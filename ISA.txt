@@ -1,0 +1,27 @@
+hlt - Halts execution
+const <id: 8> - Pushes constant from constant pool with index id onto stack
+const_neg_1, const_0 to const_10 - specific constants
+
+add - Adds 2 topmost numbers on stack
+sub
+mul
+div - Integer division
+mod
+neg - negation
+
+equal - Compares 2 topmost numbers on stack for equality. Pushes 1 if yes, 0 if no.
+less
+less_equal
+
+not - logical not
+and
+or
+
+jmp <offset: 16> - unconditional jump
+jmp_true <offset: 16> - jumps if true on stack
+
+var_get <id: 8> - Gets value of variable with index id
+var_set <id: 8> - Sets value of variable with value on stack
+
+call <offset: 16>
+call_long <offset: 32>
