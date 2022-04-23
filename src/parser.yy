@@ -64,7 +64,7 @@
              | TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R TOKEN_EQUAL TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R TOKEN_SEMICOLON
              ;
      
-    function :  TOKEN_FUN TOKEN_IDENTIFIER TOKEN_PAREN_L params TOKEN_PAREN_R TOKEN_COLON blckstmt
+    function :  TOKEN_FUN TOKEN_IDENTIFIER TOKEN_PAREN_L params TOKEN_PAREN_R blckstmt
                  | TOKEN_FUN TOKEN_IDENTIFIER TOKEN_PAREN_L params TOKEN_PAREN_R TOKEN_COLON type blckstmt
     		 | TOKEN_FUN TOKEN_IDENTIFIER TOKEN_PAREN_L params TOKEN_PAREN_R TOKEN_COLON type TOKEN_SQ_BRACK_L TOKEN_SQ_BRACK_R blckstmt
              ;
@@ -130,8 +130,13 @@
              | TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R TOKEN_EQUAL expr TOKEN_SEMICOLON
              ;
      
-    blckstmt : TOKEN_BRACE_L stmts TOKEN_BRACE_R
-    		 ;
+    blckstmt : TOKEN_BRACE_L { open_scope(); } stmts TOKEN_BRACE_R 
+                { 
+                        usize var_count = get_scope_var_count();
+                        close_scope();
+                        vm.undecl_vars(var_count);
+                }
+    		;
      
     expr : expr TOKEN_LOGICAL_OR andexpr 
          | andexpr { $$.type = $1.type; }

@@ -1,6 +1,20 @@
-fun main(): int
+fun main()
 {
-    var xyz: int = 5;
-    var ab: int = 67;
-    xyz = ab;
+    var a: int = 5;
+    var b: int = 67;
+    {
+        var c: int = 10;
+        b = c;
+    }
+    var d: int = 15;
+    {
+        var e: int = 20;
+        {
+            var f: int = 25;
+            e = f;
+        }
+        var i: int = 45;
+    }
 }
+
+var g: int = 199;

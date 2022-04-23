@@ -142,6 +142,11 @@ usize VM::write_decl_var()
 	return index;
 }
 
+void VM::undecl_vars(usize count)
+{
+	vars_declared -= count;
+}
+
 /*********************************************************************/
 
 OP VM::read_op()

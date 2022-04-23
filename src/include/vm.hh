@@ -37,6 +37,7 @@ class VM
 	void write_constant_op(OP op, u64 constant);
 
 	usize write_decl_var();
+	void undecl_vars(usize count);
 
 	#ifdef DEBUG_FLAG
 	const u8 *get_raw_code(u64 *size);

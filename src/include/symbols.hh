@@ -28,5 +28,6 @@ void close_scope();
 
 bool add_symbol(string &symbol, Entry entry);
 bool check_symbol(string &symbol, Entry &entry);
+usize get_scope_var_count();
 
 #endif /* SYMBOLS_HH */

@@ -47,3 +47,8 @@ bool check_symbol(string &symbol, Entry &entry)
     }
     return false;
 }
+
+usize get_scope_var_count()
+{
+    return currentTable->entries.size();
+}
