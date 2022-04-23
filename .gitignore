@@ -1,4 +1,5 @@
 obj/
 .cache/
+.vscode/
 log/
 compile_commands.json

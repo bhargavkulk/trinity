@@ -2,7 +2,9 @@
     {
     #include <cstdio>
     #include "vm.hh"
+    #include "symbols.hh"
      
+    extern int yylineno;
     extern int yylex(void);
     void yyerror(const char *);
      
@@ -48,10 +50,22 @@
                ;
      
     variable : TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_EQUAL expr TOKEN_SEMICOLON
+        {
+                if($4.type != $6.type) DECLARE_ERROR("Type mismatch");
+
+                usize id = vm.write_decl_var();
+                string ident = $2.as.str_val;
+                Entry entry = { $4.type, id };
+
+                if(!add_symbol(ident, entry)) DECLARE_ERROR("Variable redeclaration not allowed");
+
+        }
+
              | TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R TOKEN_EQUAL TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R TOKEN_SEMICOLON
              ;
      
-    function : TOKEN_FUN TOKEN_IDENTIFIER TOKEN_PAREN_L params TOKEN_PAREN_R TOKEN_COLON type blckstmt
+    function :  TOKEN_FUN TOKEN_IDENTIFIER TOKEN_PAREN_L params TOKEN_PAREN_R TOKEN_COLON blckstmt
+                 | TOKEN_FUN TOKEN_IDENTIFIER TOKEN_PAREN_L params TOKEN_PAREN_R TOKEN_COLON type blckstmt
     		 | TOKEN_FUN TOKEN_IDENTIFIER TOKEN_PAREN_L params TOKEN_PAREN_R TOKEN_COLON type TOKEN_SQ_BRACK_L TOKEN_SQ_BRACK_R blckstmt
              ;
      
@@ -67,9 +81,10 @@
     	  | TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_SQ_BRACK_L TOKEN_SQ_BRACK_R
           ;
      
-    type : TOKEN_INT
-    	 | TOKEN_STR
-    	 | TOKEN_BLK;
+    type : TOKEN_INT { $$.type = DataType::INT; }
+    	 | TOKEN_STR { $$.type = DataType::STR; }
+    	 | TOKEN_BLK { $$.type = DataType::BLK; }
+         ;
      
     stmts :	stmts stmt
     	  |
@@ -103,25 +118,31 @@
             ;
      
     asgnstmt : TOKEN_IDENTIFIER TOKEN_EQUAL expr TOKEN_SEMICOLON
+    {
+        string ident = $1.as.str_val;
+        Entry entry;
+        if(!check_symbol(ident, entry)) DECLARE_ERROR("Undeclared identifier");
+        if(entry.type != $3.type) DECLARE_ERROR("Type mismatch");
+
+        vm.write_op(OP::VARSET);
+        vm.write_byte(entry.id);
+    }
              | TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R TOKEN_EQUAL expr TOKEN_SEMICOLON
              ;
      
-    blckstmt : openbrace stmts TOKEN_BRACE_R
+    blckstmt : TOKEN_BRACE_L stmts TOKEN_BRACE_R
     		 ;
      
-    openbrace :	TOKEN_BRACE_L
-    		  ;
-     
     expr : expr TOKEN_LOGICAL_OR andexpr 
-         | andexpr
+         | andexpr { $$.type = $1.type; }
          ;
      
     andexpr : andexpr TOKEN_LOGICAL_AND notexpr
-            | notexpr
+            | notexpr { $$.type = $1.type; }
             ;
      
     notexpr : TOKEN_LOGICAL_NOT relexpr 
-            | relexpr
+            | relexpr { $$.type = $1.type; }
             ;
      
     relexpr : relexpr TOKEN_LESS_EQ sumexpr
@@ -130,34 +151,48 @@
             | relexpr TOKEN_GREATER sumexpr
             | relexpr TOKEN_DOUBLE_EQ sumexpr
             | relexpr TOKEN_NOT_EQ sumexpr
-            | sumexpr
+            | sumexpr { $$.type = $1.type; }
             ;
      
     sumexpr : sumexpr TOKEN_PLUS mulexpr
             | sumexpr TOKEN_MINUS mulexpr
-            | mulexpr
+            | mulexpr { $$.type = $1.type; }
             ;
      
     mulexpr : mulexpr TOKEN_STAR unexpr
             | mulexpr TOKEN_SLASH unexpr
             | mulexpr TOKEN_MODULO unexpr
-            | unexpr
+            | unexpr { $$.type = $1.type; }
             ;
      
     unexpr : TOKEN_MINUS smolexpr
-           | smolexpr
+           | smolexpr { $$.type = $1.type; }
            ;
      
     smolexpr : TOKEN_INT_VAL
         {
                 vm.write_constant_op(OP::CONST, $1.as.int_val);
+                $$.type = DataType::INT;
         }
 
              | TOKEN_STR_VAL
+                {
+                        vm.write_constant_op(OP::CONST, (u64) $1.as.str_val);
+                        $$.type = DataType::STR;
+                }
              | TOKEN_PAREN_L expr TOKEN_PAREN_R
              | TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R
              | callexpr
              | TOKEN_IDENTIFIER
+                {
+                        string ident = $1.as.str_val;
+                        Entry entry;
+                        if(!check_symbol(ident, entry)) DECLARE_ERROR("Undeclared identifier");
+
+                        vm.write_op(OP::VARGET);
+                        vm.write_byte(entry.id);
+                        $$.type = entry.type;
+                }
              ;
      
     callexpr : TOKEN_IDENTIFIER TOKEN_PAREN_L args TOKEN_PAREN_R
@@ -176,5 +211,5 @@
      
     void yyerror(const char *msg)
     {
-    	fprintf(stderr, "Syntax error: %s\n", msg);
+    	fprintf(stderr, "<Line %d> Syntax error: %s\n", yylineno, msg);
     }

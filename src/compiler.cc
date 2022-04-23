@@ -1,6 +1,7 @@
 #include "common.hh"
 #include "compiler.hh"
 #include "vm.hh"
+#include "symbols.hh"
 #include <cstdio>
 #include <cstdlib>
 
@@ -14,6 +15,8 @@ FILE *compilation_log;
 
 int compile(FILE *source)
 {
+	init_symbols();
+
 	yyin = source;
 	int yyretval = yyparse();
 	if(yyretval != 0)

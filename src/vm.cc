@@ -9,12 +9,14 @@ FILE *execution_log;
 #endif /* DEBUG_FLAG */
 
 VM vm;
-VM::VM() : pc(0) {}
+VM::VM() : pc(0), vars_declared(0), max_vars_declared(0) {}
 
 int VM::run()
 {
 	bool has_halted = false;
 	u64 halt_pc = 0;
+
+	variables = std::vector<u64>(max_vars_declared);
 
 	// TEMPORARY: REPLACE WITH WINDOW FLAG.
 	while (pc < bytecode.size())
@@ -70,6 +72,22 @@ int VM::run()
 				push(constants.at(index));
 				break;
 			}
+
+			case OP::VARSET:
+			{
+				u64 val = pop();
+				u8 id = read_byte();
+				variables.at(id) = val;
+				break;
+			}
+
+			case OP::VARGET:
+			{
+				u8 id = read_byte();
+				u64 val = variables.at(id);
+				push(val);
+				break;
+			}
 		}
 #ifdef DEBUG_FLAG
 		stack_dump(stack, execution_log);
@@ -77,6 +95,9 @@ int VM::run()
 		fflush(execution_log);
 #endif /* DEBUG_FLAG */
 	}
+
+	for(auto e : variables) printf("%d\n", e);
+
 	return 0;
 }
 
@@ -105,6 +126,20 @@ void VM::write_constant_op(OP op, u64 constant)
 	bytecode.push_back(static_cast<u8>(index));
 
 	// TODO: long constant opcode.
+}
+
+usize VM::write_decl_var()
+{
+	usize index = vars_declared;
+	vars_declared += 1;
+	if(max_vars_declared < vars_declared)
+	{
+		max_vars_declared = vars_declared;
+	}
+
+	bytecode.push_back(static_cast<u8>(OP::VARSET));
+	bytecode.push_back(static_cast<u8>(index));
+	return index;
 }
 
 /*********************************************************************/

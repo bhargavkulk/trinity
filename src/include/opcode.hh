@@ -20,6 +20,11 @@ enum class OP : u8
 	// NEG,
 	CONST, // SETS
 
+
+	// Nimish
+
+	VARSET, VARGET,
+
 };
 
 struct OPData

@@ -11,6 +11,8 @@ class VM
 	std::vector<u8> bytecode;
 	std::vector<u64> stack;
 	std::vector<u64> constants; // Both integers and string pointers.
+	std::vector<u64> variables;
+	usize vars_declared, max_vars_declared;
 
 	OP read_op();
 	u8 read_byte();
@@ -33,6 +35,8 @@ class VM
 	void write_word(u16 word);
 	void write_op(OP op);
 	void write_constant_op(OP op, u64 constant);
+
+	usize write_decl_var();
 
 	#ifdef DEBUG_FLAG
 	const u8 *get_raw_code(u64 *size);

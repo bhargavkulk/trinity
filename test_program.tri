@@ -1,1 +1,6 @@
-var a: int = 5;
+fun main(): int
+{
+    var xyz: int = 5;
+    var ab: int = 67;
+    xyz = ab;
+}

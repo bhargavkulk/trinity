@@ -9,5 +9,8 @@ const OPData OP_DATA[]
 
 	{"ADD", 0},
 
-	{"CONST", 2}
+	{"CONST", 1},
+
+	{"VARSET", 1},
+	{"VARGET", 1},
 };
