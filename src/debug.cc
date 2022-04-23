@@ -16,6 +16,8 @@ void disassemble(const u8 *instruction, FILE *file)
 	{
 		case OP::ERR:
 		case OP::HLT:
+		case OP::LOGINT:
+		case OP::LOGSTR:
 		fprintf(file, "%s\n", OP_str(op));
 		break;
 
@@ -23,13 +25,7 @@ void disassemble(const u8 *instruction, FILE *file)
 		break;
 
 		case OP::CONST:
-		fprintf(file, "%s %d\n", OP_str(op), instruction[1]);
-		break;
-
 		case OP::VARSET:
-		fprintf(file, "%s %d\n", OP_str(op), instruction[1]);
-		break;
-
 		case OP::VARGET:
 		fprintf(file, "%s %d\n", OP_str(op), instruction[1]);
 		break;

@@ -88,6 +88,18 @@ int VM::run()
 				push(val);
 				break;
 			}
+
+			case OP::LOGINT:
+			{
+				printf("%ld\n", (i64) pop());
+				break;
+			}
+
+			case OP::LOGSTR:
+			{
+				printf("%s\n", (const char *) pop());
+				break;
+			}
 		}
 #ifdef DEBUG_FLAG
 		stack_dump(stack, execution_log);
@@ -95,8 +107,6 @@ int VM::run()
 		fflush(execution_log);
 #endif /* DEBUG_FLAG */
 	}
-
-	for(auto e : variables) printf("%d\n", e);
 
 	return 0;
 }

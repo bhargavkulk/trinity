@@ -13,4 +13,7 @@ const OPData OP_DATA[]
 
 	{"VARSET", 1},
 	{"VARGET", 1},
+
+	{"LOGINT", 0},
+	{"LOGSTR", 0},
 };

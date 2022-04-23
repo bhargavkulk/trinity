@@ -33,7 +33,9 @@
      
     		TOKEN_INT_VAL TOKEN_STR_VAL TOKEN_IDENTIFIER
      
-    		TOKEN_ERR
+    		TOKEN_LOG
+                    
+                TOKEN_ERR
      
     %%
      
@@ -101,6 +103,24 @@
     	 | TOKEN_BRK TOKEN_SEMICOLON
     	 | TOKEN_CNT TOKEN_SEMICOLON
     	 | TOKEN_SEMICOLON
+
+         | TOKEN_LOG expr TOKEN_SEMICOLON
+         {
+                 switch($2.type)
+                 {
+                         case DataType::STR:
+                         vm.write_op(OP::LOGSTR);
+                         break;
+
+                         case DataType::INT:
+                         vm.write_op(OP::LOGINT);
+                         break;
+
+                         default:
+                         DECLARE_ERROR("Invalid operand for log\n");
+                         break;
+                 }
+         }
          ;
      
     retstmt : TOKEN_RET TOKEN_SEMICOLON

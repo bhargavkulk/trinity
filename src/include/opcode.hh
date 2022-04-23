@@ -25,6 +25,8 @@ enum class OP : u8
 
 	VARSET, VARGET,
 
+	LOGINT, LOGSTR,
+
 };
 
 struct OPData

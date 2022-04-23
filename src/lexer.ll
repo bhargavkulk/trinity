@@ -28,6 +28,8 @@ nil                             return TOKEN_NIL;
 !title                          return TOKEN_DIR_TITLE;
 !icon                           return TOKEN_DIR_ICON;
 
+log                             return TOKEN_LOG;
+
 \[                              return TOKEN_SQ_BRACK_L;
 \]                              return TOKEN_SQ_BRACK_R;
 \(                              return TOKEN_PAREN_L;

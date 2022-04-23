@@ -15,6 +15,8 @@ fun main()
         }
         var i: int = 45;
     }
+
+    log d;
 }
 
 var g: int = 199;

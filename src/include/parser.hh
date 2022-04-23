@@ -102,7 +102,8 @@ extern int yydebug;
     TOKEN_INT_VAL = 300,
     TOKEN_STR_VAL = 301,
     TOKEN_IDENTIFIER = 302,
-    TOKEN_ERR = 303
+    TOKEN_LOG = 303,
+    TOKEN_ERR = 304
   };
 #endif
 
