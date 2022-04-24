@@ -26,7 +26,8 @@ Pops top 2 integers from the stack and pushes the quotient onto the stack.
 - Throws error if divisor is zero.
 
 ## `MOD`
-Pops top 2 integers from the stack and pushes the remainder onto the stack. Throws error if both elements not being compared are not integers.
+Pops top 2 integers from the stack and pushes the remainder onto the stack.
+- Throws error if both elements not being compared are not integers.
 
 ## `SUB`
 Pops topmost integer from the stack and pushes the negation onto the stack. 
