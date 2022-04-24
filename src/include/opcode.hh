@@ -23,7 +23,12 @@ enum class OP : u8
 
 	// Nimish
 
+	CONST_0,
+
+	GLOB_VARSET, GLOB_VARGET,
 	VARSET, VARGET,
+
+	CALL, RET,
 
 	LOGINT, LOGSTR,
 

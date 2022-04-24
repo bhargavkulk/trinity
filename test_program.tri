@@ -1,22 +1,15 @@
-fun main()
-{
-    var a: int = 5;
-    var b: int = 67;
-    {
-        var c: int = 10;
-        b = c;
-    }
-    var d: int = 15;
-    {
-        var e: int = 20;
-        {
-            var f: int = 25;
-            e = f;
-        }
-        var i: int = 45;
-    }
+var glob: int = 100;
 
-    log d;
+fun function(a: int, b: str): str
+{
+    log a;
+    log b;
+
+    ret "abc";
 }
 
-var g: int = 199;
+fun start()
+{
+    var g: int = 20;
+    log function(1, "hello");
+}

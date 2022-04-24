@@ -16,8 +16,10 @@ void disassemble(const u8 *instruction, FILE *file)
 	{
 		case OP::ERR:
 		case OP::HLT:
+		case OP::CONST_0:
 		case OP::LOGINT:
 		case OP::LOGSTR:
+		case OP::RET:
 		fprintf(file, "%s\n", OP_str(op));
 		break;
 
@@ -25,9 +27,15 @@ void disassemble(const u8 *instruction, FILE *file)
 		break;
 
 		case OP::CONST:
+		case OP::GLOB_VARSET:
+		case OP::GLOB_VARGET:
 		case OP::VARSET:
 		case OP::VARGET:
 		fprintf(file, "%s %d\n", OP_str(op), instruction[1]);
+		break;
+
+		case OP::CALL:
+		fprintf(file, "%s %u\n", OP_str(op), *(u32 *) &instruction[1]);
 		break;
 
 		default:
