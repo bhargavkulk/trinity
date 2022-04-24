@@ -8,3 +8,15 @@ A game engine bundled with an interpreted language. Completed as the end-term pr
 - Mihir Thalanki - [MihirT906](https://github.com/MihirT906)
 - Nimish Wadekar - [nimishwadekar](https://github.com/nimishwadekar)
 - Pranav Kumar Dargan - [Pranav-KD](https://github.com/Pranav-KD)
+
+## Language Semantics
+**TODO**
+
+## Pipeline
+**TODO**
+
+## NEO-VM Architecture
+**TODO**
+
+## ISA Specification
+The ISA Specification can be found here: [ISA.md](ISA.md).
