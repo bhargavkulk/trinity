@@ -12,7 +12,4 @@ fun start()
 {
     var g: int = 20;
     log function(1, "hello");
-    var a: int = 10;
-    var b: int =10;
-    log (a + b) * b;
 }

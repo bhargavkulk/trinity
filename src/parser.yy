@@ -250,99 +250,27 @@ blckstmt : TOKEN_BRACE_L
         ;
     
 expr : expr TOKEN_LOGICAL_OR andexpr 
-{
-                if($1.type == DataType::INT && $3.type == DataType::INT) {
-                        vm.write_op(OP::OR);
-                } else {
-                        DECLARE_ERROR("Types not same.");
-                } 
-}
         | andexpr { $$.type = $1.type; }
         ;
     
 andexpr : andexpr TOKEN_LOGICAL_AND notexpr
-{
-                if($1.type == DataType::INT && $3.type == DataType::INT) {
-                        vm.write_op(OP::AND);
-                } else {
-                        DECLARE_ERROR("Types not same.");
-                } 
-}
         | notexpr { $$.type = $1.type; }
         ;
     
 notexpr : TOKEN_LOGICAL_NOT relexpr 
-{
-                if($2.type == DataType::INT) {
-                        vm.write_op(OP::NOT);
-                } else {
-                        DECLARE_ERROR("Types not same.");
-                } 
-}
         | relexpr { $$.type = $1.type; }
         ;
     
 relexpr : relexpr TOKEN_LESS_EQ sumexpr
-{
-                if($1.type == DataType::INT && $3.type == DataType::INT) {
-                        vm.write_op(OP::LESS_EQUAL);
-                } else {
-                        DECLARE_ERROR("Types not same.");
-                } 
-}
         | relexpr TOKEN_GREATER_EQ sumexpr
-{
-                if($1.type == DataType::INT && $3.type == DataType::INT) {
-                        vm.write_op(OP::LESS);
-                        vm.write_op(OP::NOT);
-                } else {
-                        DECLARE_ERROR("Types not same.");
-                } 
-}
         | relexpr TOKEN_LESS sumexpr
-{
-                if($1.type == DataType::INT && $3.type == DataType::INT) {
-                        vm.write_op(OP::LESS);
-                } else {
-                        DECLARE_ERROR("Types not same.");
-                } 
-}
         | relexpr TOKEN_GREATER sumexpr
-{
-                if($1.type == DataType::INT && $3.type == DataType::INT) {
-                        vm.write_op(OP::LESS_EQUAL);
-                        vm.write_op(OP::NOT);
-                } else {
-                        DECLARE_ERROR("Types not same.");
-                }     
-}
         | relexpr TOKEN_DOUBLE_EQ sumexpr
-{
-                if($1.type == DataType::INT && $3.type == DataType::INT) {
-                        vm.write_op(OP::EQUAL);
-                } else {
-                        DECLARE_ERROR("Types not same.");
-                } 
-}
         | relexpr TOKEN_NOT_EQ sumexpr
-{
-                if($1.type == DataType::INT && $3.type == DataType::INT) {
-                        vm.write_op(OP::EQUAL);
-                        vm.write_op(OP::NOT);
-                } else {
-                        DECLARE_ERROR("Types not same.");
-                } 
-}
         | sumexpr { $$.type = $1.type; }
         ;
 
-sumexpr : sumexpr TOKEN_PLUS mulexpr{
-                if($1.type == DataType::INT && $3.type == DataType::INT) {
-                        vm.write_op(OP::ADD);
-                } else {
-                        DECLARE_ERROR("Types not same.");
-                }    
-}
+sumexpr : sumexpr TOKEN_PLUS mulexpr
         | sumexpr TOKEN_MINUS mulexpr { 
                 if($1.type == DataType::INT && $3.type == DataType::INT) {
                         vm.write_op(OP::SUB);
@@ -353,40 +281,13 @@ sumexpr : sumexpr TOKEN_PLUS mulexpr{
         | mulexpr { $$.type = $1.type; }
         ;
 
-mulexpr : mulexpr TOKEN_STAR unexpr{
-                if($1.type == DataType::INT && $3.type == DataType::INT) {
-                        vm.write_op(OP::MUL);
-                } else {
-                        DECLARE_ERROR("Types not same.");
-                }    
-}
+mulexpr : mulexpr TOKEN_STAR unexpr
         | mulexpr TOKEN_SLASH unexpr
-{
-                if($1.type == DataType::INT && $3.type == DataType::INT) {
-                        vm.write_op(OP::DIV);
-                } else {
-                        DECLARE_ERROR("Types not same.");
-                }
-}
         | mulexpr TOKEN_MODULO unexpr
-{
-                if($1.type == DataType::INT && $3.type == DataType::INT) {
-                        vm.write_op(OP::MOD);
-                } else {
-                        DECLARE_ERROR("Types not same.");
-                }
-}
         | unexpr { $$.type = $1.type; }
         ;
     
 unexpr : TOKEN_MINUS smolexpr
-{
-                if($2.type == DataType::INT) {
-                        vm.write_op(OP::NEG);
-                } else {
-                        DECLARE_ERROR("Types not same.");
-                } 
-}
         | smolexpr { $$.type = $1.type; }
         ;
     
