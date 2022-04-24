@@ -46,11 +46,10 @@ extern int yydebug;
 /* "%code requires" blocks.  */
 #line 16 "src/parser.yy"
 
-    #include <cstdint>
-    #include "types.hh"
-    
+#include <cstdint>
+#include "types.hh"
 
-#line 54 "src/parser.hh"
+#line 53 "src/parser.hh"
 
 /* Token type.  */
 #ifndef YYTOKENTYPE

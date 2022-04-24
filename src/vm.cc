@@ -3,6 +3,7 @@
 #include "debug.hh"
 #include "vm.hh"
 #include <cstdio>
+#include <cstdlib>
 
 #ifdef DEBUG_FLAG
 FILE *execution_log;
@@ -100,6 +101,28 @@ int VM::run()
 				printf("%s\n", (const char *) pop());
 				break;
 			}
+
+			case OP::JMP_IF_FALSE:
+			{
+				u16 offset = read_word() - 3;
+				i64 cond = (i64) pop();
+				pc += cond ? 0 : offset;
+				break;
+			}
+
+			case OP::JMP:
+			{
+				u16 offset = read_word() - 3;
+				pc += offset;
+				break;
+			}
+
+			case OP::LOOP:
+			{
+				u16 offset = read_word() - 3;
+				pc -= offset;
+				break;
+			}
 		}
 #ifdef DEBUG_FLAG
 		stack_dump(stack, execution_log);
@@ -193,6 +216,20 @@ u64 VM::pop()
 u64 VM::peek(usize offset)
 {
 	return stack.at(stack.size() - 1 - offset);
+}
+
+/*********************************************************************/
+usize VM::bytecode_len() {
+	return bytecode.size();
+}
+
+void VM::patch_jump(i64 offset) {
+	i64 jump = bytecode.size() - offset;
+	if(jump > UINT16_MAX) {
+		exit(1);
+	}
+	bytecode[offset + 1] = static_cast<u8>(jump & 0xff);
+    bytecode[offset + 2] = static_cast<u8>((jump >> 8) & 0xff);
 }
 
 /*********************************************************************/

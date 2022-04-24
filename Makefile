@@ -18,7 +18,7 @@ obj/%.o: src/%.cc
 	g++ $(FLAGS) -c $^ -o $@
 
 src/$(PARSER).cc: src/$(PARSER).yy
-	bison src/$(PARSER).yy -do src/$(PARSER).cc
+	bison src/$(PARSER).yy -do src/$(PARSER).cc -v
 	mv -f src/$(PARSER).hh src/include/$(PARSER).hh
 
 src/$(LEXER).cc: src/$(LEXER).ll

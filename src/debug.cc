@@ -30,6 +30,12 @@ void disassemble(const u8 *instruction, FILE *file)
 		fprintf(file, "%s %d\n", OP_str(op), instruction[1]);
 		break;
 
+		case OP::JMP_IF_FALSE:
+		case OP::JMP:
+		case OP::LOOP:
+		fprintf(file, "%s %d\n", OP_str(op), instruction[1] | static_cast<i16>(instruction[2]) << 8);
+		break;
+
 		default:
 		fprintf(stderr, "INVALID OPCODE\n");
 		break;
