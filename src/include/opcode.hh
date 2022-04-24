@@ -14,10 +14,19 @@ enum class OP : u8
 
 	ADD, // Adds 2 topmost numbers on stack
 	SUB, // sames
-	// MUL, // sames
-	// DIV,
-	// MOD,
-	// NEG,
+	MUL, // sames
+	DIV,
+	MOD,
+	NEG,
+
+	LESS,
+	EQUAL,
+	LESS_EQUAL,
+	GREATER,
+	GREATER_EQUAL,
+	NOT,
+	AND,
+	OR,
 	CONST, // SETS
 
 

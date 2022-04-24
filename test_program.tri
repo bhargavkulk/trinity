@@ -8,8 +8,23 @@ fun function(a: int, b: str): str
     ret "abc";
 }
 
+fun factorial(n: int): int
+{
+    if n == 0 {
+        ret 1;
+    } else {
+        ret n * factorial(n - 1);
+    }
+}
+
+fun add(a: int, b: int): int
+{
+    ret a + b;
+}
+
 fun start()
 {
-    var g: int = 20;
-    log function(1, "hello");
+    var g: int = 3;
+    var h: int = 3;
+    log factorial(add(g, h));
 }

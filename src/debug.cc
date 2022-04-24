@@ -25,6 +25,18 @@ void disassemble(const u8 *instruction, FILE *file)
 
 		case OP::ADD:
 		case OP::SUB:
+		case OP::DIV:
+		case OP::MUL:
+		case OP::MOD:
+		case OP::EQUAL:
+		case OP::LESS:
+		case OP::LESS_EQUAL:
+		case OP::GREATER:
+		case OP::GREATER_EQUAL:
+		case OP::NEG:
+		case OP::NOT:
+		case OP::OR:
+		case OP::AND:
 		fprintf(file, "%s\n", OP_str(op));
 		break;
 
