@@ -16,4 +16,8 @@ const OPData OP_DATA[]
 
 	{"LOGINT", 0},
 	{"LOGSTR", 0},
+
+	{"JMP_IF_FALSE", 2},
+	{"JMP", 2},
+	{"LOOP", 2},
 };

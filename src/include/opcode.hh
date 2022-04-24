@@ -27,6 +27,11 @@ enum class OP : u8
 
 	LOGINT, LOGSTR,
 
+	// Bhargav
+	JMP_IF_FALSE,
+	JMP,
+	LOOP
+
 };
 
 struct OPData
