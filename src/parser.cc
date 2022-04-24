@@ -568,10 +568,10 @@ static const yytype_int16 yyrline[] =
       88,    91,    92,    95,    96,    97,    98,    99,   100,   101,
      102,   103,   104,   105,   107,   126,   127,   130,   132,   130,
      145,   148,   153,   148,   161,   161,   170,   180,   183,   183,
-     191,   192,   195,   196,   199,   200,   203,   204,   205,   206,
-     207,   208,   209,   212,   213,   220,   223,   224,   225,   226,
-     229,   230,   233,   239,   244,   245,   246,   247,   259,   262,
-     263,   266,   267
+     191,   199,   202,   210,   213,   221,   224,   232,   241,   249,
+     258,   266,   275,   278,   285,   292,   295,   302,   310,   318,
+     321,   329,   332,   338,   343,   344,   345,   346,   358,   361,
+     362,   365,   366
 };
 #endif
 
@@ -1633,32 +1633,155 @@ vm.write_byte(entry.id);
 #line 1634 "src/parser.cc"
     break;
 
-  case 51:
+  case 50:
 #line 192 "src/parser.yy"
-                  { yyval.type = yyvsp[0].type; }
-#line 1640 "src/parser.cc"
-    break;
-
-  case 53:
-#line 196 "src/parser.yy"
-                  { yyval.type = yyvsp[0].type; }
+{
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::OR);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                } 
+}
 #line 1646 "src/parser.cc"
     break;
 
-  case 55:
-#line 200 "src/parser.yy"
+  case 51:
+#line 199 "src/parser.yy"
                   { yyval.type = yyvsp[0].type; }
 #line 1652 "src/parser.cc"
     break;
 
-  case 62:
-#line 209 "src/parser.yy"
+  case 52:
+#line 203 "src/parser.yy"
+{
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::AND);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                } 
+}
+#line 1664 "src/parser.cc"
+    break;
+
+  case 53:
+#line 210 "src/parser.yy"
                   { yyval.type = yyvsp[0].type; }
-#line 1658 "src/parser.cc"
+#line 1670 "src/parser.cc"
+    break;
+
+  case 54:
+#line 214 "src/parser.yy"
+{
+                if(yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::NOT);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                } 
+}
+#line 1682 "src/parser.cc"
+    break;
+
+  case 55:
+#line 221 "src/parser.yy"
+                  { yyval.type = yyvsp[0].type; }
+#line 1688 "src/parser.cc"
+    break;
+
+  case 56:
+#line 225 "src/parser.yy"
+{
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::LESS_EQUAL);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                } 
+}
+#line 1700 "src/parser.cc"
+    break;
+
+  case 57:
+#line 233 "src/parser.yy"
+{
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::LESS);
+                        vm.write_op(OP::NOT);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                } 
+}
+#line 1713 "src/parser.cc"
+    break;
+
+  case 58:
+#line 242 "src/parser.yy"
+{
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::LESS);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                } 
+}
+#line 1725 "src/parser.cc"
+    break;
+
+  case 59:
+#line 250 "src/parser.yy"
+{
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::LESS_EQUAL);
+                        vm.write_op(OP::NOT);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                }     
+}
+#line 1738 "src/parser.cc"
+    break;
+
+  case 60:
+#line 259 "src/parser.yy"
+{
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::EQUAL);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                } 
+}
+#line 1750 "src/parser.cc"
+    break;
+
+  case 61:
+#line 267 "src/parser.yy"
+{
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::EQUAL);
+                        vm.write_op(OP::NOT);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                } 
+}
+#line 1763 "src/parser.cc"
+    break;
+
+  case 62:
+#line 275 "src/parser.yy"
+                  { yyval.type = yyvsp[0].type; }
+#line 1769 "src/parser.cc"
+    break;
+
+  case 63:
+#line 278 "src/parser.yy"
+                                    {
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::ADD);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                }    
+}
+#line 1781 "src/parser.cc"
     break;
 
   case 64:
-#line 213 "src/parser.yy"
+#line 285 "src/parser.yy"
                                       { 
                 if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
                         vm.write_op(OP::SUB);
@@ -1666,47 +1789,95 @@ vm.write_byte(entry.id);
                         DECLARE_ERROR("Types not same.");
                 }
 }
-#line 1670 "src/parser.cc"
+#line 1793 "src/parser.cc"
     break;
 
   case 65:
-#line 220 "src/parser.yy"
+#line 292 "src/parser.yy"
                   { yyval.type = yyvsp[0].type; }
-#line 1676 "src/parser.cc"
+#line 1799 "src/parser.cc"
+    break;
+
+  case 66:
+#line 295 "src/parser.yy"
+                                   {
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::MUL);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                }    
+}
+#line 1811 "src/parser.cc"
+    break;
+
+  case 67:
+#line 303 "src/parser.yy"
+{
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::DIV);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                }
+}
+#line 1823 "src/parser.cc"
+    break;
+
+  case 68:
+#line 311 "src/parser.yy"
+{
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::MOD);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                }
+}
+#line 1835 "src/parser.cc"
     break;
 
   case 69:
-#line 226 "src/parser.yy"
+#line 318 "src/parser.yy"
                  { yyval.type = yyvsp[0].type; }
-#line 1682 "src/parser.cc"
+#line 1841 "src/parser.cc"
+    break;
+
+  case 70:
+#line 322 "src/parser.yy"
+{
+                if(yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::NEG);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                } 
+}
+#line 1853 "src/parser.cc"
     break;
 
   case 71:
-#line 230 "src/parser.yy"
+#line 329 "src/parser.yy"
                    { yyval.type = yyvsp[0].type; }
-#line 1688 "src/parser.cc"
+#line 1859 "src/parser.cc"
     break;
 
   case 72:
-#line 234 "src/parser.yy"
+#line 333 "src/parser.yy"
 {
         vm.write_constant_op(OP::CONST, yyvsp[0].as.int_val);
         yyval.type = DataType::INT;
 }
-#line 1697 "src/parser.cc"
+#line 1868 "src/parser.cc"
     break;
 
   case 73:
-#line 240 "src/parser.yy"
+#line 339 "src/parser.yy"
         {
                 vm.write_constant_op(OP::CONST, (u64) yyvsp[0].as.str_val);
                 yyval.type = DataType::STR;
         }
-#line 1706 "src/parser.cc"
+#line 1877 "src/parser.cc"
     break;
 
   case 77:
-#line 248 "src/parser.yy"
+#line 347 "src/parser.yy"
         {
                 string ident = yyvsp[0].as.str_val;
                 Entry entry;
@@ -1716,11 +1887,11 @@ vm.write_byte(entry.id);
                 vm.write_byte(entry.id);
                 yyval.type = entry.type;
         }
-#line 1720 "src/parser.cc"
+#line 1891 "src/parser.cc"
     break;
 
 
-#line 1724 "src/parser.cc"
+#line 1895 "src/parser.cc"
 
       default: break;
     }
@@ -1952,7 +2123,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 271 "src/parser.yy"
+#line 370 "src/parser.yy"
 
 
 void yyerror(const char *msg)
