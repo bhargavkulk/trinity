@@ -1,12 +1,10 @@
 fun main()
 {
-    var a: int = 0;
-    var b: int = 69;
-    var c: int = 39;
-    if a {
+    var a: int = 10;
+    var b: int = 0;
+    if b {
         log a;
     } else {
         log b;
     }
-    log c;
 }

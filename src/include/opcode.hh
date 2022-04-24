@@ -13,7 +13,7 @@ enum class OP : u8
 	// Harsha adding the new byte code instruction types
 
 	ADD, // Adds 2 topmost numbers on stack
-		 // SUB, // sames
+	SUB, // sames
 	// MUL, // sames
 	// DIV,
 	// MOD,

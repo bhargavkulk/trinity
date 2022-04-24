@@ -67,6 +67,14 @@ int VM::run()
 				break;
 			}
 
+			case OP::SUB:
+			{
+				i64 op2 = (i64) pop();
+				i64 op1 = (i64) pop();
+				push((u64)(op1 - op2));
+				break;
+			}
+
 			case OP::CONST:
 			{
 				u8 index = read_byte();
@@ -119,7 +127,7 @@ int VM::run()
 
 			case OP::LOOP:
 			{
-				u16 offset = read_word() - 3;
+				u16 offset = read_word() + 3;
 				pc -= offset;
 				break;
 			}
