@@ -1,8 +1,8 @@
 obj/
 .cache/
 .vscode/
-log/
 bin/
+log/
 src/parser.cc
 src/include/parser.hh
 src/lexer.cc
