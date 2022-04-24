@@ -16,8 +16,6 @@ FILE *compilation_log;
 int compile(FILE *source)
 {
 	init_symbols();
-	init_funcs();
-	init_buffers();
 
 	yyin = source;
 	int yyretval = yyparse();

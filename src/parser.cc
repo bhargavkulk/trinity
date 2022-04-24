@@ -65,20 +65,18 @@
 /* "%code top" blocks.  */
 #line 2 "src/parser.yy"
 
-    #include <cstdio>
-    #include <cstring>
-    #include "vm.hh"
-    #include "symbols.hh"
-     
-    extern int yylineno;
-    extern int yylex(void);
-    void yyerror(const char *);
-     
-    #define DECLARE_ERROR(msg) do { yyerror(msg); YYERROR; } while(0)
-     
-    
+#include <cstdio>
+#include "vm.hh"
+#include "symbols.hh"
 
-#line 82 "src/parser.cc"
+extern int yylineno;
+extern int yylex(void);
+void yyerror(const char *);
+
+#define DECLARE_ERROR(msg) do { yyerror(msg); YYERROR; } while(0)
+
+
+#line 80 "src/parser.cc"
 
 
 
@@ -124,13 +122,12 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 17 "src/parser.yy"
+#line 16 "src/parser.yy"
 
-    #include <cstdint>
-    #include "types.hh"
-    
+#include <cstdint>
+#include "types.hh"
 
-#line 134 "src/parser.cc"
+#line 131 "src/parser.cc"
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -503,18 +500,18 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  6
+#define YYFINAL  10
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   163
+#define YYLAST   159
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  50
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  32
+#define YYNNTS  35
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  80
+#define YYNRULES  82
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  154
+#define YYNSTATES  158
 
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   304
@@ -566,15 +563,15 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    43,    43,    46,    46,    47,    47,    50,    49,    77,
-      88,    91,    97,   103,   106,   107,   110,   111,   114,   119,
-     122,   123,   124,   127,   128,   131,   132,   133,   134,   135,
-     136,   137,   138,   139,   140,   141,   143,   162,   168,   175,
-     178,   181,   182,   185,   197,   201,   200,   222,   223,   226,
-     227,   230,   231,   234,   235,   236,   237,   238,   239,   240,
-     243,   244,   245,   248,   249,   250,   251,   254,   255,   258,
-     264,   270,   275,   276,   277,   278,   291,   311,   312,   315,
-     319
+       0,    42,    42,    46,    47,    50,    51,    54,    66,    69,
+      70,    71,    74,    75,    78,    79,    82,    83,    86,    87,
+      88,    91,    92,    95,    96,    97,    98,    99,   100,   101,
+     102,   103,   104,   105,   107,   126,   127,   130,   132,   130,
+     145,   148,   153,   148,   161,   161,   170,   180,   183,   183,
+     191,   199,   202,   210,   213,   221,   224,   232,   241,   249,
+     258,   266,   275,   278,   285,   292,   295,   302,   310,   318,
+     321,   329,   332,   338,   343,   344,   345,   346,   358,   361,
+     362,   365,   366
 };
 #endif
 
@@ -595,11 +592,11 @@ static const char *const yytname[] =
   "TOKEN_LOGICAL_OR", "TOKEN_LOGICAL_NOT", "TOKEN_SEMICOLON",
   "TOKEN_COLON", "TOKEN_COMMA", "TOKEN_INT_VAL", "TOKEN_STR_VAL",
   "TOKEN_IDENTIFIER", "TOKEN_LOG", "TOKEN_ERR", "$accept", "program",
-  "vardefs", "fundefs", "fundef", "$@1", "variable", "function", "params",
-  "params_", "param", "type", "stmts", "stmt", "retstmt", "whilestmt",
-  "forstmt", "ifstmt", "asgnstmt", "blckstmt", "$@2", "expr", "andexpr",
-  "notexpr", "relexpr", "sumexpr", "mulexpr", "unexpr", "smolexpr",
-  "callexpr", "args", "args_", YY_NULLPTR
+  "definitions", "definition", "variable", "function", "params", "params_",
+  "param", "type", "stmts", "stmt", "retstmt", "whilestmt", "@1", "@2",
+  "forstmt", "ifstmt", "@3", "@4", "@5", "asgnstmt", "blckstmt", "$@6",
+  "expr", "andexpr", "notexpr", "relexpr", "sumexpr", "mulexpr", "unexpr",
+  "smolexpr", "callexpr", "args", "args_", YY_NULLPTR
 };
 #endif
 
@@ -630,22 +627,22 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-      17,   -31,    40,    45,    17,    11,   -57,    10,   -57,    45,
-     -57,   -57,    84,    53,   -57,    60,   -57,   -57,   -57,    16,
-      43,   -57,   -57,    33,    33,    71,   101,   -57,    82,   -57,
-     -57,    33,    58,    49,   -57,   -57,     3,    62,    92,   -57,
-      78,    70,    77,   -57,   -57,   -57,   113,    93,   -23,    84,
-      95,    43,    -3,   -19,   -57,    78,    33,    33,    33,    33,
-      49,    49,    49,    49,    49,    49,    49,    49,    49,    49,
-      49,   100,    33,   -57,   118,    84,   -57,    33,    94,    33,
-      98,   102,    18,   -57,   -57,    47,    33,   -57,   -57,   -57,
-     -57,   -57,   -57,   -57,   -57,   -13,   -57,    -7,   119,    92,
-     -57,    70,    70,    70,    70,    70,    70,    77,    77,   -57,
-     -57,   -57,   121,    62,   123,   125,    46,   137,    46,   -57,
-     -57,   -57,     7,    33,    33,    42,   -57,   -57,   -57,    33,
-     -57,   126,   141,    33,   -57,   -57,    -4,    51,   -57,   128,
-     -57,    60,    -9,   115,   -57,   110,   -57,    33,    33,   -57,
-      46,    90,   -57,   -57
+      14,   -11,    -8,    64,   -57,    14,   -57,   -57,    54,    37,
+     -57,   -57,    85,    11,    42,    75,   -57,    70,   -57,   -57,
+     -57,    40,    11,   -12,    85,    22,    22,   113,   -57,    11,
+     -57,   -57,    22,     9,    12,   -57,   -57,     5,    95,    97,
+     -57,    72,   -10,    67,   -57,   -57,   -57,   115,    94,    79,
+     117,   -57,    90,   -17,   -57,    72,    22,    22,    22,    22,
+      12,    12,    12,    12,    12,    12,    12,    12,    12,    12,
+      12,   104,    22,   -57,   -57,    -4,   119,   -57,   -57,    38,
+     118,    97,   -57,   -10,   -10,   -10,   -10,   -10,   -10,    67,
+      67,   -57,   -57,   -57,   122,    95,    22,    98,   -57,   102,
+     105,     6,   -57,   -57,    50,    22,   -57,   -57,   -57,   -57,
+     -57,   -57,   -57,   -57,    80,   121,   -57,   -57,    22,    95,
+     138,    22,   -57,   -57,   -57,    84,    22,    22,    87,   -57,
+     -57,   127,   121,   121,    22,    95,   -57,    44,    88,   -57,
+     108,   -57,   -57,    -7,   121,   116,   -57,   -57,   143,    22,
+     -57,    22,   121,    47,    91,   -57,   -57,   -57
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -653,40 +650,40 @@ static const yytype_int16 yypact[] =
      means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       4,     0,     0,     6,     4,     0,     1,     0,     2,     6,
-       7,     3,     0,     0,     5,     0,    20,    21,    22,     0,
-      15,    45,     8,    78,     0,     0,     0,    14,    16,    24,
-      70,     0,     0,     0,    69,    71,    75,    80,    48,    50,
-      52,    59,    62,    66,    68,    74,     0,    77,     0,     0,
-      11,     0,     0,     0,    67,    51,     0,    78,     0,     0,
+       4,     0,     0,     0,     2,     4,     5,     6,     0,     0,
+       1,     3,    13,     0,     0,     0,    12,    14,    18,    19,
+      20,     0,     0,     0,     0,    80,     0,    16,    48,     0,
+       9,    15,     0,     0,     0,    72,    73,    77,    82,    51,
+      53,    55,    62,    65,    69,    71,    76,     0,    79,     0,
+       0,    22,     0,     0,    70,    54,     0,    80,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     9,    18,     0,    17,     0,     0,     0,
-       0,     0,     0,    46,    35,    75,     0,    25,    23,    30,
-      29,    27,    28,    31,    32,     0,    72,     0,     0,    47,
-      49,    57,    58,    54,    53,    55,    56,    60,    61,    64,
-      63,    65,     0,    79,     0,    12,     0,     0,     0,    33,
-      34,    37,     0,     0,     0,     0,    26,    73,    76,    78,
-      19,     0,    41,     0,    39,    38,     0,     0,    36,     0,
-      13,     0,     0,    73,    43,     0,    42,     0,     0,    10,
-       0,     0,    40,    44
+       0,     0,     0,     7,    17,     0,     0,    10,    74,     0,
+       0,    50,    52,    60,    61,    57,    56,    58,    59,    63,
+      64,    67,    66,    68,     0,    81,     0,     0,    37,     0,
+       0,     0,    49,    33,    77,     0,    23,    21,    28,    27,
+      25,    26,    29,    30,     0,     0,    75,    78,    80,    41,
+       0,     0,    31,    32,    35,     0,     0,     0,     0,    24,
+      11,     0,     0,     0,     0,    38,    36,     0,     0,    34,
+       0,    42,    45,     0,     0,    75,    46,     8,     0,     0,
+      39,     0,     0,     0,     0,    43,    40,    47
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-     -57,   -57,   149,   145,   -57,   -57,   103,   -57,   -57,   105,
-     -57,   -41,   -57,   -57,   -57,   -57,   -57,   -57,   -57,   -49,
-     -57,   -24,    99,   104,   127,    57,    67,    59,   129,   -57,
-     -56,   -57
+     -57,   -57,   148,   -57,    81,   -57,   -57,   130,   -57,    52,
+     -57,   -57,   -57,   -57,   -57,   -57,   -57,   -57,   -57,   -57,
+     -57,   -57,   -50,   -57,   -26,    99,    96,   124,    28,    46,
+      48,   126,   -57,   -56,   -57
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
-static const yytype_int8 yydefgoto[] =
+static const yytype_int16 yydefgoto[] =
 {
-      -1,     2,     3,     8,     9,    15,     4,    10,    26,    27,
-      28,    19,    52,    88,    89,    90,    91,    92,    93,    22,
-      29,    37,    38,    39,    40,    41,    42,    43,    44,    45,
-      46,    47
+      -1,     3,     4,     5,     6,     7,    15,    16,    17,    21,
+      75,   107,   108,   109,   121,   144,   110,   111,   132,   148,
+     133,   112,    30,    51,    38,    39,    40,    41,    42,    43,
+      44,    45,    46,    47,    48
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -694,94 +691,92 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-      48,    98,   147,    94,    77,    96,    78,    53,    74,    79,
-       1,    80,    81,    82,    30,   127,     5,    58,   143,    73,
-      31,    58,    21,    83,    56,    32,    57,    58,    95,   126,
-       1,    58,    97,    58,   115,    30,    58,    23,    33,    84,
-       6,    31,    34,    35,    85,    86,    32,    58,   113,   135,
-      30,     7,    24,   116,    12,   118,    31,    13,   122,    33,
-     121,    32,   125,    34,    35,    36,    30,   132,   123,   134,
-      57,    21,    31,   139,    33,    30,    20,    32,    34,    35,
-      36,    31,    58,   124,   138,    21,    58,    16,    17,    18,
-      25,    58,   146,   144,    34,    35,    36,    66,    67,   136,
-     137,   152,    58,    34,    35,    36,    68,    69,    70,   142,
-      60,    61,    62,    63,    49,    64,    65,   101,   102,   103,
-     104,   105,   106,   150,   151,    50,    51,   109,   110,   111,
-      58,    59,   153,   107,   108,    71,   112,    72,    75,   114,
-     119,   117,   129,   128,   120,   130,   131,   133,   140,   141,
-     145,   148,   149,    11,    14,    87,    76,    99,     0,     0,
-      55,    54,     0,   100
+      49,    80,    77,    96,   149,    97,    53,    78,    98,     2,
+      99,   100,   101,    28,    18,    19,    20,    66,    67,    32,
+       1,    28,   102,    58,    33,   113,    56,     2,    57,    32,
+      79,    29,    32,    58,    33,    32,     8,    34,   103,     9,
+      33,    35,    36,   104,   105,    32,    95,    34,   124,   114,
+      33,    35,    36,    37,    35,    36,    37,    35,    36,    37,
+     116,    25,   131,    34,    10,   130,   145,    35,    36,    37,
+     119,   126,    28,    57,    27,   125,    26,    12,    58,   128,
+      13,    52,   141,   142,    58,    22,   127,    58,    83,    84,
+      85,    86,    87,    88,   150,   135,    68,    69,    70,    23,
+     137,   138,   155,   156,    60,    61,    62,    63,   143,    64,
+      65,    76,    89,    90,    24,    28,    91,    92,    93,    58,
+      58,    73,   129,   153,    58,   154,   136,    58,    58,   139,
+     146,    58,    14,   157,    50,    58,    59,    71,    72,    74,
+      94,   115,   117,   118,   122,   120,    28,   123,   134,   140,
+     147,   152,   151,    11,    31,    82,   106,    81,    55,    54
 };
 
-static const yytype_int16 yycheck[] =
+static const yytype_uint8 yycheck[] =
 {
-      24,    57,    11,    52,     7,    24,     9,    31,    49,    12,
-      13,    14,    15,    16,    17,    22,    47,    40,    22,    42,
-      23,    40,    25,    26,    21,    28,    23,    40,    52,    42,
-      13,    40,    56,    40,    75,    17,    40,    21,    41,    42,
-       0,    23,    45,    46,    47,    48,    28,    40,    72,    42,
-      17,     6,    36,    77,    43,    79,    23,    47,    82,    41,
-      42,    28,    86,    45,    46,    47,    17,   116,    21,   118,
-      23,    25,    23,   129,    41,    17,    23,    28,    45,    46,
-      47,    23,    40,    36,    42,    25,    40,     3,     4,     5,
-      47,    40,   141,    42,    45,    46,    47,    27,    28,   123,
-     124,   150,    40,    45,    46,    47,    29,    30,    31,   133,
-      32,    33,    34,    35,    43,    37,    38,    60,    61,    62,
-      63,    64,    65,   147,   148,    24,    44,    68,    69,    70,
-      40,    39,    42,    66,    67,    22,    36,    44,    43,    21,
-      42,    47,    21,    24,    42,    22,    21,    10,    22,     8,
-      22,    36,    42,     4,     9,    52,    51,    58,    -1,    -1,
-      33,    32,    -1,    59
+      26,    57,    52,     7,    11,     9,    32,    24,    12,    13,
+      14,    15,    16,    25,     3,     4,     5,    27,    28,    23,
+       6,    25,    26,    40,    28,    75,    21,    13,    23,    23,
+      56,    43,    23,    40,    28,    23,    47,    41,    42,    47,
+      28,    45,    46,    47,    48,    23,    72,    41,    42,    75,
+      28,    45,    46,    47,    45,    46,    47,    45,    46,    47,
+      22,    21,   118,    41,     0,   115,    22,    45,    46,    47,
+      96,    21,    25,    23,    22,   101,    36,    23,    40,   105,
+      43,    29,   132,   133,    40,    43,    36,    40,    60,    61,
+      62,    63,    64,    65,   144,   121,    29,    30,    31,    24,
+     126,   127,   152,   153,    32,    33,    34,    35,   134,    37,
+      38,    21,    66,    67,    44,    25,    68,    69,    70,    40,
+      40,    42,    42,   149,    40,   151,    42,    40,    40,    42,
+      42,    40,    47,    42,    21,    40,    39,    22,    44,    22,
+      36,    22,    24,    21,    42,    47,    25,    42,    10,    22,
+      42,     8,    36,     5,    24,    59,    75,    58,    34,    33
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    13,    51,    52,    56,    47,     0,     6,    53,    54,
-      57,    52,    43,    47,    53,    55,     3,     4,     5,    61,
-      23,    25,    69,    21,    36,    47,    58,    59,    60,    70,
-      17,    23,    28,    41,    45,    46,    47,    71,    72,    73,
-      74,    75,    76,    77,    78,    79,    80,    81,    71,    43,
-      24,    44,    62,    71,    78,    74,    21,    23,    40,    39,
+       0,     6,    13,    51,    52,    53,    54,    55,    47,    47,
+       0,    52,    23,    43,    47,    56,    57,    58,     3,     4,
+       5,    59,    43,    24,    44,    21,    36,    59,    25,    43,
+      72,    57,    23,    28,    41,    45,    46,    47,    74,    75,
+      76,    77,    78,    79,    80,    81,    82,    83,    84,    74,
+      21,    73,    59,    74,    81,    77,    21,    23,    40,    39,
       32,    33,    34,    35,    37,    38,    27,    28,    29,    30,
-      31,    22,    44,    42,    61,    43,    59,     7,     9,    12,
-      14,    15,    16,    26,    42,    47,    48,    56,    63,    64,
-      65,    66,    67,    68,    69,    71,    24,    71,    80,    72,
-      73,    75,    75,    75,    75,    75,    75,    76,    76,    77,
-      77,    77,    36,    71,    21,    61,    71,    47,    71,    42,
-      42,    42,    71,    21,    36,    71,    42,    22,    24,    21,
-      22,    21,    69,    10,    69,    42,    71,    71,    42,    80,
-      22,     8,    71,    22,    42,    22,    69,    11,    36,    42,
-      71,    71,    69,    42
+      31,    22,    44,    42,    22,    60,    21,    72,    24,    74,
+      83,    75,    76,    78,    78,    78,    78,    78,    78,    79,
+      79,    80,    80,    80,    36,    74,     7,     9,    12,    14,
+      15,    16,    26,    42,    47,    48,    54,    61,    62,    63,
+      66,    67,    71,    72,    74,    22,    22,    24,    21,    74,
+      47,    64,    42,    42,    42,    74,    21,    36,    74,    42,
+      72,    83,    68,    70,    10,    74,    42,    74,    74,    42,
+      22,    72,    72,    74,    65,    22,    42,    42,    69,    11,
+      72,    36,     8,    74,    74,    72,    72,    42
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    50,    51,    52,    52,    53,    53,    55,    54,    56,
-      56,    57,    57,    57,    58,    58,    59,    59,    60,    60,
-      61,    61,    61,    62,    62,    63,    63,    63,    63,    63,
-      63,    63,    63,    63,    63,    63,    63,    64,    64,    65,
-      66,    67,    67,    68,    68,    70,    69,    71,    71,    72,
-      72,    73,    73,    74,    74,    74,    74,    74,    74,    74,
-      75,    75,    75,    76,    76,    76,    76,    77,    77,    78,
-      78,    78,    78,    78,    78,    78,    79,    80,    80,    81,
-      81
+       0,    50,    51,    52,    52,    53,    53,    54,    54,    55,
+      55,    55,    56,    56,    57,    57,    58,    58,    59,    59,
+      59,    60,    60,    61,    61,    61,    61,    61,    61,    61,
+      61,    61,    61,    61,    61,    62,    62,    64,    65,    63,
+      66,    68,    69,    67,    70,    67,    71,    71,    73,    72,
+      74,    74,    75,    75,    76,    76,    77,    77,    77,    77,
+      77,    77,    77,    78,    78,    78,    79,    79,    79,    79,
+      80,    80,    81,    81,    81,    81,    81,    81,    82,    83,
+      83,    84,    84
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     2,     2,     0,     2,     0,     0,     3,     7,
-      12,     5,     7,     9,     1,     0,     1,     3,     3,     5,
-       1,     1,     1,     2,     0,     1,     2,     1,     1,     1,
-       1,     1,     1,     2,     2,     1,     3,     2,     3,     3,
-       7,     3,     5,     4,     7,     0,     4,     3,     1,     3,
-       1,     2,     1,     3,     3,     3,     3,     3,     3,     1,
-       3,     3,     1,     3,     3,     3,     1,     2,     1,     1,
-       1,     1,     3,     4,     1,     1,     4,     1,     0,     3,
-       1
+       0,     2,     1,     2,     0,     1,     1,     7,    12,     6,
+       8,    10,     1,     0,     1,     3,     3,     5,     1,     1,
+       1,     2,     0,     1,     2,     1,     1,     1,     1,     1,
+       1,     2,     2,     1,     3,     2,     3,     0,     0,     5,
+       7,     0,     0,     7,     0,     4,     4,     7,     0,     4,
+       3,     1,     3,     1,     2,     1,     3,     3,     3,     3,
+       3,     3,     1,     3,     3,     1,     3,     3,     3,     1,
+       2,     1,     1,     1,     3,     4,     1,     1,     4,     1,
+       0,     3,     1
 };
 
 
@@ -1477,305 +1472,426 @@ yyreduce:
   switch (yyn)
     {
   case 7:
-#line 50 "src/parser.yy"
-               {
-                        string ident = yyvsp[0].as.str_val;
-                        FuncEntry entry;
-                        entry.retType = yyvsp[0].type;
-                        entry.pc = (u32) vm.bytecode_len();
+#line 55 "src/parser.yy"
+{
+        if(yyvsp[-3].type != yyvsp[-1].type) DECLARE_ERROR("Type mismatch");
 
-                        currFuncRetType = entry.retType;
+        usize id = vm.write_decl_var();
+        string ident = yyvsp[-5].as.str_val;
+        Entry entry = { yyvsp[-3].type, id };
 
-                        if(ident == "start")
-                        {
-                                if(entry.retType != DataType::NIL || scope_starts.size() > 0)
-                                {
-                                        DECLARE_ERROR("Function \"start\" must have the following prototype: fun start() { ... }");
-                                }
-                                vm.set_start(entry.pc);
-                        }
+        if(!add_symbol(ident, entry)) DECLARE_ERROR("Variable redeclaration not allowed");
 
-                        for(usize i = 0, size = scope_starts.size(); i < size; i++)
-                        {
-                                ScopeStartEntry sse = scope_starts.at(i);
-                                entry.paramTypes.push_back(sse.type);
-                        }
-                        if(!add_func(ident, entry)) DECLARE_ERROR("Function redefinition not allowed");
-               }
-#line 1506 "src/parser.cc"
+}
+#line 1487 "src/parser.cc"
     break;
 
-  case 8:
-#line 74 "src/parser.yy"
-                        { vm.write_op(OP::CONST_0); vm.write_op(OP::RET); }
-#line 1512 "src/parser.cc"
+  case 18:
+#line 86 "src/parser.yy"
+                 { yyval.type = DataType::INT; }
+#line 1493 "src/parser.cc"
     break;
 
-  case 9:
-#line 78 "src/parser.yy"
+  case 19:
+#line 87 "src/parser.yy"
+                    { yyval.type = DataType::STR; }
+#line 1499 "src/parser.cc"
+    break;
+
+  case 20:
+#line 88 "src/parser.yy"
+                    { yyval.type = DataType::BLK; }
+#line 1505 "src/parser.cc"
+    break;
+
+  case 34:
+#line 108 "src/parser.yy"
         {
-                if(yyvsp[-3].type != yyvsp[-1].type) DECLARE_ERROR("Type mismatch");
+                switch(yyvsp[-1].type)
+                {
+                        case DataType::STR:
+                        vm.write_op(OP::LOGSTR);
+                        break;
 
-                usize id = vm.write_decl_var(is_currently_global());
-                string ident = yyvsp[-5].as.str_val;
-                SymbolEntry entry = { yyvsp[-3].type, id };
+                        case DataType::INT:
+                        vm.write_op(OP::LOGINT);
+                        break;
 
-                if(!add_symbol(ident, entry)) DECLARE_ERROR("Variable redeclaration not allowed");
+                        default:
+                        DECLARE_ERROR("Invalid operand for log\n");
+                        break;
+                }
         }
 #line 1526 "src/parser.cc"
     break;
 
-  case 11:
-#line 92 "src/parser.yy"
-                {
-                        yyval.as.str_val = yyvsp[-3].as.str_val;
-                        yyval.type = DataType::NIL;
-                }
-#line 1535 "src/parser.cc"
-    break;
-
-  case 12:
-#line 98 "src/parser.yy"
-                 {
-                        yyval.as.str_val = yyvsp[-5].as.str_val;
-                        yyval.type = yyvsp[0].type;
-                 }
-#line 1544 "src/parser.cc"
-    break;
-
-  case 18:
-#line 115 "src/parser.yy"
-                {
-                        scope_starts.push_back({yyvsp[-2].as.str_val, yyvsp[0].type});
-                }
-#line 1552 "src/parser.cc"
-    break;
-
-  case 20:
-#line 122 "src/parser.yy"
-                     { yyval.type = DataType::INT; }
-#line 1558 "src/parser.cc"
-    break;
-
-  case 21:
-#line 123 "src/parser.yy"
-                     { yyval.type = DataType::STR; }
-#line 1564 "src/parser.cc"
-    break;
-
-  case 22:
-#line 124 "src/parser.yy"
-                     { yyval.type = DataType::BLK; }
-#line 1570 "src/parser.cc"
-    break;
-
-  case 36:
-#line 144 "src/parser.yy"
-         {
-                 switch(yyvsp[-1].type)
-                 {
-                         case DataType::STR:
-                         vm.write_op(OP::LOGSTR);
-                         break;
-
-                         case DataType::INT:
-                         vm.write_op(OP::LOGINT);
-                         break;
-
-                         default:
-                         DECLARE_ERROR("Invalid operand for log\n");
-                         break;
-                 }
-         }
-#line 1591 "src/parser.cc"
-    break;
-
   case 37:
-#line 163 "src/parser.yy"
-                {
-                        if(currFuncRetType != DataType::NIL) DECLARE_ERROR("Must return a value");
-                        vm.write_op(OP::CONST_0); 
-                        vm.write_op(OP::RET);
-                }
-#line 1601 "src/parser.cc"
+#line 130 "src/parser.yy"
+                        {
+        yyval.as.int_val = vm.bytecode_len();
+}
+#line 1534 "src/parser.cc"
     break;
 
   case 38:
-#line 169 "src/parser.yy"
-                {
-                        if(currFuncRetType != yyvsp[-1].type) DECLARE_ERROR("Return value type mismatch");
-                        vm.write_op(OP::RET);
-                }
-#line 1610 "src/parser.cc"
+#line 132 "src/parser.yy"
+                    {
+        yyval.as.int_val = vm.bytecode_len();
+        vm.write_op(OP::JMP_IF_FALSE);
+        vm.write_word(0);
+}
+#line 1544 "src/parser.cc"
+    break;
+
+  case 39:
+#line 136 "src/parser.yy"
+                        {
+        vm.write_op(OP::LOOP);
+        i64 offset = vm.bytecode_len() - 1 - yyvsp[-3].as.int_val;
+        if(offset > UINT16_MAX) DECLARE_ERROR("Code jump too big");
+        vm.write_word(static_cast<u16>(offset));
+        vm.patch_jump(yyvsp[-1].as.int_val);  
+}
+#line 1556 "src/parser.cc"
+    break;
+
+  case 41:
+#line 148 "src/parser.yy"
+                        {
+        yyval.as.int_val = vm.bytecode_len();
+        vm.write_op(OP::JMP_IF_FALSE);
+        vm.write_word(0);
+        
+}
+#line 1567 "src/parser.cc"
+    break;
+
+  case 42:
+#line 153 "src/parser.yy"
+                        {
+        yyval.as.int_val = vm.bytecode_len();
+        vm.write_op(OP::JMP);
+        vm.write_word(0);
+        vm.patch_jump(yyvsp[-1].as.int_val);
+}
+#line 1578 "src/parser.cc"
     break;
 
   case 43:
-#line 186 "src/parser.yy"
-                {
-                        string ident = yyvsp[-3].as.str_val;
-                        SymbolEntry entry;
-                        bool is_global;
-                        if(!check_symbol(ident, entry, is_global)) DECLARE_ERROR("Undeclared identifier");
-                        if(entry.type != yyvsp[-1].type) DECLARE_ERROR("Type mismatch");
+#line 158 "src/parser.yy"
+                                    {
+        vm.patch_jump(yyvsp[-2].as.int_val);
+}
+#line 1586 "src/parser.cc"
+    break;
 
-                        vm.write_op(is_global ? OP::GLOB_VARSET : OP::VARSET);
-                        vm.write_byte(entry.id);
-                }
-#line 1625 "src/parser.cc"
+  case 44:
+#line 161 "src/parser.yy"
+                        {
+        yyval.as.int_val = vm.bytecode_len();
+        vm.write_op(OP::JMP_IF_FALSE);
+        vm.write_word(0);
+}
+#line 1596 "src/parser.cc"
     break;
 
   case 45:
-#line 201 "src/parser.yy"
-                { 
-                        open_scope();
-                        for(auto it = scope_starts.rbegin(); it != scope_starts.rend(); it++)
-                        {
-                                ScopeStartEntry sse = *it;
-                                
-                                usize id = vm.write_decl_var(false); // Never global in a block stmt
-                                SymbolEntry entry = { sse.type, id };
-
-                                if(!add_symbol(sse.symbol, entry)) DECLARE_ERROR("Variable redeclaration not allowed");
-                        }
-                        scope_starts.clear();
-                }
-#line 1643 "src/parser.cc"
+#line 165 "src/parser.yy"
+                   {
+        vm.patch_jump(yyvsp[-1].as.int_val);        
+}
+#line 1604 "src/parser.cc"
     break;
 
   case 46:
-#line 215 "src/parser.yy"
-                { 
-                        usize var_count = get_scope_var_count();
-                        close_scope();
-                        vm.undecl_vars(var_count);
-                }
-#line 1653 "src/parser.cc"
+#line 171 "src/parser.yy"
+{
+string ident = yyvsp[-3].as.str_val;
+Entry entry;
+if(!check_symbol(ident, entry)) DECLARE_ERROR("Undeclared identifier");
+if(entry.type != yyvsp[-1].type) DECLARE_ERROR("Type mismatch");
+
+vm.write_op(OP::VARSET);
+vm.write_byte(entry.id);
+}
+#line 1618 "src/parser.cc"
     break;
 
   case 48:
-#line 223 "src/parser.yy"
-                   { yyval.type = yyvsp[0].type; }
-#line 1659 "src/parser.cc"
+#line 183 "src/parser.yy"
+                         { open_scope(); }
+#line 1624 "src/parser.cc"
+    break;
+
+  case 49:
+#line 184 "src/parser.yy"
+        { 
+                usize var_count = get_scope_var_count();
+                close_scope();
+                vm.undecl_vars(var_count);
+        }
+#line 1634 "src/parser.cc"
     break;
 
   case 50:
-#line 227 "src/parser.yy"
-                      { yyval.type = yyvsp[0].type; }
-#line 1665 "src/parser.cc"
+#line 192 "src/parser.yy"
+{
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::OR);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                } 
+}
+#line 1646 "src/parser.cc"
+    break;
+
+  case 51:
+#line 199 "src/parser.yy"
+                  { yyval.type = yyvsp[0].type; }
+#line 1652 "src/parser.cc"
     break;
 
   case 52:
-#line 231 "src/parser.yy"
-                      { yyval.type = yyvsp[0].type; }
-#line 1671 "src/parser.cc"
+#line 203 "src/parser.yy"
+{
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::AND);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                } 
+}
+#line 1664 "src/parser.cc"
     break;
 
-  case 59:
-#line 240 "src/parser.yy"
-                      { yyval.type = yyvsp[0].type; }
-#line 1677 "src/parser.cc"
+  case 53:
+#line 210 "src/parser.yy"
+                  { yyval.type = yyvsp[0].type; }
+#line 1670 "src/parser.cc"
     break;
 
-  case 62:
-#line 245 "src/parser.yy"
-                      { yyval.type = yyvsp[0].type; }
-#line 1683 "src/parser.cc"
+  case 54:
+#line 214 "src/parser.yy"
+{
+                if(yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::NOT);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                } 
+}
+#line 1682 "src/parser.cc"
     break;
 
-  case 66:
-#line 251 "src/parser.yy"
-                     { yyval.type = yyvsp[0].type; }
-#line 1689 "src/parser.cc"
+  case 55:
+#line 221 "src/parser.yy"
+                  { yyval.type = yyvsp[0].type; }
+#line 1688 "src/parser.cc"
     break;
 
-  case 68:
-#line 255 "src/parser.yy"
-                      { yyval.type = yyvsp[0].type; }
-#line 1695 "src/parser.cc"
+  case 56:
+#line 225 "src/parser.yy"
+{
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::LESS_EQUAL);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                } 
+}
+#line 1700 "src/parser.cc"
     break;
 
-  case 69:
-#line 259 "src/parser.yy"
-                {
-                        vm.write_constant_op(OP::CONST, yyvsp[0].as.int_val);
-                        yyval.type = DataType::INT;
-                }
-#line 1704 "src/parser.cc"
-    break;
-
-  case 70:
-#line 265 "src/parser.yy"
-                {
-                        vm.write_op(OP::CONST_0);
-                        yyval.type = DataType::NIL; 
-                }
+  case 57:
+#line 233 "src/parser.yy"
+{
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::LESS);
+                        vm.write_op(OP::NOT);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                } 
+}
 #line 1713 "src/parser.cc"
     break;
 
-  case 71:
-#line 271 "src/parser.yy"
-                {
-                        vm.write_constant_op(OP::CONST, (u64) yyvsp[0].as.str_val);
-                        yyval.type = DataType::STR;
-                }
-#line 1722 "src/parser.cc"
+  case 58:
+#line 242 "src/parser.yy"
+{
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::LESS);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                } 
+}
+#line 1725 "src/parser.cc"
     break;
 
-  case 75:
-#line 279 "src/parser.yy"
-                {
-                        string ident = yyvsp[0].as.str_val;
-                        SymbolEntry entry;
-                        bool is_global;
-                        if(!check_symbol(ident, entry, is_global)) DECLARE_ERROR("Undeclared identifier");
-
-                        vm.write_op(is_global ? OP::GLOB_VARGET : OP::VARGET);
-                        vm.write_byte(entry.id);
-                        yyval.type = entry.type;
-                }
-#line 1737 "src/parser.cc"
+  case 59:
+#line 250 "src/parser.yy"
+{
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::LESS_EQUAL);
+                        vm.write_op(OP::NOT);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                }     
+}
+#line 1738 "src/parser.cc"
     break;
 
-  case 76:
+  case 60:
+#line 259 "src/parser.yy"
+{
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::EQUAL);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                } 
+}
+#line 1750 "src/parser.cc"
+    break;
+
+  case 61:
+#line 267 "src/parser.yy"
+{
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::EQUAL);
+                        vm.write_op(OP::NOT);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                } 
+}
+#line 1763 "src/parser.cc"
+    break;
+
+  case 62:
+#line 275 "src/parser.yy"
+                  { yyval.type = yyvsp[0].type; }
+#line 1769 "src/parser.cc"
+    break;
+
+  case 63:
+#line 278 "src/parser.yy"
+                                    {
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::ADD);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                }    
+}
+#line 1781 "src/parser.cc"
+    break;
+
+  case 64:
+#line 285 "src/parser.yy"
+                                      { 
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::SUB);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                }
+}
+#line 1793 "src/parser.cc"
+    break;
+
+  case 65:
 #line 292 "src/parser.yy"
-                {
-                        string ident = yyvsp[-3].as.str_val;
-                        FuncEntry func;
-                        if(!check_func(ident, func)) DECLARE_ERROR("Undefined function");
-                        if(func.paramTypes.size() != argv.size()) DECLARE_ERROR("Number of function parameters and arguments do not match");
+                  { yyval.type = yyvsp[0].type; }
+#line 1799 "src/parser.cc"
+    break;
 
-                        for(usize i = 0, size = argv.size(); i < size; i++)
-                        {
-                                if(func.paramTypes.at(i) != argv.at(i)) DECLARE_ERROR("Function parameter and argument type mismatch");
-                        }
-                        argv.clear();
+  case 66:
+#line 295 "src/parser.yy"
+                                   {
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::MUL);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                }    
+}
+#line 1811 "src/parser.cc"
+    break;
 
-                        vm.write_op(OP::CALL);
-                        vm.write_dword(func.pc);
-
-                        yyval.type = func.retType;
+  case 67:
+#line 303 "src/parser.yy"
+{
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::DIV);
+                } else {
+                        DECLARE_ERROR("Types not same.");
                 }
-#line 1759 "src/parser.cc"
+}
+#line 1823 "src/parser.cc"
     break;
 
-  case 79:
-#line 316 "src/parser.yy"
-                {
-                        argv.push_back(yyvsp[0].type);
+  case 68:
+#line 311 "src/parser.yy"
+{
+                if(yyvsp[-2].type == DataType::INT && yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::MOD);
+                } else {
+                        DECLARE_ERROR("Types not same.");
                 }
-#line 1767 "src/parser.cc"
+}
+#line 1835 "src/parser.cc"
     break;
 
-  case 80:
-#line 320 "src/parser.yy"
-          {
-                  argv.push_back(yyvsp[0].type);
-          }
-#line 1775 "src/parser.cc"
+  case 69:
+#line 318 "src/parser.yy"
+                 { yyval.type = yyvsp[0].type; }
+#line 1841 "src/parser.cc"
+    break;
+
+  case 70:
+#line 322 "src/parser.yy"
+{
+                if(yyvsp[0].type == DataType::INT) {
+                        vm.write_op(OP::NEG);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                } 
+}
+#line 1853 "src/parser.cc"
+    break;
+
+  case 71:
+#line 329 "src/parser.yy"
+                   { yyval.type = yyvsp[0].type; }
+#line 1859 "src/parser.cc"
+    break;
+
+  case 72:
+#line 333 "src/parser.yy"
+{
+        vm.write_constant_op(OP::CONST, yyvsp[0].as.int_val);
+        yyval.type = DataType::INT;
+}
+#line 1868 "src/parser.cc"
+    break;
+
+  case 73:
+#line 339 "src/parser.yy"
+        {
+                vm.write_constant_op(OP::CONST, (u64) yyvsp[0].as.str_val);
+                yyval.type = DataType::STR;
+        }
+#line 1877 "src/parser.cc"
+    break;
+
+  case 77:
+#line 347 "src/parser.yy"
+        {
+                string ident = yyvsp[0].as.str_val;
+                Entry entry;
+                if(!check_symbol(ident, entry)) DECLARE_ERROR("Undeclared identifier");
+
+                vm.write_op(OP::VARGET);
+                vm.write_byte(entry.id);
+                yyval.type = entry.type;
+        }
+#line 1891 "src/parser.cc"
     break;
 
 
-#line 1779 "src/parser.cc"
+#line 1895 "src/parser.cc"
 
       default: break;
     }
@@ -2007,10 +2123,10 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 326 "src/parser.yy"
+#line 370 "src/parser.yy"
 
-     
-    void yyerror(const char *msg)
-    {
-    	fprintf(stderr, "<Line %d> Syntax error: %s\n", yylineno, msg);
-    }
+
+void yyerror(const char *msg)
+{
+fprintf(stderr, "<Line %d> Syntax error: %s\n", yylineno, msg);
+}

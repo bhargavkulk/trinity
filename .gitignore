@@ -1,9 +1,5 @@
 obj/
 .cache/
 .vscode/
-bin/
 log/
-src/parser.cc
-src/include/parser.hh
-src/lexer.cc
 compile_commands.json

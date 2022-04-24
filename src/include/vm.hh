@@ -7,27 +7,17 @@
 
 class VM
 {
-	u64 pc, start_pc;
-	bool found_start;
+    public:
+    u64 pc;
+    std::vector<u8> bytecode;
+    std::vector<u64> stack;
+    std::vector<u64> constants; // Both integers and string pointers.
+    std::vector<u64> variables;
+    usize vars_declared, max_vars_declared;
 
-	std::vector<u8> bytecode;
-	std::vector<u64> stack;
-	std::vector<u64> constants; // Both integers and string pointers.
-	std::vector<u64> globals;
-	usize vars_declared, max_vars_declared;
-
-	struct StackFrame
-	{
-		u64 retPC;
-		std::vector<u64> locals;
-	};
-
-	std::vector<StackFrame> callstack;
-
-	OP read_op();
-	u8 read_byte();
-	u16 read_word();
-	u32 read_dword();
+    OP read_op();
+    u8 read_byte();
+    u16 read_word();
 
     void push(u64 num);
     u64 pop();
@@ -44,21 +34,18 @@ class VM
 
     void write_byte(u8 byte);
     void write_word(u16 word);
-    void write_dword(u32 dword);
     void write_op(OP op);
     void write_constant_op(OP op, u64 constant);
 
-    usize write_decl_var(bool is_global);
+    usize write_decl_var();
     void undecl_vars(usize count);
-    
-	void set_start(u64 pc);
 
-	usize bytecode_len();
+    usize bytecode_len();
     void patch_jump(i64 offset);
 
-	#ifdef DEBUG_FLAG
-	const u8 *get_raw_code(u64 *size);
-	#endif /* DEBUG_FLAG */
+    #ifdef DEBUG_FLAG
+    const u8 *get_raw_code(u64 *size);
+    #endif /* DEBUG_FLAG */
 };
 
 extern VM vm;

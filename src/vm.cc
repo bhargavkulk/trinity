@@ -10,24 +10,14 @@ FILE *execution_log;
 #endif /* DEBUG_FLAG */
 
 VM vm;
-VM::VM() : pc(0), start_pc(0), found_start(false), vars_declared(0), max_vars_declared(0) {}
+VM::VM() : pc(0), vars_declared(0), max_vars_declared(0) {}
 
 int VM::run()
 {
-	// TEMP
-	if(!found_start)
-	{
-		printf("ERROR: start() not found\n");
-		return 0;
-	}
-
 	bool has_halted = false;
 	u64 halt_pc = 0;
 
-	// Remove when stub added.
-	callstack = std::vector<StackFrame>(1);
-
-	pc = start_pc;
+	variables = std::vector<u64>(max_vars_declared);
 
 	// TEMPORARY: REPLACE WITH WINDOW FLAG.
 	while (pc < bytecode.size())
@@ -57,146 +47,173 @@ int VM::run()
 
 		switch (read_op())
 		{
-			case OP::ERR:
-			{
-				return 1;
-			}
+		case OP::ERR:
+		{
+			return 1;
+		}
 
-			case OP::HLT:
+		case OP::HLT:
+		{
+			printf("hlt\n");
+			has_halted = true;
+			pc -= 1;
+			halt_pc = pc;
+			break;
+		}
+
+		case OP::ADD:
+		{
+			i64 op2 = (i64)pop();
+			i64 op1 = (i64)pop();
+			// printf("OP1 is %ld ,OP2 is %ld, and the sum is - %ld ", op1, op2, op1 + op2);
+			push((u64)(op1 + op2));
+			break;
+		}
+
+		case OP::SUB:
+		{
+			i64 op2 = (i64)pop();
+			i64 op1 = (i64)pop();
+			push((u64)(op1 - op2));
+			break;
+		}
+		case OP::MUL:
+		{
+			i64 op2 = (i64)pop();
+			i64 op1 = (i64)pop();
+			push((u64)(op1 * op2));
+			break;
+		}
+
+		case OP::DIV:
+		{
+			i64 op2 = (i64)pop();
+			i64 op1 = (i64)pop();
+			// error checking for division by zero error
+			if (op2 == 0)
 			{
-				printf("hlt\n");
-				has_halted = true;
-				pc -= 1;
-				halt_pc = pc;
+				fprintf(stderr, "Division by zero, PLEASE CHANGE THIS NOW");
 				break;
 			}
+			push((u64)(op1 / op2));
+			break;
+		}
 
-			case OP::ADD:
-			{
-				i64 a1 = (i64) pop();
-				break;
-			}
+		case OP::MOD:
+		{
+			i64 op2 = (i64)pop();
+			i64 op1 = (i64)pop();
+			push((u64)(op1 % op2));
+			break;
+		}
 
-			case OP::SUB:
-			{
-				i64 op2 = (i64) pop();
-				i64 op1 = (i64) pop();
-				push((u64)(op1 - op2));
-				break;
-			}
+		case OP::EQUAL:
+		{
+			i64 op2 = (i64)pop();
+			i64 op1 = (i64)pop();
+			push((u64)((op1 == op2) ? (1) : (0)));
+			break;
+		}
+		case OP::LESS:
+		{
+			i64 op2 = (i64)pop();
+			i64 op1 = (i64)pop();
+			push((u64)((op1 < op2) ? (1) : (0)));
+			break;
+		}
+		case OP::LESS_EQUAL:
+		{
+			i64 op2 = (i64)pop();
+			i64 op1 = (i64)pop();
+			push((u64)((op1 <= op2) ? (1) : (0)));
+			break;
+		}
 
-			case OP::CONST:
-			{
-				u8 index = read_byte();
-				push(constants.at(index));
-				break;
-			}
+		case OP::NEG:
+		{
+			i64 op2 = (i64)pop();
+			push((u64)(-1 * op2));
+			break;
+		}
 
-			case OP::CONST_0:
-			{
-				push(0);
-				break;
-			}
+		case OP::AND:
+		{
+			i64 op2 = (i64)pop();
+			i64 op1 = (i64)pop();
+			push((u64)((op1 * op2 != 0) ? (1) : (0)));
+			break;
+		}
+		case OP::OR:
+		{
+			i64 op2 = (i64)pop();
+			i64 op1 = (i64)pop();
+			push((u64)((op1 + op2 != 0) ? (1) : (0)));
+			break;
+		}
 
-			case OP::GLOB_VARSET:
-			{
-				u64 val = pop();
-				u8 id = read_byte();
-				if(id >= globals.size())
-					globals.insert(globals.end(), id - globals.size() + 1, 0);
+		case OP::NOT:
+		{
+			i64 op1 = (i64)pop();
+			push((u64)((op1 == 0) ? (1) : (0)));
+			break;
+		}
 
-				globals.at(id) = val;
-				break;
-			}
+		case OP::CONST:
+		{
+			u8 index = read_byte();
+			push(constants.at(index));
+			break;
+		}
 
-			case OP::GLOB_VARGET:
-			{
-				u8 id = read_byte();
-				u64 val = globals.at(id);
-				push(val);
-				break;
-			}
+		case OP::VARSET:
+		{
+			u64 val = pop();
+			u8 id = read_byte();
+			variables.at(id) = val;
+			break;
+		}
 
-			case OP::VARSET:
-			{
-				u64 val = pop();
-				u8 id = read_byte();
-				auto &locals = callstack.back().locals;
+		case OP::VARGET:
+		{
+			u8 id = read_byte();
+			u64 val = variables.at(id);
+			push(val);
+			break;
+		}
 
-				if(id >= locals.size())
-					locals.insert(locals.end(), id - locals.size() + 1, 0);
+		case OP::LOGINT:
+		{
+			printf("%ld\n", (i64)pop());
+			break;
+		}
 
-				locals.at(id) = val;
-				break;
-			}
+		case OP::LOGSTR:
+		{
+			printf("%s\n", (const char *)pop());
+			break;
+		}
 
-			case OP::VARGET:
-			{
-				u8 id = read_byte();
-				u64 val = callstack.back().locals.at(id);
-				push(val);
-				break;
-			}
+		case OP::JMP_IF_FALSE:
+		{
+			u16 offset = read_word() - 3;
+			i64 cond = (i64)pop();
+			pc += cond ? 0 : offset;
+			break;
+		}
 
-			case OP::CALL:
-			{
-				u32 addr = read_dword();
-				StackFrame frame;
-				frame.retPC = pc;
-				callstack.push_back(frame);
-				pc = addr;
-				break;
-			}
+		case OP::JMP:
+		{
+			u16 offset = read_word() - 3;
+			pc += offset;
+			break;
+		}
 
-			case OP::RET:
-			{
-				// Remove when stub added.
-				if(callstack.size() == 1) return 0;
-
-				pc = callstack.back().retPC;
-				callstack.pop_back();
-				break;
-			}
-
-			case OP::LOGINT:
-			{
-				printf("%ld\n", (i64) pop());
-				break;
-			}
-
-			case OP::LOGSTR:
-			{
-				u64 str = pop();
-				if(str == 0)
-				{
-					fprintf(stderr, "NIL Reference\n");
-					return 1;
-				}
-				printf("%s\n", (const char *) str);
-				break;
-			}
-
-			case OP::JMP_IF_FALSE:
-			{
-				u16 offset = read_word() - 3;
-				i64 cond = (i64) pop();
-				pc += cond ? 0 : offset;
-				break;
-			}
-
-			case OP::JMP:
-			{
-				u16 offset = read_word() - 3;
-				pc += offset;
-				break;
-			}
-
-			case OP::LOOP:
-			{
-				u16 offset = read_word() + 3;
-				pc -= offset;
-				break;
-			}
+		case OP::LOOP:
+		{
+			u16 offset = read_word() + 3;
+			pc -= offset;
+			break;
+		}
 		}
 #ifdef DEBUG_FLAG
 		stack_dump(stack, execution_log);
@@ -219,14 +236,6 @@ void VM::write_word(u16 word)
 	bytecode.push_back(static_cast<u8>(word >> 8));
 }
 
-void VM::write_dword(u32 dword)
-{
-	bytecode.push_back(static_cast<u8>(dword));
-	bytecode.push_back(static_cast<u8>(dword >> 8));
-	bytecode.push_back(static_cast<u8>(dword >> 16));
-	bytecode.push_back(static_cast<u8>(dword >> 24));
-}
-
 void VM::write_op(OP op)
 {
 	bytecode.push_back(static_cast<u8>(op));
@@ -243,16 +252,16 @@ void VM::write_constant_op(OP op, u64 constant)
 	// TODO: long constant opcode.
 }
 
-usize VM::write_decl_var(bool is_global)
+usize VM::write_decl_var()
 {
 	usize index = vars_declared;
 	vars_declared += 1;
-	if(max_vars_declared < vars_declared)
+	if (max_vars_declared < vars_declared)
 	{
 		max_vars_declared = vars_declared;
 	}
 
-	bytecode.push_back(static_cast<u8>(is_global ? OP::GLOB_VARSET : OP::VARSET));
+	bytecode.push_back(static_cast<u8>(OP::VARSET));
 	bytecode.push_back(static_cast<u8>(index));
 	return index;
 }
@@ -260,12 +269,6 @@ usize VM::write_decl_var(bool is_global)
 void VM::undecl_vars(usize count)
 {
 	vars_declared -= count;
-}
-
-void VM::set_start(u64 pc)
-{
-	found_start = true;
-	start_pc = pc;
 }
 
 /*********************************************************************/
@@ -285,14 +288,6 @@ u16 VM::read_word()
 	u16 word = (bytecode.at(pc) | (static_cast<u16>(bytecode.at(pc + 1)) << 8));
 	pc += 2;
 	return word;
-}
-
-u32 VM::read_dword()
-{
-	u32 dword = (bytecode.at(pc) | (static_cast<u32>(bytecode.at(pc + 1)) << 8) | 
-		(static_cast<u32>(bytecode.at(pc + 2)) << 16) | (static_cast<u32>(bytecode.at(pc + 3)) << 24));
-	pc += 4;
-	return dword;
 }
 
 /*********************************************************************/
@@ -315,17 +310,20 @@ u64 VM::peek(usize offset)
 }
 
 /*********************************************************************/
-usize VM::bytecode_len() {
+usize VM::bytecode_len()
+{
 	return bytecode.size();
 }
 
-void VM::patch_jump(i64 offset) {
+void VM::patch_jump(i64 offset)
+{
 	i64 jump = bytecode.size() - offset;
-	if(jump > UINT16_MAX) {
+	if (jump > UINT16_MAX)
+	{
 		exit(1);
 	}
 	bytecode[offset + 1] = static_cast<u8>(jump & 0xff);
-    bytecode[offset + 2] = static_cast<u8>((jump >> 8) & 0xff);
+	bytecode[offset + 2] = static_cast<u8>((jump >> 8) & 0xff);
 }
 
 /*********************************************************************/

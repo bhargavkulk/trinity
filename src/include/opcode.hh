@@ -14,23 +14,29 @@ enum class OP : u8
 
 	ADD, // Adds 2 topmost numbers on stack
 	SUB, // sames
-	// MUL, // sames
-	// DIV,
-	// MOD,
-	// NEG,
-	CONST, // SETS
+	MUL, // sames
+	DIV,
+	MOD,
+	NEG,
 
+	LESS,
+	EQUAL,
+	LESS_EQUAL,
+	GREATER,
+	GREATER_EQUAL,
+	NOT,
+	AND,
+	OR,
+
+	CONST, // SETS
 
 	// Nimish
 
-	CONST_0,
+	VARSET,
+	VARGET,
 
-	GLOB_VARSET, GLOB_VARGET,
-	VARSET, VARGET,
-
-	CALL, RET,
-
-	LOGINT, LOGSTR,
+	LOGINT,
+	LOGSTR,
 
 	// Bhargav
 	JMP_IF_FALSE,
