@@ -18,10 +18,9 @@ void disassemble(const u8 *instruction, FILE *file)
 		case OP::HLT:
 		case OP::LOGINT:
 		case OP::LOGSTR:
-		fprintf(file, "%s\n", OP_str(op));
-		break;
-
 		case OP::ADD:
+		case OP::SUB:
+		fprintf(file, "%s\n", OP_str(op));
 		break;
 
 		case OP::CONST:

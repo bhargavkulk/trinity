@@ -8,6 +8,7 @@ const OPData OP_DATA[]
 	{"HLT", 0},
 
 	{"ADD", 0},
+	{"SUB", 0},
 
 	{"CONST", 1},
 

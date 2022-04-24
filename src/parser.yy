@@ -127,28 +127,41 @@ retstmt : TOKEN_RET TOKEN_SEMICOLON
         | TOKEN_RET expr TOKEN_SEMICOLON
         ;
 
-whilestmt : TOKEN_WHILE expr blckstmt
+whilestmt : TOKEN_WHILE {
+        $[offset_loop].as.int_val = vm.bytecode_len();
+}[offset_loop] expr {
+        $[offset_exit].as.int_val = vm.bytecode_len();
+        vm.write_op(OP::JMP_IF_FALSE);
+        vm.write_word(0);
+}[offset_exit] blckstmt {
+        vm.write_op(OP::LOOP);
+        i64 offset = vm.bytecode_len() - 1 - $[offset_loop].as.int_val;
+        if(offset > UINT16_MAX) DECLARE_ERROR("Code jump too big");
+        vm.write_word(static_cast<u16>(offset));
+        vm.patch_jump($[offset_exit].as.int_val);  
+}
         ;
 
 forstmt : TOKEN_FOR TOKEN_IDENTIFIER TOKEN_FROM expr TOKEN_TO expr blckstmt
         ;
 
 ifstmt  : TOKEN_IF expr {
+        $[offset_then].as.int_val = vm.bytecode_len();
         vm.write_op(OP::JMP_IF_FALSE);
         vm.write_word(0);
-        $[offset_then].as.int_val = vm.bytecode_len() - 3;
+        
 }[offset_then] blckstmt {
+        $[offset_else].as.int_val = vm.bytecode_len();
         vm.write_op(OP::JMP);
         vm.write_word(0);
-        $[offset_else].as.int_val = vm.bytecode_len() - 3;
         vm.patch_jump($[offset_then].as.int_val);
 } [offset_else] TOKEN_ELSE blckstmt {
         vm.patch_jump($[offset_else].as.int_val);
 }
         | TOKEN_IF expr {
+        $[offset].as.int_val = vm.bytecode_len();
         vm.write_op(OP::JMP_IF_FALSE);
         vm.write_word(0);
-        $[offset].as.int_val = vm.bytecode_len() - 3;
 }[offset] blckstmt {
         vm.patch_jump($[offset].as.int_val);        
 }
@@ -197,7 +210,13 @@ relexpr : relexpr TOKEN_LESS_EQ sumexpr
         ;
 
 sumexpr : sumexpr TOKEN_PLUS mulexpr
-        | sumexpr TOKEN_MINUS mulexpr
+        | sumexpr TOKEN_MINUS mulexpr { 
+                if($1.type == DataType::INT && $3.type == DataType::INT) {
+                        vm.write_op(OP::SUB);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                }
+}
         | mulexpr { $$.type = $1.type; }
         ;
 

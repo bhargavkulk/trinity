@@ -9,7 +9,7 @@ Terminals unused in grammar
 
 Rules useless in parser due to conflicts
 
-   41 @3: %empty
+   43 @5: %empty
 
 
 State 119 conflicts: 1 reduce/reduce
@@ -66,70 +66,74 @@ Grammar
    34 retstmt: TOKEN_RET TOKEN_SEMICOLON
    35        | TOKEN_RET expr TOKEN_SEMICOLON
 
-   36 whilestmt: TOKEN_WHILE expr blckstmt
+   36 @1: %empty
 
-   37 forstmt: TOKEN_FOR TOKEN_IDENTIFIER TOKEN_FROM expr TOKEN_TO expr blckstmt
+   37 @2: %empty
 
-   38 @1: %empty
+   38 whilestmt: TOKEN_WHILE @1 expr @2 blckstmt
 
-   39 @2: %empty
+   39 forstmt: TOKEN_FOR TOKEN_IDENTIFIER TOKEN_FROM expr TOKEN_TO expr blckstmt
 
-   40 ifstmt: TOKEN_IF expr @1 blckstmt @2 TOKEN_ELSE blckstmt
+   40 @3: %empty
 
-   41 @3: %empty
+   41 @4: %empty
 
-   42 ifstmt: TOKEN_IF expr @3 blckstmt
+   42 ifstmt: TOKEN_IF expr @3 blckstmt @4 TOKEN_ELSE blckstmt
 
-   43 asgnstmt: TOKEN_IDENTIFIER TOKEN_EQUAL expr TOKEN_SEMICOLON
-   44         | TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R TOKEN_EQUAL expr TOKEN_SEMICOLON
+   43 @5: %empty
 
-   45 $@4: %empty
+   44 ifstmt: TOKEN_IF expr @5 blckstmt
 
-   46 blckstmt: TOKEN_BRACE_L $@4 stmts TOKEN_BRACE_R
+   45 asgnstmt: TOKEN_IDENTIFIER TOKEN_EQUAL expr TOKEN_SEMICOLON
+   46         | TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R TOKEN_EQUAL expr TOKEN_SEMICOLON
 
-   47 expr: expr TOKEN_LOGICAL_OR andexpr
-   48     | andexpr
+   47 $@6: %empty
 
-   49 andexpr: andexpr TOKEN_LOGICAL_AND notexpr
-   50        | notexpr
+   48 blckstmt: TOKEN_BRACE_L $@6 stmts TOKEN_BRACE_R
 
-   51 notexpr: TOKEN_LOGICAL_NOT relexpr
-   52        | relexpr
+   49 expr: expr TOKEN_LOGICAL_OR andexpr
+   50     | andexpr
 
-   53 relexpr: relexpr TOKEN_LESS_EQ sumexpr
-   54        | relexpr TOKEN_GREATER_EQ sumexpr
-   55        | relexpr TOKEN_LESS sumexpr
-   56        | relexpr TOKEN_GREATER sumexpr
-   57        | relexpr TOKEN_DOUBLE_EQ sumexpr
-   58        | relexpr TOKEN_NOT_EQ sumexpr
-   59        | sumexpr
+   51 andexpr: andexpr TOKEN_LOGICAL_AND notexpr
+   52        | notexpr
 
-   60 sumexpr: sumexpr TOKEN_PLUS mulexpr
-   61        | sumexpr TOKEN_MINUS mulexpr
-   62        | mulexpr
+   53 notexpr: TOKEN_LOGICAL_NOT relexpr
+   54        | relexpr
 
-   63 mulexpr: mulexpr TOKEN_STAR unexpr
-   64        | mulexpr TOKEN_SLASH unexpr
-   65        | mulexpr TOKEN_MODULO unexpr
-   66        | unexpr
+   55 relexpr: relexpr TOKEN_LESS_EQ sumexpr
+   56        | relexpr TOKEN_GREATER_EQ sumexpr
+   57        | relexpr TOKEN_LESS sumexpr
+   58        | relexpr TOKEN_GREATER sumexpr
+   59        | relexpr TOKEN_DOUBLE_EQ sumexpr
+   60        | relexpr TOKEN_NOT_EQ sumexpr
+   61        | sumexpr
 
-   67 unexpr: TOKEN_MINUS smolexpr
-   68       | smolexpr
+   62 sumexpr: sumexpr TOKEN_PLUS mulexpr
+   63        | sumexpr TOKEN_MINUS mulexpr
+   64        | mulexpr
 
-   69 smolexpr: TOKEN_INT_VAL
-   70         | TOKEN_STR_VAL
-   71         | TOKEN_PAREN_L expr TOKEN_PAREN_R
-   72         | TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R
-   73         | callexpr
-   74         | TOKEN_IDENTIFIER
+   65 mulexpr: mulexpr TOKEN_STAR unexpr
+   66        | mulexpr TOKEN_SLASH unexpr
+   67        | mulexpr TOKEN_MODULO unexpr
+   68        | unexpr
 
-   75 callexpr: TOKEN_IDENTIFIER TOKEN_PAREN_L args TOKEN_PAREN_R
+   69 unexpr: TOKEN_MINUS smolexpr
+   70       | smolexpr
 
-   76 args: args_
-   77     | %empty
+   71 smolexpr: TOKEN_INT_VAL
+   72         | TOKEN_STR_VAL
+   73         | TOKEN_PAREN_L expr TOKEN_PAREN_R
+   74         | TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R
+   75         | callexpr
+   76         | TOKEN_IDENTIFIER
 
-   78 args_: args_ TOKEN_COMMA expr
-   79      | expr
+   77 callexpr: TOKEN_IDENTIFIER TOKEN_PAREN_L args TOKEN_PAREN_R
+
+   78 args: args_
+   79     | %empty
+
+   80 args_: args_ TOKEN_COMMA expr
+   81      | expr
 
 
 Terminals, with rules where they appear
@@ -140,12 +144,12 @@ Terminals, with rules where they appear
     TOKEN_STR (259) 18
     TOKEN_BLK (260) 19
     TOKEN_FUN (261) 8 9 10
-    TOKEN_IF (262) 40 42
-    TOKEN_ELSE (263) 40
-    TOKEN_FOR (264) 37
-    TOKEN_FROM (265) 37
-    TOKEN_TO (266) 37
-    TOKEN_WHILE (267) 36
+    TOKEN_IF (262) 42 44
+    TOKEN_ELSE (263) 42
+    TOKEN_FOR (264) 39
+    TOKEN_FROM (265) 39
+    TOKEN_TO (266) 39
+    TOKEN_WHILE (267) 38
     TOKEN_VAR (268) 6 7
     TOKEN_BRK (269) 30
     TOKEN_CNT (270) 31
@@ -154,33 +158,33 @@ Terminals, with rules where they appear
     TOKEN_DIR_GRID (273)
     TOKEN_DIR_TITLE (274)
     TOKEN_DIR_ICON (275)
-    TOKEN_SQ_BRACK_L (276) 7 10 16 44 72
-    TOKEN_SQ_BRACK_R (277) 7 10 16 44 72
-    TOKEN_PAREN_L (278) 8 9 10 71 75
-    TOKEN_PAREN_R (279) 8 9 10 71 75
-    TOKEN_BRACE_L (280) 46
-    TOKEN_BRACE_R (281) 46
-    TOKEN_PLUS (282) 60
-    TOKEN_MINUS (283) 61 67
-    TOKEN_SLASH (284) 64
-    TOKEN_STAR (285) 63
-    TOKEN_MODULO (286) 65
-    TOKEN_DOUBLE_EQ (287) 57
-    TOKEN_NOT_EQ (288) 58
-    TOKEN_GREATER_EQ (289) 54
-    TOKEN_LESS_EQ (290) 53
-    TOKEN_EQUAL (291) 6 7 43 44
-    TOKEN_LESS (292) 55
-    TOKEN_GREATER (293) 56
-    TOKEN_LOGICAL_AND (294) 49
-    TOKEN_LOGICAL_OR (295) 47
-    TOKEN_LOGICAL_NOT (296) 51
-    TOKEN_SEMICOLON (297) 6 7 23 30 31 32 33 34 35 43 44
+    TOKEN_SQ_BRACK_L (276) 7 10 16 46 74
+    TOKEN_SQ_BRACK_R (277) 7 10 16 46 74
+    TOKEN_PAREN_L (278) 8 9 10 73 77
+    TOKEN_PAREN_R (279) 8 9 10 73 77
+    TOKEN_BRACE_L (280) 48
+    TOKEN_BRACE_R (281) 48
+    TOKEN_PLUS (282) 62
+    TOKEN_MINUS (283) 63 69
+    TOKEN_SLASH (284) 66
+    TOKEN_STAR (285) 65
+    TOKEN_MODULO (286) 67
+    TOKEN_DOUBLE_EQ (287) 59
+    TOKEN_NOT_EQ (288) 60
+    TOKEN_GREATER_EQ (289) 56
+    TOKEN_LESS_EQ (290) 55
+    TOKEN_EQUAL (291) 6 7 45 46
+    TOKEN_LESS (292) 57
+    TOKEN_GREATER (293) 58
+    TOKEN_LOGICAL_AND (294) 51
+    TOKEN_LOGICAL_OR (295) 49
+    TOKEN_LOGICAL_NOT (296) 53
+    TOKEN_SEMICOLON (297) 6 7 23 30 31 32 33 34 35 45 46
     TOKEN_COLON (298) 6 7 9 10 15 16
-    TOKEN_COMMA (299) 14 78
-    TOKEN_INT_VAL (300) 69
-    TOKEN_STR_VAL (301) 70
-    TOKEN_IDENTIFIER (302) 6 7 8 9 10 15 16 37 43 44 72 74 75
+    TOKEN_COMMA (299) 14 80
+    TOKEN_INT_VAL (300) 71
+    TOKEN_STR_VAL (301) 72
+    TOKEN_IDENTIFIER (302) 6 7 8 9 10 15 16 39 45 46 74 76 77
     TOKEN_LOG (303) 33
     TOKEN_ERR (304)
 
@@ -218,7 +222,7 @@ Nonterminals, with rules where they appear
         on right: 6 7 9 10 15 16
     stmts (60)
         on left: 20 21
-        on right: 20 46
+        on right: 20 48
     stmt (61)
         on left: 22 23 24 25 26 27 28 29 30 31 32 33
         on right: 20
@@ -226,65 +230,71 @@ Nonterminals, with rules where they appear
         on left: 34 35
         on right: 27
     whilestmt (63)
-        on left: 36
-        on right: 26
-    forstmt (64)
-        on left: 37
-        on right: 24
-    ifstmt (65)
-        on left: 40 42
-        on right: 25
-    @1 (66)
         on left: 38
-        on right: 40
-    @2 (67)
+        on right: 26
+    @1 (64)
+        on left: 36
+        on right: 38
+    @2 (65)
+        on left: 37
+        on right: 38
+    forstmt (66)
         on left: 39
-        on right: 40
+        on right: 24
+    ifstmt (67)
+        on left: 42 44
+        on right: 25
     @3 (68)
+        on left: 40
+        on right: 42
+    @4 (69)
         on left: 41
         on right: 42
-    asgnstmt (69)
-        on left: 43 44
+    @5 (70)
+        on left: 43
+        on right: 44
+    asgnstmt (71)
+        on left: 45 46
         on right: 28
-    blckstmt (70)
-        on left: 46
-        on right: 8 9 10 29 36 37 40 42
-    $@4 (71)
-        on left: 45
-        on right: 46
-    expr (72)
-        on left: 47 48
-        on right: 6 23 33 35 36 37 40 42 43 44 47 71 72 78 79
-    andexpr (73)
+    blckstmt (72)
+        on left: 48
+        on right: 8 9 10 29 38 39 42 44
+    $@6 (73)
+        on left: 47
+        on right: 48
+    expr (74)
         on left: 49 50
-        on right: 47 48 49
-    notexpr (74)
+        on right: 6 23 33 35 38 39 42 44 45 46 49 73 74 80 81
+    andexpr (75)
         on left: 51 52
-        on right: 49 50
-    relexpr (75)
-        on left: 53 54 55 56 57 58 59
-        on right: 51 52 53 54 55 56 57 58
-    sumexpr (76)
-        on left: 60 61 62
-        on right: 53 54 55 56 57 58 59 60 61
-    mulexpr (77)
-        on left: 63 64 65 66
-        on right: 60 61 62 63 64 65
-    unexpr (78)
-        on left: 67 68
-        on right: 63 64 65 66
-    smolexpr (79)
-        on left: 69 70 71 72 73 74
-        on right: 67 68
-    callexpr (80)
-        on left: 75
-        on right: 73
-    args (81)
-        on left: 76 77
-        on right: 7 75
-    args_ (82)
+        on right: 49 50 51
+    notexpr (76)
+        on left: 53 54
+        on right: 51 52
+    relexpr (77)
+        on left: 55 56 57 58 59 60 61
+        on right: 53 54 55 56 57 58 59 60
+    sumexpr (78)
+        on left: 62 63 64
+        on right: 55 56 57 58 59 60 61 62 63
+    mulexpr (79)
+        on left: 65 66 67 68
+        on right: 62 63 64 65 66 67
+    unexpr (80)
+        on left: 69 70
+        on right: 65 66 67 68
+    smolexpr (81)
+        on left: 71 72 73 74 75 76
+        on right: 69 70
+    callexpr (82)
+        on left: 77
+        on right: 75
+    args (83)
         on left: 78 79
-        on right: 76 78
+        on right: 7 77
+    args_ (84)
+        on left: 80 81
+        on right: 78 80
 
 
 State 0
@@ -530,7 +540,7 @@ State 25
     TOKEN_STR_VAL      shift, and go to state 36
     TOKEN_IDENTIFIER   shift, and go to state 37
 
-    $default  reduce using rule 77 (args)
+    $default  reduce using rule 79 (args)
 
     expr      go to state 38
     andexpr   go to state 39
@@ -579,11 +589,11 @@ State 27
 
 State 28
 
-   46 blckstmt: TOKEN_BRACE_L . $@4 stmts TOKEN_BRACE_R
+   48 blckstmt: TOKEN_BRACE_L . $@6 stmts TOKEN_BRACE_R
 
-    $default  reduce using rule 45 ($@4)
+    $default  reduce using rule 47 ($@6)
 
-    $@4  go to state 51
+    $@6  go to state 51
 
 
 State 29
@@ -614,7 +624,7 @@ State 31
 
 State 32
 
-   71 smolexpr: TOKEN_PAREN_L . expr TOKEN_PAREN_R
+   73 smolexpr: TOKEN_PAREN_L . expr TOKEN_PAREN_R
 
     TOKEN_PAREN_L      shift, and go to state 32
     TOKEN_MINUS        shift, and go to state 33
@@ -636,7 +646,7 @@ State 32
 
 State 33
 
-   67 unexpr: TOKEN_MINUS . smolexpr
+   69 unexpr: TOKEN_MINUS . smolexpr
 
     TOKEN_PAREN_L     shift, and go to state 32
     TOKEN_INT_VAL     shift, and go to state 35
@@ -649,7 +659,7 @@ State 33
 
 State 34
 
-   51 notexpr: TOKEN_LOGICAL_NOT . relexpr
+   53 notexpr: TOKEN_LOGICAL_NOT . relexpr
 
     TOKEN_PAREN_L     shift, and go to state 32
     TOKEN_MINUS       shift, and go to state 33
@@ -667,66 +677,66 @@ State 34
 
 State 35
 
-   69 smolexpr: TOKEN_INT_VAL .
+   71 smolexpr: TOKEN_INT_VAL .
 
-    $default  reduce using rule 69 (smolexpr)
+    $default  reduce using rule 71 (smolexpr)
 
 
 State 36
 
-   70 smolexpr: TOKEN_STR_VAL .
+   72 smolexpr: TOKEN_STR_VAL .
 
-    $default  reduce using rule 70 (smolexpr)
+    $default  reduce using rule 72 (smolexpr)
 
 
 State 37
 
-   72 smolexpr: TOKEN_IDENTIFIER . TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R
-   74         | TOKEN_IDENTIFIER .
-   75 callexpr: TOKEN_IDENTIFIER . TOKEN_PAREN_L args TOKEN_PAREN_R
+   74 smolexpr: TOKEN_IDENTIFIER . TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R
+   76         | TOKEN_IDENTIFIER .
+   77 callexpr: TOKEN_IDENTIFIER . TOKEN_PAREN_L args TOKEN_PAREN_R
 
     TOKEN_SQ_BRACK_L  shift, and go to state 56
     TOKEN_PAREN_L     shift, and go to state 57
 
-    $default  reduce using rule 74 (smolexpr)
+    $default  reduce using rule 76 (smolexpr)
 
 
 State 38
 
-   47 expr: expr . TOKEN_LOGICAL_OR andexpr
-   79 args_: expr .
+   49 expr: expr . TOKEN_LOGICAL_OR andexpr
+   81 args_: expr .
 
     TOKEN_LOGICAL_OR  shift, and go to state 58
 
-    $default  reduce using rule 79 (args_)
+    $default  reduce using rule 81 (args_)
 
 
 State 39
 
-   48 expr: andexpr .
-   49 andexpr: andexpr . TOKEN_LOGICAL_AND notexpr
+   50 expr: andexpr .
+   51 andexpr: andexpr . TOKEN_LOGICAL_AND notexpr
 
     TOKEN_LOGICAL_AND  shift, and go to state 59
 
-    $default  reduce using rule 48 (expr)
+    $default  reduce using rule 50 (expr)
 
 
 State 40
 
-   50 andexpr: notexpr .
+   52 andexpr: notexpr .
 
-    $default  reduce using rule 50 (andexpr)
+    $default  reduce using rule 52 (andexpr)
 
 
 State 41
 
-   52 notexpr: relexpr .
-   53 relexpr: relexpr . TOKEN_LESS_EQ sumexpr
-   54        | relexpr . TOKEN_GREATER_EQ sumexpr
-   55        | relexpr . TOKEN_LESS sumexpr
-   56        | relexpr . TOKEN_GREATER sumexpr
-   57        | relexpr . TOKEN_DOUBLE_EQ sumexpr
-   58        | relexpr . TOKEN_NOT_EQ sumexpr
+   54 notexpr: relexpr .
+   55 relexpr: relexpr . TOKEN_LESS_EQ sumexpr
+   56        | relexpr . TOKEN_GREATER_EQ sumexpr
+   57        | relexpr . TOKEN_LESS sumexpr
+   58        | relexpr . TOKEN_GREATER sumexpr
+   59        | relexpr . TOKEN_DOUBLE_EQ sumexpr
+   60        | relexpr . TOKEN_NOT_EQ sumexpr
 
     TOKEN_DOUBLE_EQ   shift, and go to state 60
     TOKEN_NOT_EQ      shift, and go to state 61
@@ -735,54 +745,54 @@ State 41
     TOKEN_LESS        shift, and go to state 64
     TOKEN_GREATER     shift, and go to state 65
 
-    $default  reduce using rule 52 (notexpr)
+    $default  reduce using rule 54 (notexpr)
 
 
 State 42
 
-   59 relexpr: sumexpr .
-   60 sumexpr: sumexpr . TOKEN_PLUS mulexpr
-   61        | sumexpr . TOKEN_MINUS mulexpr
+   61 relexpr: sumexpr .
+   62 sumexpr: sumexpr . TOKEN_PLUS mulexpr
+   63        | sumexpr . TOKEN_MINUS mulexpr
 
     TOKEN_PLUS   shift, and go to state 66
     TOKEN_MINUS  shift, and go to state 67
 
-    $default  reduce using rule 59 (relexpr)
+    $default  reduce using rule 61 (relexpr)
 
 
 State 43
 
-   62 sumexpr: mulexpr .
-   63 mulexpr: mulexpr . TOKEN_STAR unexpr
-   64        | mulexpr . TOKEN_SLASH unexpr
-   65        | mulexpr . TOKEN_MODULO unexpr
+   64 sumexpr: mulexpr .
+   65 mulexpr: mulexpr . TOKEN_STAR unexpr
+   66        | mulexpr . TOKEN_SLASH unexpr
+   67        | mulexpr . TOKEN_MODULO unexpr
 
     TOKEN_SLASH   shift, and go to state 68
     TOKEN_STAR    shift, and go to state 69
     TOKEN_MODULO  shift, and go to state 70
 
-    $default  reduce using rule 62 (sumexpr)
+    $default  reduce using rule 64 (sumexpr)
 
 
 State 44
 
-   66 mulexpr: unexpr .
+   68 mulexpr: unexpr .
 
-    $default  reduce using rule 66 (mulexpr)
+    $default  reduce using rule 68 (mulexpr)
 
 
 State 45
 
-   68 unexpr: smolexpr .
+   70 unexpr: smolexpr .
 
-    $default  reduce using rule 68 (unexpr)
+    $default  reduce using rule 70 (unexpr)
 
 
 State 46
 
-   73 smolexpr: callexpr .
+   75 smolexpr: callexpr .
 
-    $default  reduce using rule 73 (smolexpr)
+    $default  reduce using rule 75 (smolexpr)
 
 
 State 47
@@ -794,18 +804,18 @@ State 47
 
 State 48
 
-   76 args: args_ .
-   78 args_: args_ . TOKEN_COMMA expr
+   78 args: args_ .
+   80 args_: args_ . TOKEN_COMMA expr
 
     TOKEN_COMMA  shift, and go to state 72
 
-    $default  reduce using rule 76 (args)
+    $default  reduce using rule 78 (args)
 
 
 State 49
 
     6 variable: TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_EQUAL expr . TOKEN_SEMICOLON
-   47 expr: expr . TOKEN_LOGICAL_OR andexpr
+   49 expr: expr . TOKEN_LOGICAL_OR andexpr
 
     TOKEN_LOGICAL_OR  shift, and go to state 58
     TOKEN_SEMICOLON   shift, and go to state 73
@@ -820,7 +830,7 @@ State 50
 
 State 51
 
-   46 blckstmt: TOKEN_BRACE_L $@4 . stmts TOKEN_BRACE_R
+   48 blckstmt: TOKEN_BRACE_L $@6 . stmts TOKEN_BRACE_R
 
     $default  reduce using rule 21 (stmts)
 
@@ -840,8 +850,8 @@ State 52
 
 State 53
 
-   47 expr: expr . TOKEN_LOGICAL_OR andexpr
-   71 smolexpr: TOKEN_PAREN_L expr . TOKEN_PAREN_R
+   49 expr: expr . TOKEN_LOGICAL_OR andexpr
+   73 smolexpr: TOKEN_PAREN_L expr . TOKEN_PAREN_R
 
     TOKEN_PAREN_R     shift, and go to state 78
     TOKEN_LOGICAL_OR  shift, and go to state 58
@@ -849,20 +859,20 @@ State 53
 
 State 54
 
-   67 unexpr: TOKEN_MINUS smolexpr .
+   69 unexpr: TOKEN_MINUS smolexpr .
 
-    $default  reduce using rule 67 (unexpr)
+    $default  reduce using rule 69 (unexpr)
 
 
 State 55
 
-   51 notexpr: TOKEN_LOGICAL_NOT relexpr .
-   53 relexpr: relexpr . TOKEN_LESS_EQ sumexpr
-   54        | relexpr . TOKEN_GREATER_EQ sumexpr
-   55        | relexpr . TOKEN_LESS sumexpr
-   56        | relexpr . TOKEN_GREATER sumexpr
-   57        | relexpr . TOKEN_DOUBLE_EQ sumexpr
-   58        | relexpr . TOKEN_NOT_EQ sumexpr
+   53 notexpr: TOKEN_LOGICAL_NOT relexpr .
+   55 relexpr: relexpr . TOKEN_LESS_EQ sumexpr
+   56        | relexpr . TOKEN_GREATER_EQ sumexpr
+   57        | relexpr . TOKEN_LESS sumexpr
+   58        | relexpr . TOKEN_GREATER sumexpr
+   59        | relexpr . TOKEN_DOUBLE_EQ sumexpr
+   60        | relexpr . TOKEN_NOT_EQ sumexpr
 
     TOKEN_DOUBLE_EQ   shift, and go to state 60
     TOKEN_NOT_EQ      shift, and go to state 61
@@ -871,12 +881,12 @@ State 55
     TOKEN_LESS        shift, and go to state 64
     TOKEN_GREATER     shift, and go to state 65
 
-    $default  reduce using rule 51 (notexpr)
+    $default  reduce using rule 53 (notexpr)
 
 
 State 56
 
-   72 smolexpr: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L . expr TOKEN_SQ_BRACK_R
+   74 smolexpr: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L . expr TOKEN_SQ_BRACK_R
 
     TOKEN_PAREN_L      shift, and go to state 32
     TOKEN_MINUS        shift, and go to state 33
@@ -898,7 +908,7 @@ State 56
 
 State 57
 
-   75 callexpr: TOKEN_IDENTIFIER TOKEN_PAREN_L . args TOKEN_PAREN_R
+   77 callexpr: TOKEN_IDENTIFIER TOKEN_PAREN_L . args TOKEN_PAREN_R
 
     TOKEN_PAREN_L      shift, and go to state 32
     TOKEN_MINUS        shift, and go to state 33
@@ -907,7 +917,7 @@ State 57
     TOKEN_STR_VAL      shift, and go to state 36
     TOKEN_IDENTIFIER   shift, and go to state 37
 
-    $default  reduce using rule 77 (args)
+    $default  reduce using rule 79 (args)
 
     expr      go to state 38
     andexpr   go to state 39
@@ -924,7 +934,7 @@ State 57
 
 State 58
 
-   47 expr: expr TOKEN_LOGICAL_OR . andexpr
+   49 expr: expr TOKEN_LOGICAL_OR . andexpr
 
     TOKEN_PAREN_L      shift, and go to state 32
     TOKEN_MINUS        shift, and go to state 33
@@ -945,7 +955,7 @@ State 58
 
 State 59
 
-   49 andexpr: andexpr TOKEN_LOGICAL_AND . notexpr
+   51 andexpr: andexpr TOKEN_LOGICAL_AND . notexpr
 
     TOKEN_PAREN_L      shift, and go to state 32
     TOKEN_MINUS        shift, and go to state 33
@@ -965,7 +975,7 @@ State 59
 
 State 60
 
-   57 relexpr: relexpr TOKEN_DOUBLE_EQ . sumexpr
+   59 relexpr: relexpr TOKEN_DOUBLE_EQ . sumexpr
 
     TOKEN_PAREN_L     shift, and go to state 32
     TOKEN_MINUS       shift, and go to state 33
@@ -982,7 +992,7 @@ State 60
 
 State 61
 
-   58 relexpr: relexpr TOKEN_NOT_EQ . sumexpr
+   60 relexpr: relexpr TOKEN_NOT_EQ . sumexpr
 
     TOKEN_PAREN_L     shift, and go to state 32
     TOKEN_MINUS       shift, and go to state 33
@@ -999,7 +1009,7 @@ State 61
 
 State 62
 
-   54 relexpr: relexpr TOKEN_GREATER_EQ . sumexpr
+   56 relexpr: relexpr TOKEN_GREATER_EQ . sumexpr
 
     TOKEN_PAREN_L     shift, and go to state 32
     TOKEN_MINUS       shift, and go to state 33
@@ -1016,7 +1026,7 @@ State 62
 
 State 63
 
-   53 relexpr: relexpr TOKEN_LESS_EQ . sumexpr
+   55 relexpr: relexpr TOKEN_LESS_EQ . sumexpr
 
     TOKEN_PAREN_L     shift, and go to state 32
     TOKEN_MINUS       shift, and go to state 33
@@ -1033,7 +1043,7 @@ State 63
 
 State 64
 
-   55 relexpr: relexpr TOKEN_LESS . sumexpr
+   57 relexpr: relexpr TOKEN_LESS . sumexpr
 
     TOKEN_PAREN_L     shift, and go to state 32
     TOKEN_MINUS       shift, and go to state 33
@@ -1050,7 +1060,7 @@ State 64
 
 State 65
 
-   56 relexpr: relexpr TOKEN_GREATER . sumexpr
+   58 relexpr: relexpr TOKEN_GREATER . sumexpr
 
     TOKEN_PAREN_L     shift, and go to state 32
     TOKEN_MINUS       shift, and go to state 33
@@ -1067,7 +1077,7 @@ State 65
 
 State 66
 
-   60 sumexpr: sumexpr TOKEN_PLUS . mulexpr
+   62 sumexpr: sumexpr TOKEN_PLUS . mulexpr
 
     TOKEN_PAREN_L     shift, and go to state 32
     TOKEN_MINUS       shift, and go to state 33
@@ -1083,7 +1093,7 @@ State 66
 
 State 67
 
-   61 sumexpr: sumexpr TOKEN_MINUS . mulexpr
+   63 sumexpr: sumexpr TOKEN_MINUS . mulexpr
 
     TOKEN_PAREN_L     shift, and go to state 32
     TOKEN_MINUS       shift, and go to state 33
@@ -1099,7 +1109,7 @@ State 67
 
 State 68
 
-   64 mulexpr: mulexpr TOKEN_SLASH . unexpr
+   66 mulexpr: mulexpr TOKEN_SLASH . unexpr
 
     TOKEN_PAREN_L     shift, and go to state 32
     TOKEN_MINUS       shift, and go to state 33
@@ -1114,7 +1124,7 @@ State 68
 
 State 69
 
-   63 mulexpr: mulexpr TOKEN_STAR . unexpr
+   65 mulexpr: mulexpr TOKEN_STAR . unexpr
 
     TOKEN_PAREN_L     shift, and go to state 32
     TOKEN_MINUS       shift, and go to state 33
@@ -1129,7 +1139,7 @@ State 69
 
 State 70
 
-   65 mulexpr: mulexpr TOKEN_MODULO . unexpr
+   67 mulexpr: mulexpr TOKEN_MODULO . unexpr
 
     TOKEN_PAREN_L     shift, and go to state 32
     TOKEN_MINUS       shift, and go to state 33
@@ -1151,7 +1161,7 @@ State 71
 
 State 72
 
-   78 args_: args_ TOKEN_COMMA . expr
+   80 args_: args_ TOKEN_COMMA . expr
 
     TOKEN_PAREN_L      shift, and go to state 32
     TOKEN_MINUS        shift, and go to state 33
@@ -1188,7 +1198,7 @@ State 74
 State 75
 
    20 stmts: stmts . stmt
-   46 blckstmt: TOKEN_BRACE_L $@4 stmts . TOKEN_BRACE_R
+   48 blckstmt: TOKEN_BRACE_L $@6 stmts . TOKEN_BRACE_R
 
     TOKEN_IF           shift, and go to state 96
     TOKEN_FOR          shift, and go to state 97
@@ -1243,15 +1253,15 @@ State 77
 
 State 78
 
-   71 smolexpr: TOKEN_PAREN_L expr TOKEN_PAREN_R .
+   73 smolexpr: TOKEN_PAREN_L expr TOKEN_PAREN_R .
 
-    $default  reduce using rule 71 (smolexpr)
+    $default  reduce using rule 73 (smolexpr)
 
 
 State 79
 
-   47 expr: expr . TOKEN_LOGICAL_OR andexpr
-   72 smolexpr: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr . TOKEN_SQ_BRACK_R
+   49 expr: expr . TOKEN_LOGICAL_OR andexpr
+   74 smolexpr: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr . TOKEN_SQ_BRACK_R
 
     TOKEN_SQ_BRACK_R  shift, and go to state 116
     TOKEN_LOGICAL_OR  shift, and go to state 58
@@ -1259,93 +1269,57 @@ State 79
 
 State 80
 
-   75 callexpr: TOKEN_IDENTIFIER TOKEN_PAREN_L args . TOKEN_PAREN_R
+   77 callexpr: TOKEN_IDENTIFIER TOKEN_PAREN_L args . TOKEN_PAREN_R
 
     TOKEN_PAREN_R  shift, and go to state 117
 
 
 State 81
 
-   47 expr: expr TOKEN_LOGICAL_OR andexpr .
-   49 andexpr: andexpr . TOKEN_LOGICAL_AND notexpr
+   49 expr: expr TOKEN_LOGICAL_OR andexpr .
+   51 andexpr: andexpr . TOKEN_LOGICAL_AND notexpr
 
     TOKEN_LOGICAL_AND  shift, and go to state 59
 
-    $default  reduce using rule 47 (expr)
+    $default  reduce using rule 49 (expr)
 
 
 State 82
 
-   49 andexpr: andexpr TOKEN_LOGICAL_AND notexpr .
+   51 andexpr: andexpr TOKEN_LOGICAL_AND notexpr .
 
-    $default  reduce using rule 49 (andexpr)
+    $default  reduce using rule 51 (andexpr)
 
 
 State 83
 
-   57 relexpr: relexpr TOKEN_DOUBLE_EQ sumexpr .
-   60 sumexpr: sumexpr . TOKEN_PLUS mulexpr
-   61        | sumexpr . TOKEN_MINUS mulexpr
+   59 relexpr: relexpr TOKEN_DOUBLE_EQ sumexpr .
+   62 sumexpr: sumexpr . TOKEN_PLUS mulexpr
+   63        | sumexpr . TOKEN_MINUS mulexpr
 
     TOKEN_PLUS   shift, and go to state 66
     TOKEN_MINUS  shift, and go to state 67
 
-    $default  reduce using rule 57 (relexpr)
+    $default  reduce using rule 59 (relexpr)
 
 
 State 84
 
-   58 relexpr: relexpr TOKEN_NOT_EQ sumexpr .
-   60 sumexpr: sumexpr . TOKEN_PLUS mulexpr
-   61        | sumexpr . TOKEN_MINUS mulexpr
+   60 relexpr: relexpr TOKEN_NOT_EQ sumexpr .
+   62 sumexpr: sumexpr . TOKEN_PLUS mulexpr
+   63        | sumexpr . TOKEN_MINUS mulexpr
 
     TOKEN_PLUS   shift, and go to state 66
     TOKEN_MINUS  shift, and go to state 67
 
-    $default  reduce using rule 58 (relexpr)
+    $default  reduce using rule 60 (relexpr)
 
 
 State 85
 
-   54 relexpr: relexpr TOKEN_GREATER_EQ sumexpr .
-   60 sumexpr: sumexpr . TOKEN_PLUS mulexpr
-   61        | sumexpr . TOKEN_MINUS mulexpr
-
-    TOKEN_PLUS   shift, and go to state 66
-    TOKEN_MINUS  shift, and go to state 67
-
-    $default  reduce using rule 54 (relexpr)
-
-
-State 86
-
-   53 relexpr: relexpr TOKEN_LESS_EQ sumexpr .
-   60 sumexpr: sumexpr . TOKEN_PLUS mulexpr
-   61        | sumexpr . TOKEN_MINUS mulexpr
-
-    TOKEN_PLUS   shift, and go to state 66
-    TOKEN_MINUS  shift, and go to state 67
-
-    $default  reduce using rule 53 (relexpr)
-
-
-State 87
-
-   55 relexpr: relexpr TOKEN_LESS sumexpr .
-   60 sumexpr: sumexpr . TOKEN_PLUS mulexpr
-   61        | sumexpr . TOKEN_MINUS mulexpr
-
-    TOKEN_PLUS   shift, and go to state 66
-    TOKEN_MINUS  shift, and go to state 67
-
-    $default  reduce using rule 55 (relexpr)
-
-
-State 88
-
-   56 relexpr: relexpr TOKEN_GREATER sumexpr .
-   60 sumexpr: sumexpr . TOKEN_PLUS mulexpr
-   61        | sumexpr . TOKEN_MINUS mulexpr
+   56 relexpr: relexpr TOKEN_GREATER_EQ sumexpr .
+   62 sumexpr: sumexpr . TOKEN_PLUS mulexpr
+   63        | sumexpr . TOKEN_MINUS mulexpr
 
     TOKEN_PLUS   shift, and go to state 66
     TOKEN_MINUS  shift, and go to state 67
@@ -1353,53 +1327,89 @@ State 88
     $default  reduce using rule 56 (relexpr)
 
 
+State 86
+
+   55 relexpr: relexpr TOKEN_LESS_EQ sumexpr .
+   62 sumexpr: sumexpr . TOKEN_PLUS mulexpr
+   63        | sumexpr . TOKEN_MINUS mulexpr
+
+    TOKEN_PLUS   shift, and go to state 66
+    TOKEN_MINUS  shift, and go to state 67
+
+    $default  reduce using rule 55 (relexpr)
+
+
+State 87
+
+   57 relexpr: relexpr TOKEN_LESS sumexpr .
+   62 sumexpr: sumexpr . TOKEN_PLUS mulexpr
+   63        | sumexpr . TOKEN_MINUS mulexpr
+
+    TOKEN_PLUS   shift, and go to state 66
+    TOKEN_MINUS  shift, and go to state 67
+
+    $default  reduce using rule 57 (relexpr)
+
+
+State 88
+
+   58 relexpr: relexpr TOKEN_GREATER sumexpr .
+   62 sumexpr: sumexpr . TOKEN_PLUS mulexpr
+   63        | sumexpr . TOKEN_MINUS mulexpr
+
+    TOKEN_PLUS   shift, and go to state 66
+    TOKEN_MINUS  shift, and go to state 67
+
+    $default  reduce using rule 58 (relexpr)
+
+
 State 89
 
-   60 sumexpr: sumexpr TOKEN_PLUS mulexpr .
-   63 mulexpr: mulexpr . TOKEN_STAR unexpr
-   64        | mulexpr . TOKEN_SLASH unexpr
-   65        | mulexpr . TOKEN_MODULO unexpr
+   62 sumexpr: sumexpr TOKEN_PLUS mulexpr .
+   65 mulexpr: mulexpr . TOKEN_STAR unexpr
+   66        | mulexpr . TOKEN_SLASH unexpr
+   67        | mulexpr . TOKEN_MODULO unexpr
 
     TOKEN_SLASH   shift, and go to state 68
     TOKEN_STAR    shift, and go to state 69
     TOKEN_MODULO  shift, and go to state 70
 
-    $default  reduce using rule 60 (sumexpr)
+    $default  reduce using rule 62 (sumexpr)
 
 
 State 90
 
-   61 sumexpr: sumexpr TOKEN_MINUS mulexpr .
-   63 mulexpr: mulexpr . TOKEN_STAR unexpr
-   64        | mulexpr . TOKEN_SLASH unexpr
-   65        | mulexpr . TOKEN_MODULO unexpr
+   63 sumexpr: sumexpr TOKEN_MINUS mulexpr .
+   65 mulexpr: mulexpr . TOKEN_STAR unexpr
+   66        | mulexpr . TOKEN_SLASH unexpr
+   67        | mulexpr . TOKEN_MODULO unexpr
 
     TOKEN_SLASH   shift, and go to state 68
     TOKEN_STAR    shift, and go to state 69
     TOKEN_MODULO  shift, and go to state 70
 
-    $default  reduce using rule 61 (sumexpr)
+    $default  reduce using rule 63 (sumexpr)
 
 
 State 91
 
-   64 mulexpr: mulexpr TOKEN_SLASH unexpr .
+   66 mulexpr: mulexpr TOKEN_SLASH unexpr .
 
-    $default  reduce using rule 64 (mulexpr)
+    $default  reduce using rule 66 (mulexpr)
 
 
 State 92
 
-   63 mulexpr: mulexpr TOKEN_STAR unexpr .
+   65 mulexpr: mulexpr TOKEN_STAR unexpr .
 
-    $default  reduce using rule 63 (mulexpr)
+    $default  reduce using rule 65 (mulexpr)
 
 
 State 93
 
-   65 mulexpr: mulexpr TOKEN_MODULO unexpr .
+   67 mulexpr: mulexpr TOKEN_MODULO unexpr .
 
-    $default  reduce using rule 65 (mulexpr)
+    $default  reduce using rule 67 (mulexpr)
 
 
 State 94
@@ -1411,18 +1421,18 @@ State 94
 
 State 95
 
-   47 expr: expr . TOKEN_LOGICAL_OR andexpr
-   78 args_: args_ TOKEN_COMMA expr .
+   49 expr: expr . TOKEN_LOGICAL_OR andexpr
+   80 args_: args_ TOKEN_COMMA expr .
 
     TOKEN_LOGICAL_OR  shift, and go to state 58
 
-    $default  reduce using rule 78 (args_)
+    $default  reduce using rule 80 (args_)
 
 
 State 96
 
-   40 ifstmt: TOKEN_IF . expr @1 blckstmt @2 TOKEN_ELSE blckstmt
-   42       | TOKEN_IF . expr @3 blckstmt
+   42 ifstmt: TOKEN_IF . expr @3 blckstmt @4 TOKEN_ELSE blckstmt
+   44       | TOKEN_IF . expr @5 blckstmt
 
     TOKEN_PAREN_L      shift, and go to state 32
     TOKEN_MINUS        shift, and go to state 33
@@ -1444,31 +1454,18 @@ State 96
 
 State 97
 
-   37 forstmt: TOKEN_FOR . TOKEN_IDENTIFIER TOKEN_FROM expr TOKEN_TO expr blckstmt
+   39 forstmt: TOKEN_FOR . TOKEN_IDENTIFIER TOKEN_FROM expr TOKEN_TO expr blckstmt
 
     TOKEN_IDENTIFIER  shift, and go to state 120
 
 
 State 98
 
-   36 whilestmt: TOKEN_WHILE . expr blckstmt
+   38 whilestmt: TOKEN_WHILE . @1 expr @2 blckstmt
 
-    TOKEN_PAREN_L      shift, and go to state 32
-    TOKEN_MINUS        shift, and go to state 33
-    TOKEN_LOGICAL_NOT  shift, and go to state 34
-    TOKEN_INT_VAL      shift, and go to state 35
-    TOKEN_STR_VAL      shift, and go to state 36
-    TOKEN_IDENTIFIER   shift, and go to state 37
+    $default  reduce using rule 36 (@1)
 
-    expr      go to state 121
-    andexpr   go to state 39
-    notexpr   go to state 40
-    relexpr   go to state 41
-    sumexpr   go to state 42
-    mulexpr   go to state 43
-    unexpr    go to state 44
-    smolexpr  go to state 45
-    callexpr  go to state 46
+    @1  go to state 121
 
 
 State 99
@@ -1511,9 +1508,9 @@ State 101
 
 State 102
 
-   46 blckstmt: TOKEN_BRACE_L $@4 stmts TOKEN_BRACE_R .
+   48 blckstmt: TOKEN_BRACE_L $@6 stmts TOKEN_BRACE_R .
 
-    $default  reduce using rule 46 (blckstmt)
+    $default  reduce using rule 48 (blckstmt)
 
 
 State 103
@@ -1525,17 +1522,17 @@ State 103
 
 State 104
 
-   43 asgnstmt: TOKEN_IDENTIFIER . TOKEN_EQUAL expr TOKEN_SEMICOLON
-   44         | TOKEN_IDENTIFIER . TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R TOKEN_EQUAL expr TOKEN_SEMICOLON
-   72 smolexpr: TOKEN_IDENTIFIER . TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R
-   74         | TOKEN_IDENTIFIER .
-   75 callexpr: TOKEN_IDENTIFIER . TOKEN_PAREN_L args TOKEN_PAREN_R
+   45 asgnstmt: TOKEN_IDENTIFIER . TOKEN_EQUAL expr TOKEN_SEMICOLON
+   46         | TOKEN_IDENTIFIER . TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R TOKEN_EQUAL expr TOKEN_SEMICOLON
+   74 smolexpr: TOKEN_IDENTIFIER . TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R
+   76         | TOKEN_IDENTIFIER .
+   77 callexpr: TOKEN_IDENTIFIER . TOKEN_PAREN_L args TOKEN_PAREN_R
 
     TOKEN_SQ_BRACK_L  shift, and go to state 126
     TOKEN_PAREN_L     shift, and go to state 57
     TOKEN_EQUAL       shift, and go to state 127
 
-    $default  reduce using rule 74 (smolexpr)
+    $default  reduce using rule 76 (smolexpr)
 
 
 State 105
@@ -1619,7 +1616,7 @@ State 113
 State 114
 
    23 stmt: expr . TOKEN_SEMICOLON
-   47 expr: expr . TOKEN_LOGICAL_OR andexpr
+   49 expr: expr . TOKEN_LOGICAL_OR andexpr
 
     TOKEN_LOGICAL_OR  shift, and go to state 58
     TOKEN_SEMICOLON   shift, and go to state 129
@@ -1636,16 +1633,16 @@ State 115
 
 State 116
 
-   72 smolexpr: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R .
+   74 smolexpr: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R .
 
-    $default  reduce using rule 72 (smolexpr)
+    $default  reduce using rule 74 (smolexpr)
 
 
 State 117
 
-   75 callexpr: TOKEN_IDENTIFIER TOKEN_PAREN_L args TOKEN_PAREN_R .
+   77 callexpr: TOKEN_IDENTIFIER TOKEN_PAREN_L args TOKEN_PAREN_R .
 
-    $default  reduce using rule 75 (callexpr)
+    $default  reduce using rule 77 (callexpr)
 
 
 State 118
@@ -1659,7 +1656,7 @@ State 118
     TOKEN_STR_VAL      shift, and go to state 36
     TOKEN_IDENTIFIER   shift, and go to state 37
 
-    $default  reduce using rule 77 (args)
+    $default  reduce using rule 79 (args)
 
     expr      go to state 38
     andexpr   go to state 39
@@ -1676,36 +1673,47 @@ State 118
 
 State 119
 
-   40 ifstmt: TOKEN_IF expr . @1 blckstmt @2 TOKEN_ELSE blckstmt
-   42       | TOKEN_IF expr . @3 blckstmt
-   47 expr: expr . TOKEN_LOGICAL_OR andexpr
+   42 ifstmt: TOKEN_IF expr . @3 blckstmt @4 TOKEN_ELSE blckstmt
+   44       | TOKEN_IF expr . @5 blckstmt
+   49 expr: expr . TOKEN_LOGICAL_OR andexpr
 
     TOKEN_LOGICAL_OR  shift, and go to state 58
 
-    TOKEN_BRACE_L  reduce using rule 38 (@1)
-    TOKEN_BRACE_L  [reduce using rule 41 (@3)]
-    $default       reduce using rule 38 (@1)
+    TOKEN_BRACE_L  reduce using rule 40 (@3)
+    TOKEN_BRACE_L  [reduce using rule 43 (@5)]
+    $default       reduce using rule 40 (@3)
 
-    @1  go to state 132
-    @3  go to state 133
+    @3  go to state 132
+    @5  go to state 133
 
 
 State 120
 
-   37 forstmt: TOKEN_FOR TOKEN_IDENTIFIER . TOKEN_FROM expr TOKEN_TO expr blckstmt
+   39 forstmt: TOKEN_FOR TOKEN_IDENTIFIER . TOKEN_FROM expr TOKEN_TO expr blckstmt
 
     TOKEN_FROM  shift, and go to state 134
 
 
 State 121
 
-   36 whilestmt: TOKEN_WHILE expr . blckstmt
-   47 expr: expr . TOKEN_LOGICAL_OR andexpr
+   38 whilestmt: TOKEN_WHILE @1 . expr @2 blckstmt
 
-    TOKEN_BRACE_L     shift, and go to state 28
-    TOKEN_LOGICAL_OR  shift, and go to state 58
+    TOKEN_PAREN_L      shift, and go to state 32
+    TOKEN_MINUS        shift, and go to state 33
+    TOKEN_LOGICAL_NOT  shift, and go to state 34
+    TOKEN_INT_VAL      shift, and go to state 35
+    TOKEN_STR_VAL      shift, and go to state 36
+    TOKEN_IDENTIFIER   shift, and go to state 37
 
-    blckstmt  go to state 135
+    expr      go to state 135
+    andexpr   go to state 39
+    notexpr   go to state 40
+    relexpr   go to state 41
+    sumexpr   go to state 42
+    mulexpr   go to state 43
+    unexpr    go to state 44
+    smolexpr  go to state 45
+    callexpr  go to state 46
 
 
 State 122
@@ -1732,7 +1740,7 @@ State 124
 State 125
 
    35 retstmt: TOKEN_RET expr . TOKEN_SEMICOLON
-   47 expr: expr . TOKEN_LOGICAL_OR andexpr
+   49 expr: expr . TOKEN_LOGICAL_OR andexpr
 
     TOKEN_LOGICAL_OR  shift, and go to state 58
     TOKEN_SEMICOLON   shift, and go to state 136
@@ -1740,8 +1748,8 @@ State 125
 
 State 126
 
-   44 asgnstmt: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L . expr TOKEN_SQ_BRACK_R TOKEN_EQUAL expr TOKEN_SEMICOLON
-   72 smolexpr: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L . expr TOKEN_SQ_BRACK_R
+   46 asgnstmt: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L . expr TOKEN_SQ_BRACK_R TOKEN_EQUAL expr TOKEN_SEMICOLON
+   74 smolexpr: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L . expr TOKEN_SQ_BRACK_R
 
     TOKEN_PAREN_L      shift, and go to state 32
     TOKEN_MINUS        shift, and go to state 33
@@ -1763,7 +1771,7 @@ State 126
 
 State 127
 
-   43 asgnstmt: TOKEN_IDENTIFIER TOKEN_EQUAL . expr TOKEN_SEMICOLON
+   45 asgnstmt: TOKEN_IDENTIFIER TOKEN_EQUAL . expr TOKEN_SEMICOLON
 
     TOKEN_PAREN_L      shift, and go to state 32
     TOKEN_MINUS        shift, and go to state 33
@@ -1786,7 +1794,7 @@ State 127
 State 128
 
    33 stmt: TOKEN_LOG expr . TOKEN_SEMICOLON
-   47 expr: expr . TOKEN_LOGICAL_OR andexpr
+   49 expr: expr . TOKEN_LOGICAL_OR andexpr
 
     TOKEN_LOGICAL_OR  shift, and go to state 58
     TOKEN_SEMICOLON   shift, and go to state 139
@@ -1815,7 +1823,7 @@ State 131
 
 State 132
 
-   40 ifstmt: TOKEN_IF expr @1 . blckstmt @2 TOKEN_ELSE blckstmt
+   42 ifstmt: TOKEN_IF expr @3 . blckstmt @4 TOKEN_ELSE blckstmt
 
     TOKEN_BRACE_L  shift, and go to state 28
 
@@ -1824,7 +1832,7 @@ State 132
 
 State 133
 
-   42 ifstmt: TOKEN_IF expr @3 . blckstmt
+   44 ifstmt: TOKEN_IF expr @5 . blckstmt
 
     TOKEN_BRACE_L  shift, and go to state 28
 
@@ -1833,7 +1841,7 @@ State 133
 
 State 134
 
-   37 forstmt: TOKEN_FOR TOKEN_IDENTIFIER TOKEN_FROM . expr TOKEN_TO expr blckstmt
+   39 forstmt: TOKEN_FOR TOKEN_IDENTIFIER TOKEN_FROM . expr TOKEN_TO expr blckstmt
 
     TOKEN_PAREN_L      shift, and go to state 32
     TOKEN_MINUS        shift, and go to state 33
@@ -1855,9 +1863,14 @@ State 134
 
 State 135
 
-   36 whilestmt: TOKEN_WHILE expr blckstmt .
+   38 whilestmt: TOKEN_WHILE @1 expr . @2 blckstmt
+   49 expr: expr . TOKEN_LOGICAL_OR andexpr
 
-    $default  reduce using rule 36 (whilestmt)
+    TOKEN_LOGICAL_OR  shift, and go to state 58
+
+    $default  reduce using rule 37 (@2)
+
+    @2  go to state 144
 
 
 State 136
@@ -1869,21 +1882,21 @@ State 136
 
 State 137
 
-   44 asgnstmt: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr . TOKEN_SQ_BRACK_R TOKEN_EQUAL expr TOKEN_SEMICOLON
-   47 expr: expr . TOKEN_LOGICAL_OR andexpr
-   72 smolexpr: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr . TOKEN_SQ_BRACK_R
+   46 asgnstmt: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr . TOKEN_SQ_BRACK_R TOKEN_EQUAL expr TOKEN_SEMICOLON
+   49 expr: expr . TOKEN_LOGICAL_OR andexpr
+   74 smolexpr: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr . TOKEN_SQ_BRACK_R
 
-    TOKEN_SQ_BRACK_R  shift, and go to state 144
+    TOKEN_SQ_BRACK_R  shift, and go to state 145
     TOKEN_LOGICAL_OR  shift, and go to state 58
 
 
 State 138
 
-   43 asgnstmt: TOKEN_IDENTIFIER TOKEN_EQUAL expr . TOKEN_SEMICOLON
-   47 expr: expr . TOKEN_LOGICAL_OR andexpr
+   45 asgnstmt: TOKEN_IDENTIFIER TOKEN_EQUAL expr . TOKEN_SEMICOLON
+   49 expr: expr . TOKEN_LOGICAL_OR andexpr
 
     TOKEN_LOGICAL_OR  shift, and go to state 58
-    TOKEN_SEMICOLON   shift, and go to state 145
+    TOKEN_SEMICOLON   shift, and go to state 146
 
 
 State 139
@@ -1897,90 +1910,77 @@ State 140
 
     7 variable: TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R TOKEN_EQUAL TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R . TOKEN_SEMICOLON
 
-    TOKEN_SEMICOLON  shift, and go to state 146
+    TOKEN_SEMICOLON  shift, and go to state 147
 
 
 State 141
 
-   40 ifstmt: TOKEN_IF expr @1 blckstmt . @2 TOKEN_ELSE blckstmt
+   42 ifstmt: TOKEN_IF expr @3 blckstmt . @4 TOKEN_ELSE blckstmt
 
-    $default  reduce using rule 39 (@2)
+    $default  reduce using rule 41 (@4)
 
-    @2  go to state 147
+    @4  go to state 148
 
 
 State 142
 
-   42 ifstmt: TOKEN_IF expr @3 blckstmt .
+   44 ifstmt: TOKEN_IF expr @5 blckstmt .
 
-    $default  reduce using rule 42 (ifstmt)
+    $default  reduce using rule 44 (ifstmt)
 
 
 State 143
 
-   37 forstmt: TOKEN_FOR TOKEN_IDENTIFIER TOKEN_FROM expr . TOKEN_TO expr blckstmt
-   47 expr: expr . TOKEN_LOGICAL_OR andexpr
+   39 forstmt: TOKEN_FOR TOKEN_IDENTIFIER TOKEN_FROM expr . TOKEN_TO expr blckstmt
+   49 expr: expr . TOKEN_LOGICAL_OR andexpr
 
-    TOKEN_TO          shift, and go to state 148
+    TOKEN_TO          shift, and go to state 149
     TOKEN_LOGICAL_OR  shift, and go to state 58
 
 
 State 144
 
-   44 asgnstmt: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R . TOKEN_EQUAL expr TOKEN_SEMICOLON
-   72 smolexpr: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R .
+   38 whilestmt: TOKEN_WHILE @1 expr @2 . blckstmt
 
-    TOKEN_EQUAL  shift, and go to state 149
+    TOKEN_BRACE_L  shift, and go to state 28
 
-    $default  reduce using rule 72 (smolexpr)
+    blckstmt  go to state 150
 
 
 State 145
 
-   43 asgnstmt: TOKEN_IDENTIFIER TOKEN_EQUAL expr TOKEN_SEMICOLON .
+   46 asgnstmt: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R . TOKEN_EQUAL expr TOKEN_SEMICOLON
+   74 smolexpr: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R .
 
-    $default  reduce using rule 43 (asgnstmt)
+    TOKEN_EQUAL  shift, and go to state 151
+
+    $default  reduce using rule 74 (smolexpr)
 
 
 State 146
+
+   45 asgnstmt: TOKEN_IDENTIFIER TOKEN_EQUAL expr TOKEN_SEMICOLON .
+
+    $default  reduce using rule 45 (asgnstmt)
+
+
+State 147
 
     7 variable: TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R TOKEN_EQUAL TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R TOKEN_SEMICOLON .
 
     $default  reduce using rule 7 (variable)
 
 
-State 147
-
-   40 ifstmt: TOKEN_IF expr @1 blckstmt @2 . TOKEN_ELSE blckstmt
-
-    TOKEN_ELSE  shift, and go to state 150
-
-
 State 148
 
-   37 forstmt: TOKEN_FOR TOKEN_IDENTIFIER TOKEN_FROM expr TOKEN_TO . expr blckstmt
+   42 ifstmt: TOKEN_IF expr @3 blckstmt @4 . TOKEN_ELSE blckstmt
 
-    TOKEN_PAREN_L      shift, and go to state 32
-    TOKEN_MINUS        shift, and go to state 33
-    TOKEN_LOGICAL_NOT  shift, and go to state 34
-    TOKEN_INT_VAL      shift, and go to state 35
-    TOKEN_STR_VAL      shift, and go to state 36
-    TOKEN_IDENTIFIER   shift, and go to state 37
-
-    expr      go to state 151
-    andexpr   go to state 39
-    notexpr   go to state 40
-    relexpr   go to state 41
-    sumexpr   go to state 42
-    mulexpr   go to state 43
-    unexpr    go to state 44
-    smolexpr  go to state 45
-    callexpr  go to state 46
+    TOKEN_ELSE  shift, and go to state 152
 
 
 State 149
 
-   44 asgnstmt: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R TOKEN_EQUAL . expr TOKEN_SEMICOLON
+   39 forstmt: TOKEN_FOR TOKEN_IDENTIFIER TOKEN_FROM expr TOKEN_TO . expr blckstmt
 
     TOKEN_PAREN_L      shift, and go to state 32
     TOKEN_MINUS        shift, and go to state 33
@@ -1989,7 +1989,7 @@ State 149
     TOKEN_STR_VAL      shift, and go to state 36
     TOKEN_IDENTIFIER   shift, and go to state 37
 
-    expr      go to state 152
+    expr      go to state 153
     andexpr   go to state 39
     notexpr   go to state 40
     relexpr   go to state 41
@@ -2002,49 +2002,78 @@ State 149
 
 State 150
 
-   40 ifstmt: TOKEN_IF expr @1 blckstmt @2 TOKEN_ELSE . blckstmt
+   38 whilestmt: TOKEN_WHILE @1 expr @2 blckstmt .
 
-    TOKEN_BRACE_L  shift, and go to state 28
-
-    blckstmt  go to state 153
+    $default  reduce using rule 38 (whilestmt)
 
 
 State 151
 
-   37 forstmt: TOKEN_FOR TOKEN_IDENTIFIER TOKEN_FROM expr TOKEN_TO expr . blckstmt
-   47 expr: expr . TOKEN_LOGICAL_OR andexpr
+   46 asgnstmt: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R TOKEN_EQUAL . expr TOKEN_SEMICOLON
 
-    TOKEN_BRACE_L     shift, and go to state 28
-    TOKEN_LOGICAL_OR  shift, and go to state 58
+    TOKEN_PAREN_L      shift, and go to state 32
+    TOKEN_MINUS        shift, and go to state 33
+    TOKEN_LOGICAL_NOT  shift, and go to state 34
+    TOKEN_INT_VAL      shift, and go to state 35
+    TOKEN_STR_VAL      shift, and go to state 36
+    TOKEN_IDENTIFIER   shift, and go to state 37
 
-    blckstmt  go to state 154
+    expr      go to state 154
+    andexpr   go to state 39
+    notexpr   go to state 40
+    relexpr   go to state 41
+    sumexpr   go to state 42
+    mulexpr   go to state 43
+    unexpr    go to state 44
+    smolexpr  go to state 45
+    callexpr  go to state 46
 
 
 State 152
 
-   44 asgnstmt: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R TOKEN_EQUAL expr . TOKEN_SEMICOLON
-   47 expr: expr . TOKEN_LOGICAL_OR andexpr
+   42 ifstmt: TOKEN_IF expr @3 blckstmt @4 TOKEN_ELSE . blckstmt
 
-    TOKEN_LOGICAL_OR  shift, and go to state 58
-    TOKEN_SEMICOLON   shift, and go to state 155
+    TOKEN_BRACE_L  shift, and go to state 28
+
+    blckstmt  go to state 155
 
 
 State 153
 
-   40 ifstmt: TOKEN_IF expr @1 blckstmt @2 TOKEN_ELSE blckstmt .
+   39 forstmt: TOKEN_FOR TOKEN_IDENTIFIER TOKEN_FROM expr TOKEN_TO expr . blckstmt
+   49 expr: expr . TOKEN_LOGICAL_OR andexpr
 
-    $default  reduce using rule 40 (ifstmt)
+    TOKEN_BRACE_L     shift, and go to state 28
+    TOKEN_LOGICAL_OR  shift, and go to state 58
+
+    blckstmt  go to state 156
 
 
 State 154
 
-   37 forstmt: TOKEN_FOR TOKEN_IDENTIFIER TOKEN_FROM expr TOKEN_TO expr blckstmt .
+   46 asgnstmt: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R TOKEN_EQUAL expr . TOKEN_SEMICOLON
+   49 expr: expr . TOKEN_LOGICAL_OR andexpr
 
-    $default  reduce using rule 37 (forstmt)
+    TOKEN_LOGICAL_OR  shift, and go to state 58
+    TOKEN_SEMICOLON   shift, and go to state 157
 
 
 State 155
 
-   44 asgnstmt: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R TOKEN_EQUAL expr TOKEN_SEMICOLON .
+   42 ifstmt: TOKEN_IF expr @3 blckstmt @4 TOKEN_ELSE blckstmt .
 
-    $default  reduce using rule 44 (asgnstmt)
+    $default  reduce using rule 42 (ifstmt)
+
+
+State 156
+
+   39 forstmt: TOKEN_FOR TOKEN_IDENTIFIER TOKEN_FROM expr TOKEN_TO expr blckstmt .
+
+    $default  reduce using rule 39 (forstmt)
+
+
+State 157
+
+   46 asgnstmt: TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R TOKEN_EQUAL expr TOKEN_SEMICOLON .
+
+    $default  reduce using rule 46 (asgnstmt)
