@@ -1,6 +1,7 @@
 obj/
 .cache/
 .vscode/
+src/parser.output
 bin/
 log/
 src/parser.cc
