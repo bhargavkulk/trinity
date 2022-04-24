@@ -10,7 +10,7 @@ FILE *execution_log;
 #endif /* DEBUG_FLAG */
 
 VM vm;
-VM::VM() : pc(0), found_start(false), start_pc(0), vars_declared(0), max_vars_declared(0) {}
+VM::VM() : pc(0), start_pc(0), found_start(false), vars_declared(0), max_vars_declared(0) {}
 
 int VM::run()
 {
@@ -266,11 +266,6 @@ void VM::set_start(u64 pc)
 {
 	found_start = true;
 	start_pc = pc;
-}
-
-u64 VM::bytecode_len()
-{
-	return bytecode.size();
 }
 
 /*********************************************************************/

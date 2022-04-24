@@ -48,12 +48,12 @@ class VM
     void write_op(OP op);
     void write_constant_op(OP op, u64 constant);
 
-    usize write_decl_var();
+    usize write_decl_var(bool is_global);
     void undecl_vars(usize count);
     
 	void set_start(u64 pc);
 
-	u64 bytecode_len();
+	usize bytecode_len();
     void patch_jump(i64 offset);
 
 	#ifdef DEBUG_FLAG
