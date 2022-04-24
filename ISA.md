@@ -6,7 +6,7 @@ Halts execution.
 Pushes constant from constant pool with index `ID` onto the VM's stack.
 
 ## `CONST_NEG_1`, `CONST_0` to `CONST_10`
-Pushes constants ranging from 1-1 to 10 directly onto the stack.
+Pushes constants ranging from -1 to 10 directly onto the stack.
 
 ## `ADD`
 Pops top 2 integers from the stack and pushes the sum onto the stack.
