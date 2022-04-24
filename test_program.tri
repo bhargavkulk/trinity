@@ -27,4 +27,5 @@ fun start()
     var g: int = 3;
     var h: int = 3;
     log factorial(add(g, h));
+    log glob;
 }

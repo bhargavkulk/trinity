@@ -27,8 +27,6 @@ int VM::run()
 	// Remove when stub added.
 	callstack = std::vector<StackFrame>(1);
 
-	pc = start_pc;
-
 	// TEMPORARY: REPLACE WITH WINDOW FLAG.
 	while (pc < bytecode.size())
 	{
@@ -423,6 +421,14 @@ void VM::patch_jump(i64 offset) {
 	}
 	bytecode[offset + 1] = static_cast<u8>(jump & 0xff);
     bytecode[offset + 2] = static_cast<u8>((jump >> 8) & 0xff);
+}
+
+void VM::patch_start_jump(u64 jmp_pc)
+{
+	if(!found_start) return;
+	u16 value = static_cast<u16>(start_pc - jmp_pc);
+	bytecode.at(jmp_pc + 1) = static_cast<u8>(value);
+	bytecode.at(jmp_pc + 2) = static_cast<u8>(value >> 8);
 }
 
 /*********************************************************************/

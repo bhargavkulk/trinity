@@ -55,6 +55,7 @@ class VM
 
 	usize bytecode_len();
     void patch_jump(i64 offset);
+	void patch_start_jump(u64 pc);
 
 	#ifdef DEBUG_FLAG
 	const u8 *get_raw_code(u64 *size);

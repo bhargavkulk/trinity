@@ -36,11 +36,20 @@ void yyerror(const char *);
     
         TOKEN_LOG
                 
-            TOKEN_ERR
+        TOKEN_ERR
     
 %%
     
-program : vardefs fundefs
+program : vardefs 
+        {
+                $[start_jump].as.int_val = vm.bytecode_len();
+                vm.write_op(OP::JMP);
+                vm.write_word(0);
+        } [start_jump]
+        fundefs
+        {
+                vm.patch_start_jump($[start_jump].as.int_val);
+        }
         ;
     
 vardefs : variable vardefs | ;
