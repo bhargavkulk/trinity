@@ -14,40 +14,47 @@ void disassemble(const u8 *instruction, FILE *file)
 	OP op = static_cast<OP>(*instruction);
 	switch (op)
 	{
-		case OP::ERR:
-		case OP::HLT:
-		case OP::CONST_0:
-		case OP::LOGINT:
-		case OP::LOGSTR:
-		case OP::RET:
+	case OP::ERR:
+	case OP::HLT:
+	case OP::LOGINT:
+	case OP::LOGSTR:
+	case OP::ADD:
+	case OP::SUB:
+	case OP::DIV:
+	case OP::MUL:
+	case OP::MOD:
+	case OP::EQUAL:
+	case OP::LESS:
+	case OP::LESS_EQUAL:
+	case OP::GREATER:
+	case OP::GREATER_EQUAL:
+	case OP::NEG:
+	case OP::NOT:
+	case OP::OR:
+	case OP::AND:
 		fprintf(file, "%s\n", OP_str(op));
 		break;
 
-		case OP::ADD:
-		case OP::SUB:
-		fprintf(file, "%s\n", OP_str(op));
-		break;
-
-		case OP::CONST:
-		case OP::GLOB_VARSET:
-		case OP::GLOB_VARGET:
-		case OP::VARSET:
-		case OP::VARGET:
+	case OP::CONST:
+	case OP::GLOB_VARSET:
+	case OP::GLOB_VARGET:
+	case OP::VARSET:
+	case OP::VARGET:
 		fprintf(file, "%s %d\n", OP_str(op), instruction[1]);
 		break;
 
-		case OP::JMP_IF_FALSE:
-		case OP::JMP:
-		case OP::LOOP:
+	case OP::JMP_IF_FALSE:
+	case OP::JMP:
+	case OP::LOOP:
 		fprintf(file, "%s %d\n", OP_str(op), instruction[1] | static_cast<i16>(instruction[2]) << 8);
 		break;
 		
-		case OP::CALL:
+	case OP::CALL:
 		fprintf(file, "%s %u\n", OP_str(op), *(u32 *) &instruction[1]);
 		break;
 
-		default:
-		fprintf(stderr, "INVALID OPCODE\n");
+	default:
+		fprintf(stderr, "INVALID OPCODE %d\n", op);
 		break;
 	}
 }

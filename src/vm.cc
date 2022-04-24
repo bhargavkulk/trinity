@@ -57,42 +57,118 @@ int VM::run()
 
 		switch (read_op())
 		{
-			case OP::ERR:
-			{
-				return 1;
-			}
+		case OP::ERR:
+		{
+			return 1;
+		}
 
-			case OP::HLT:
+		case OP::HLT:
+		{
+			printf("hlt\n");
+			has_halted = true;
+			pc -= 1;
+			halt_pc = pc;
+			break;
+		}
+
+		case OP::ADD:
+		{
+			i64 op2 = (i64)pop();
+			i64 op1 = (i64)pop();
+			// printf("OP1 is %ld ,OP2 is %ld, and the sum is - %ld ", op1, op2, op1 + op2);
+			push((u64)(op1 + op2));
+			break;
+		}
+
+		case OP::SUB:
+		{
+			i64 op2 = (i64)pop();
+			i64 op1 = (i64)pop();
+			push((u64)(op1 - op2));
+			break;
+		}
+		case OP::MUL:
+		{
+			i64 op2 = (i64)pop();
+			i64 op1 = (i64)pop();
+			push((u64)(op1 * op2));
+			break;
+		}
+
+		case OP::DIV:
+		{
+			i64 op2 = (i64)pop();
+			i64 op1 = (i64)pop();
+			// error checking for division by zero error
+			if (op2 == 0)
 			{
-				printf("hlt\n");
-				has_halted = true;
-				pc -= 1;
-				halt_pc = pc;
+				fprintf(stderr, "Division by zero, PLEASE CHANGE THIS NOW");
 				break;
 			}
+			push((u64)(op1 / op2));
+			break;
+		}
 
-			case OP::ADD:
-			{
-				i64 a1 = (i64) pop();
-				break;
-			}
+		case OP::MOD:
+		{
+			i64 op2 = (i64)pop();
+			i64 op1 = (i64)pop();
+			push((u64)(op1 % op2));
+			break;
+		}
 
-			case OP::SUB:
-			{
-				i64 op2 = (i64) pop();
-				i64 op1 = (i64) pop();
-				push((u64)(op1 - op2));
-				break;
-			}
+		case OP::EQUAL:
+		{
+			i64 op2 = (i64)pop();
+			i64 op1 = (i64)pop();
+			push((u64)((op1 == op2) ? (1) : (0)));
+			break;
+		}
+		case OP::LESS:
+		{
+			i64 op2 = (i64)pop();
+			i64 op1 = (i64)pop();
+			push((u64)((op1 < op2) ? (1) : (0)));
+			break;
+		}
+		case OP::LESS_EQUAL:
+		{
+			i64 op2 = (i64)pop();
+			i64 op1 = (i64)pop();
+			push((u64)((op1 <= op2) ? (1) : (0)));
+			break;
+		}
 
-			case OP::CONST:
-			{
-				u8 index = read_byte();
-				push(constants.at(index));
-				break;
-			}
+		case OP::NEG:
+		{
+			i64 op2 = (i64)pop();
+			push((u64)(-1 * op2));
+			break;
+		}
 
-			case OP::CONST_0:
+		case OP::AND:
+		{
+			i64 op2 = (i64)pop();
+			i64 op1 = (i64)pop();
+			push((u64)((op1 * op2 != 0) ? (1) : (0)));
+			break;
+		}
+		case OP::OR:
+		{
+			i64 op2 = (i64)pop();
+			i64 op1 = (i64)pop();
+			push((u64)((op1 + op2 != 0) ? (1) : (0)));
+			break;
+		}
+
+		case OP::NOT:
+		{
+			i64 op1 = (i64)pop();
+			push((u64)((op1 == 0) ? (1) : (0)));
+			break;
+		}
+
+		case OP::CONST_0:
 			{
 				push(0);
 				break;
@@ -176,27 +252,27 @@ int VM::run()
 				break;
 			}
 
-			case OP::JMP_IF_FALSE:
-			{
-				u16 offset = read_word() - 3;
-				i64 cond = (i64) pop();
-				pc += cond ? 0 : offset;
-				break;
-			}
+		case OP::JMP_IF_FALSE:
+		{
+			u16 offset = read_word() - 3;
+			i64 cond = (i64)pop();
+			pc += cond ? 0 : offset;
+			break;
+		}
 
-			case OP::JMP:
-			{
-				u16 offset = read_word() - 3;
-				pc += offset;
-				break;
-			}
+		case OP::JMP:
+		{
+			u16 offset = read_word() - 3;
+			pc += offset;
+			break;
+		}
 
-			case OP::LOOP:
-			{
-				u16 offset = read_word() + 3;
-				pc -= offset;
-				break;
-			}
+		case OP::LOOP:
+		{
+			u16 offset = read_word() + 3;
+			pc -= offset;
+			break;
+		}
 		}
 #ifdef DEBUG_FLAG
 		stack_dump(stack, execution_log);
@@ -247,7 +323,7 @@ usize VM::write_decl_var(bool is_global)
 {
 	usize index = vars_declared;
 	vars_declared += 1;
-	if(max_vars_declared < vars_declared)
+	if (max_vars_declared < vars_declared)
 	{
 		max_vars_declared = vars_declared;
 	}
@@ -315,17 +391,20 @@ u64 VM::peek(usize offset)
 }
 
 /*********************************************************************/
-usize VM::bytecode_len() {
+usize VM::bytecode_len()
+{
 	return bytecode.size();
 }
 
-void VM::patch_jump(i64 offset) {
+void VM::patch_jump(i64 offset)
+{
 	i64 jump = bytecode.size() - offset;
-	if(jump > UINT16_MAX) {
+	if (jump > UINT16_MAX)
+	{
 		exit(1);
 	}
 	bytecode[offset + 1] = static_cast<u8>(jump & 0xff);
-    bytecode[offset + 2] = static_cast<u8>((jump >> 8) & 0xff);
+	bytecode[offset + 2] = static_cast<u8>((jump >> 8) & 0xff);
 }
 
 /*********************************************************************/
