@@ -44,7 +44,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 16 "src/parser.yy"
+#line 17 "src/parser.yy"
 
 #include <cstdint>
 #include "types.hh"

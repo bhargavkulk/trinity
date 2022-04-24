@@ -1,25 +1,26 @@
 %code top
 {
 #include <cstdio>
+#include <cstring>
 #include "vm.hh"
 #include "symbols.hh"
-
+    
 extern int yylineno;
 extern int yylex(void);
 void yyerror(const char *);
-
+    
 #define DECLARE_ERROR(msg) do { yyerror(msg); YYERROR; } while(0)
-
+    
 }
-
+    
 %code requires
 {
 #include <cstdint>
 #include "types.hh"
 }
-
+    
 %define api.value.type { ExprType }
-
+    
 %token 	TOKEN_INT TOKEN_STR TOKEN_BLK TOKEN_FUN
         TOKEN_IF TOKEN_ELSE TOKEN_FOR TOKEN_FROM TOKEN_TO TOKEN_WHILE
         TOKEN_VAR TOKEN_BRK TOKEN_CNT TOKEN_RET TOKEN_NIL
@@ -35,16 +36,16 @@ void yyerror(const char *);
     
         TOKEN_LOG
                 
-        TOKEN_ERR
-
+            TOKEN_ERR
+    
 %%
-
+    
 program : vardefs fundefs
         ;
     
 vardefs : variable vardefs | ;
 fundefs : fundef fundefs | ;
-
+    
 fundef : function 
             {
                     string ident = $1.as.str_val;
@@ -72,7 +73,7 @@ fundef : function
             } 
             blckstmt { vm.write_op(OP::CONST_0); vm.write_op(OP::RET); }
             ;
-
+    
 variable : TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_EQUAL expr TOKEN_SEMICOLON
     {
             if($4.type != $6.type) DECLARE_ERROR("Type mismatch");
@@ -86,7 +87,7 @@ variable : TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_EQUAL expr TOKEN_SE
 
             | TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R TOKEN_EQUAL TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R TOKEN_SEMICOLON
             ;
-
+    
 function :  TOKEN_FUN TOKEN_IDENTIFIER TOKEN_PAREN_L params TOKEN_PAREN_R 
             {
                     $$.as.str_val = $2.as.str_val;
@@ -105,11 +106,11 @@ function :  TOKEN_FUN TOKEN_IDENTIFIER TOKEN_PAREN_L params TOKEN_PAREN_R
 params : params_
         |
         ;
-
+    
 params_	: param
         | param TOKEN_COMMA params_
         ;
-
+    
 param :	TOKEN_IDENTIFIER TOKEN_COLON type
             {
                     scope_starts.push_back({$1.as.str_val, $3.type});
@@ -117,16 +118,16 @@ param :	TOKEN_IDENTIFIER TOKEN_COLON type
 
         | TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_SQ_BRACK_L TOKEN_SQ_BRACK_R
         ;
-
+    
 type : TOKEN_INT { $$.type = DataType::INT; }
         | TOKEN_STR { $$.type = DataType::STR; }
         | TOKEN_BLK { $$.type = DataType::BLK; }
         ;
-
+    
 stmts :	stmts stmt
         |
         ;
-
+    
 stmt : variable
         | expr TOKEN_SEMICOLON
         | forstmt
@@ -157,7 +158,7 @@ stmt : variable
                 }
         }
         ;
-
+    
 retstmt : TOKEN_RET TOKEN_SEMICOLON 
             {
                     if(currFuncRetType != DataType::NIL) DECLARE_ERROR("Must return a value");
@@ -225,7 +226,7 @@ asgnstmt : TOKEN_IDENTIFIER TOKEN_EQUAL expr TOKEN_SEMICOLON
 
             | TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R TOKEN_EQUAL expr TOKEN_SEMICOLON
             ;
-
+    
 blckstmt : TOKEN_BRACE_L 
             { 
                     open_scope();
@@ -247,19 +248,19 @@ blckstmt : TOKEN_BRACE_L
                     vm.undecl_vars(var_count);
             }
         ;
-
+    
 expr : expr TOKEN_LOGICAL_OR andexpr 
         | andexpr { $$.type = $1.type; }
         ;
-
+    
 andexpr : andexpr TOKEN_LOGICAL_AND notexpr
         | notexpr { $$.type = $1.type; }
         ;
-
+    
 notexpr : TOKEN_LOGICAL_NOT relexpr 
         | relexpr { $$.type = $1.type; }
         ;
-
+    
 relexpr : relexpr TOKEN_LESS_EQ sumexpr
         | relexpr TOKEN_GREATER_EQ sumexpr
         | relexpr TOKEN_LESS sumexpr
@@ -285,11 +286,11 @@ mulexpr : mulexpr TOKEN_STAR unexpr
         | mulexpr TOKEN_MODULO unexpr
         | unexpr { $$.type = $1.type; }
         ;
-
+    
 unexpr : TOKEN_MINUS smolexpr
         | smolexpr { $$.type = $1.type; }
         ;
-
+    
 smolexpr : TOKEN_INT_VAL
             {
                     vm.write_constant_op(OP::CONST, $1.as.int_val);
@@ -322,7 +323,7 @@ smolexpr : TOKEN_INT_VAL
                     $$.type = entry.type;
             }
             ;
-
+    
 callexpr : TOKEN_IDENTIFIER TOKEN_PAREN_L args TOKEN_PAREN_R
             {
                     string ident = $1.as.str_val;
@@ -342,11 +343,11 @@ callexpr : TOKEN_IDENTIFIER TOKEN_PAREN_L args TOKEN_PAREN_R
                     $$.type = func.retType;
             }
             ;
-
+    
 args : args_
         |
         ;
-
+    
 args_ : args_ TOKEN_COMMA expr
             {
                     argv.push_back($3.type);
@@ -356,11 +357,11 @@ args_ : args_ TOKEN_COMMA expr
                 argv.push_back($1.type);
         }
         ;
-
-
+    
+    
 %%
-
+    
 void yyerror(const char *msg)
 {
-fprintf(stderr, "<Line %d> Syntax error: %s\n", yylineno, msg);
+    fprintf(stderr, "<Line %d> Syntax error: %s\n", yylineno, msg);
 }

@@ -10,14 +10,24 @@ FILE *execution_log;
 #endif /* DEBUG_FLAG */
 
 VM vm;
-VM::VM() : pc(0), vars_declared(0), max_vars_declared(0) {}
+VM::VM() : pc(0), found_start(false), start_pc(0), vars_declared(0), max_vars_declared(0) {}
 
 int VM::run()
 {
+	// TEMP
+	if(!found_start)
+	{
+		printf("ERROR: start() not found\n");
+		return 0;
+	}
+
 	bool has_halted = false;
 	u64 halt_pc = 0;
 
-	variables = std::vector<u64>(max_vars_declared);
+	// Remove when stub added.
+	callstack = std::vector<StackFrame>(1);
+
+	pc = start_pc;
 
 	// TEMPORARY: REPLACE WITH WINDOW FLAG.
 	while (pc < bytecode.size())
@@ -82,19 +92,69 @@ int VM::run()
 				break;
 			}
 
+			case OP::CONST_0:
+			{
+				push(0);
+				break;
+			}
+
+			case OP::GLOB_VARSET:
+			{
+				u64 val = pop();
+				u8 id = read_byte();
+				if(id >= globals.size())
+					globals.insert(globals.end(), id - globals.size() + 1, 0);
+
+				globals.at(id) = val;
+				break;
+			}
+
+			case OP::GLOB_VARGET:
+			{
+				u8 id = read_byte();
+				u64 val = globals.at(id);
+				push(val);
+				break;
+			}
+
 			case OP::VARSET:
 			{
 				u64 val = pop();
 				u8 id = read_byte();
-				variables.at(id) = val;
+				auto &locals = callstack.back().locals;
+
+				if(id >= locals.size())
+					locals.insert(locals.end(), id - locals.size() + 1, 0);
+
+				locals.at(id) = val;
 				break;
 			}
 
 			case OP::VARGET:
 			{
 				u8 id = read_byte();
-				u64 val = variables.at(id);
+				u64 val = callstack.back().locals.at(id);
 				push(val);
+				break;
+			}
+
+			case OP::CALL:
+			{
+				u32 addr = read_dword();
+				StackFrame frame;
+				frame.retPC = pc;
+				callstack.push_back(frame);
+				pc = addr;
+				break;
+			}
+
+			case OP::RET:
+			{
+				// Remove when stub added.
+				if(callstack.size() == 1) return 0;
+
+				pc = callstack.back().retPC;
+				callstack.pop_back();
 				break;
 			}
 
@@ -106,7 +166,13 @@ int VM::run()
 
 			case OP::LOGSTR:
 			{
-				printf("%s\n", (const char *) pop());
+				u64 str = pop();
+				if(str == 0)
+				{
+					fprintf(stderr, "NIL Reference\n");
+					return 1;
+				}
+				printf("%s\n", (const char *) str);
 				break;
 			}
 
@@ -153,6 +219,14 @@ void VM::write_word(u16 word)
 	bytecode.push_back(static_cast<u8>(word >> 8));
 }
 
+void VM::write_dword(u32 dword)
+{
+	bytecode.push_back(static_cast<u8>(dword));
+	bytecode.push_back(static_cast<u8>(dword >> 8));
+	bytecode.push_back(static_cast<u8>(dword >> 16));
+	bytecode.push_back(static_cast<u8>(dword >> 24));
+}
+
 void VM::write_op(OP op)
 {
 	bytecode.push_back(static_cast<u8>(op));
@@ -169,7 +243,7 @@ void VM::write_constant_op(OP op, u64 constant)
 	// TODO: long constant opcode.
 }
 
-usize VM::write_decl_var()
+usize VM::write_decl_var(bool is_global)
 {
 	usize index = vars_declared;
 	vars_declared += 1;
@@ -178,7 +252,7 @@ usize VM::write_decl_var()
 		max_vars_declared = vars_declared;
 	}
 
-	bytecode.push_back(static_cast<u8>(OP::VARSET));
+	bytecode.push_back(static_cast<u8>(is_global ? OP::GLOB_VARSET : OP::VARSET));
 	bytecode.push_back(static_cast<u8>(index));
 	return index;
 }
@@ -186,6 +260,17 @@ usize VM::write_decl_var()
 void VM::undecl_vars(usize count)
 {
 	vars_declared -= count;
+}
+
+void VM::set_start(u64 pc)
+{
+	found_start = true;
+	start_pc = pc;
+}
+
+u64 VM::bytecode_len()
+{
+	return bytecode.size();
 }
 
 /*********************************************************************/
@@ -205,6 +290,14 @@ u16 VM::read_word()
 	u16 word = (bytecode.at(pc) | (static_cast<u16>(bytecode.at(pc + 1)) << 8));
 	pc += 2;
 	return word;
+}
+
+u32 VM::read_dword()
+{
+	u32 dword = (bytecode.at(pc) | (static_cast<u32>(bytecode.at(pc + 1)) << 8) | 
+		(static_cast<u32>(bytecode.at(pc + 2)) << 16) | (static_cast<u32>(bytecode.at(pc + 3)) << 24));
+	pc += 4;
+	return dword;
 }
 
 /*********************************************************************/

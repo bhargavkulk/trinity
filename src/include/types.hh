@@ -5,6 +5,7 @@
 
 enum class DataType
 {
+	NIL,
     INT,
     STR,
     BLK

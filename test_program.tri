@@ -1,10 +1,15 @@
-fun main()
+var glob: int = 100;
+
+fun function(a: int, b: str): str
 {
-    var a: int = 10;
-    var b: int = 0;
-    if b {
-        log a;
-    } else {
-        log b;
-    }
+    log a;
+    log b;
+
+    ret "abc";
+}
+
+fun start()
+{
+    var g: int = 20;
+    log function(1, "hello");
 }
