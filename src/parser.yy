@@ -94,7 +94,24 @@ variable : TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_EQUAL expr TOKEN_SE
             if(!add_symbol(ident, entry)) DECLARE_ERROR("Variable redeclaration not allowed");
     }
 
-            | TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R TOKEN_EQUAL TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R TOKEN_SEMICOLON
+            | TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R TOKEN_SEMICOLON
+        {
+                if(argv.size() >= UINT8_MAX) DECLARE_ERROR("Arrays can have a maximum of 255 dimensions");
+                for(auto type : argv)
+                {
+                        if(type != DataType::INT) DECLARE_ERROR("Array dimensions can only be of type \"int\"");
+                }
+
+                vm.write_op(OP::ARR);
+                vm.write_byte(static_cast<u8>(argv.size()));
+
+                usize id = vm.write_decl_var(is_currently_global());
+                string ident = $2.as.str_val;
+                SymbolEntry entry = { convert_to_arr_type($4.type), id };
+
+                if(!add_symbol(ident, entry)) DECLARE_ERROR("Variable redeclaration not allowed");
+                argv.clear();
+        }
             ;
     
 function :  TOKEN_FUN TOKEN_IDENTIFIER TOKEN_PAREN_L params TOKEN_PAREN_R 
@@ -138,7 +155,7 @@ stmts :	stmts stmt
         ;
     
 stmt : variable
-        | expr TOKEN_SEMICOLON
+        | expr TOKEN_SEMICOLON { vm.write_op(OP::POP); }
         | ifstmt
         | whilestmt
         | retstmt
@@ -180,7 +197,6 @@ stmt : variable
                         break;
 
                         default:
-                        printf("type %d", $2.type);
                         DECLARE_ERROR("Invalid operand for log\n");
                         break;
                 }
@@ -257,7 +273,25 @@ asgnstmt : TOKEN_IDENTIFIER TOKEN_EQUAL expr TOKEN_SEMICOLON
                     vm.write_byte(entry.id);
             }
 
-            | TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R TOKEN_EQUAL expr TOKEN_SEMICOLON
+            | TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R TOKEN_EQUAL expr TOKEN_SEMICOLON
+            {
+                    string ident = $1.as.str_val;
+                    SymbolEntry entry;
+                    bool is_global;
+                    if(!check_symbol(ident, entry, is_global)) DECLARE_ERROR("Undeclared identifier");
+                    if(!is_arr_type(entry.type)) DECLARE_ERROR("Cannot use subscript operator on a non-array type");
+                    for(auto type : argv)
+                    {
+                            if(type != DataType::INT) DECLARE_ERROR("Array dimensions can only be of type \"int\"");
+                    }
+                    if(convert_from_arr_type(entry.type) != $6.type) DECLARE_ERROR("Type mismatch");
+
+                    vm.write_op(is_global ? OP::GLOB_VARGET : OP::VARGET);
+                    vm.write_byte(entry.id);
+                    vm.write_op(OP::ARRSET);
+
+                    argv.clear();
+            }
             ;
     
 blckstmt : TOKEN_BRACE_L 
@@ -305,6 +339,14 @@ andexpr : andexpr TOKEN_LOGICAL_AND notexpr
         ;
     
 notexpr : TOKEN_LOGICAL_NOT relexpr
+        {
+                if($2.type == DataType::INT) {
+                        vm.write_op(OP::NOT);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                }
+                $$.type = $2.type;
+        }
         | relexpr { $$.type = $1.type; }
         ;
     
@@ -407,6 +449,14 @@ mulexpr : mulexpr TOKEN_STAR unexpr{
         ;
     
 unexpr : TOKEN_MINUS smolexpr
+        {
+                if($2.type == DataType::INT) {
+                        vm.write_op(OP::NEG);
+                } else {
+                        DECLARE_ERROR("Types not same.");
+                }
+                $$.type = $2.type;
+        }
         | smolexpr { $$.type = $1.type; }
         ;
     
@@ -427,8 +477,26 @@ smolexpr : TOKEN_INT_VAL
                     vm.write_constant_op(OP::CONST, (u64) $1.as.str_val);
                     $$.type = DataType::STR;
             }
-            | TOKEN_PAREN_L expr TOKEN_PAREN_R
-            | TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L expr TOKEN_SQ_BRACK_R
+            | TOKEN_PAREN_L expr TOKEN_PAREN_R { $$.type = $2.type; }
+            | TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R
+            {
+                    string ident = $1.as.str_val;
+                    SymbolEntry entry;
+                    bool is_global;
+                    if(!check_symbol(ident, entry, is_global)) DECLARE_ERROR("Undeclared identifier");
+                    if(!is_arr_type(entry.type)) DECLARE_ERROR("Cannot use subscript operator on a non-array type");
+                    for(auto type : argv)
+                    {
+                            if(type != DataType::INT) DECLARE_ERROR("Array dimensions can only be of type \"int\"");
+                    }
+
+                    vm.write_op(is_global ? OP::GLOB_VARGET : OP::VARGET);
+                    vm.write_byte(entry.id);
+                    vm.write_op(OP::ARRGET);
+
+                    argv.clear();
+                    $$.type = convert_from_arr_type(entry.type);
+            }
             | callexpr
             | TOKEN_IDENTIFIER
             {

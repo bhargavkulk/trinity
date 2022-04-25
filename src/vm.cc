@@ -2,6 +2,7 @@
 #include "common.hh"
 #include "debug.hh"
 #include "vm.hh"
+#include "structures.hh"
 #include <cstdio>
 #include <cstdlib>
 
@@ -25,7 +26,7 @@ int VM::run()
 	u64 halt_pc = 0;
 
 	// Remove when stub added.
-	callstack = std::vector<StackFrame>(1);
+	callstack = vector<StackFrame>(1);
 
 	// TEMPORARY: REPLACE WITH WINDOW FLAG.
 	while (pc < bytecode.size())
@@ -233,6 +234,85 @@ int VM::run()
 				break;
 			}
 
+			// PLEASE ADD ARR DELETE FUNCTION
+			case OP::ARR:
+			{
+				u8 dim_count = read_byte();
+				Array *array = new Array;
+				i64 flat_size = 1;
+				array->dims.insert(array->dims.end(), dim_count, 0);
+
+				for(auto rit = array->dims.rbegin(), rend = array->dims.rend(); rit != rend; rit++)
+				{
+					*rit = static_cast<i64>(pop());
+					if(*rit <= 0)
+					{
+						fprintf(stderr, "Error: Dimension of array (here %ld) must be a positive integer\n", *rit);
+						return 1;
+					}
+					flat_size *= *rit;
+				}
+
+				array->arr.insert(array->arr.end(), flat_size, 0);
+
+				push(reinterpret_cast<u64>(array));
+				break;
+			}
+
+			// Order of stack from top: array ptr, value, indices.
+			case OP::ARRSET:
+			{
+				Array *array = reinterpret_cast<Array *>(pop());
+				u64 value = pop();
+				vector<i64> indices(array->dims.size());
+				i64 flat_index = 0, multiplicand = 1;
+				for(int i = indices.size() - 1; i >= 0; i--)
+				{
+					indices[i] = pop();
+					if(indices[i] < 0)
+					{
+						fprintf(stderr, "Error: Index of array (%ld) must be a non-negative integer\n", indices[i]);
+						return 1;
+					}
+					else if(indices[i] >= array->dims[i])
+					{
+						fprintf(stderr, "Error: Index of array (here %ld) must be less than the corresponding dimension (%ld)\n", indices[i], array->dims[i]);
+						return 1;
+					}
+
+					flat_index += indices[i] * multiplicand;
+					multiplicand *= array->dims[i];
+				}
+				array->arr[flat_index] = value;
+				break;
+			}
+
+			case OP::ARRGET:
+			{
+				Array *array = reinterpret_cast<Array *>(pop());
+				vector<i64> indices(array->dims.size());
+				i64 flat_index = 0, multiplicand = 1;
+				for(int i = indices.size() - 1; i >= 0; i--)
+				{
+					indices[i] = pop();
+					if(indices[i] < 0)
+					{
+						fprintf(stderr, "Error: Index of array (%ld) must be a non-negative integer\n", indices[i]);
+						return 1;
+					}
+					else if(indices[i] >= array->dims[i])
+					{
+						fprintf(stderr, "Error: Index of array (here %ld) must be less than the corresponding dimension (%ld)\n", indices[i], array->dims[i]);
+						return 1;
+					}
+
+					flat_index += indices[i] * multiplicand;
+					multiplicand *= array->dims[i];
+				}
+				push(array->arr[flat_index]);
+				break;
+			}
+
 			case OP::CALL:
 			{
 				u32 addr = read_dword();
@@ -290,6 +370,12 @@ int VM::run()
 			{
 				u16 offset = read_word() + 3;
 				pc -= offset;
+				break;
+			}
+
+			case OP::POP:
+			{
+				pop();
 				break;
 			}
 		}

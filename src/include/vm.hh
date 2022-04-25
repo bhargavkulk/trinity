@@ -5,24 +5,26 @@
 #include "common.hh"
 #include "opcode.hh"
 
+using std::vector;
+
 class VM
 {
 	u64 pc, start_pc;
 	bool found_start;
 
-	std::vector<u8> bytecode;
-	std::vector<u64> stack;
-	std::vector<u64> constants; // Both integers and string pointers.
-	std::vector<u64> globals;
+	vector<u8> bytecode;
+	vector<u64> stack;
+	vector<u64> constants; // Both integers and string pointers.
+	vector<u64> globals;
 	usize vars_declared, max_vars_declared;
 
 	struct StackFrame
 	{
 		u64 retPC;
-		std::vector<u64> locals;
+		vector<u64> locals;
 	};
 
-	std::vector<StackFrame> callstack;
+	vector<StackFrame> callstack;
 
 	OP read_op();
 	u8 read_byte();

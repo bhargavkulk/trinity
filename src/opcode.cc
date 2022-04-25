@@ -25,6 +25,7 @@ const OPData OP_DATA[]
 	{"OR", 0},
 	{"CONST", 1},
 
+	{"POP", 0},
 	{"CONST_0", 0},
 
 	{"GLOB_VARSET", 1},
@@ -35,6 +36,10 @@ const OPData OP_DATA[]
 
 	{"CALL", 4},
 	{"RET", 0},
+
+	{"ARR", 1},
+	{"ARRSET", 0},
+	{"ARRGET", 0},
 
 	{"LOGINT", 0},
 	{"LOGSTR", 0},

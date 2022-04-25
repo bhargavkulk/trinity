@@ -1,19 +1,30 @@
 fun start()
 {
+    var a: int[3, 4];
+    
     var i: int = 0;
-    while i < 5
+    var j: int = 0;
+    while i < 3
     {
+        j = 0;
+        while j < 4
+        {
+            a[i, j] = i + j;
+            j = j + 1;
+        }
         i = i + 1;
-        if i == 2
-        {
-            cnt;
-            log "nice";
-        }
-        if i == 4
-        {
-            brk;
-        }
-        log i;
     }
-    log "out of loop";
+
+    i = 0;
+    while i < 3
+    {
+        j = 0;
+        while j < 4
+        {
+            log a[i, j];
+            j = j + 1;
+        }
+        log "";
+        i = i + 1;
+    }
 }

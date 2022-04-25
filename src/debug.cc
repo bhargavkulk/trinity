@@ -20,9 +20,6 @@ void disassemble(const u8 *instruction, FILE *file)
 		case OP::LOGINT:
 		case OP::LOGSTR:
 		case OP::RET:
-		fprintf(file, "%s\n", OP_str(op));
-		break;
-
 		case OP::ADD:
 		case OP::SUB:
 		case OP::DIV:
@@ -37,6 +34,9 @@ void disassemble(const u8 *instruction, FILE *file)
 		case OP::NOT:
 		case OP::OR:
 		case OP::AND:
+		case OP::ARRSET:
+		case OP::ARRGET:
+		case OP::POP:
 		fprintf(file, "%s\n", OP_str(op));
 		break;
 
@@ -45,6 +45,7 @@ void disassemble(const u8 *instruction, FILE *file)
 		case OP::GLOB_VARGET:
 		case OP::VARSET:
 		case OP::VARGET:
+		case OP::ARR:
 		fprintf(file, "%s %d\n", OP_str(op), instruction[1]);
 		break;
 
