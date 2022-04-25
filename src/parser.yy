@@ -146,7 +146,26 @@ stmt : variable
         | asgnstmt
         | blckstmt
         | TOKEN_BRK TOKEN_SEMICOLON
+        {
+                if(loop_entries.empty())
+                {
+                        DECLARE_ERROR("brk statement outside a loop");       
+                }
+                u64 brk_point = vm.bytecode_len();
+                vm.write_op(OP::JMP);
+                vm.write_word(0);
+                loop_entries.back().breaks.push_back(brk_point);
+        }
         | TOKEN_CNT TOKEN_SEMICOLON
+        {
+                if(loop_entries.empty())
+                {
+                        DECLARE_ERROR("cnt statement outside a loop");       
+                }
+                vm.write_op(OP::LOOP);
+                vm.write_word(static_cast<u16>(vm.bytecode_len() - 1 - loop_entries.back().loop_start));
+
+        }
         | TOKEN_SEMICOLON
 
         | TOKEN_LOG expr TOKEN_SEMICOLON
@@ -184,6 +203,8 @@ retstmt : TOKEN_RET TOKEN_SEMICOLON
 
 whilestmt : TOKEN_WHILE {
         $[offset_loop].as.int_val = vm.bytecode_len();
+        LoopEntry entry = {vm.bytecode_len(), vector<u64>()};
+        loop_entries.push_back(entry);
 }[offset_loop] expr {
         $[offset_exit].as.int_val = vm.bytecode_len();
         vm.write_op(OP::JMP_IF_FALSE);
@@ -193,14 +214,20 @@ whilestmt : TOKEN_WHILE {
         i64 offset = vm.bytecode_len() - 1 - $[offset_loop].as.int_val;
         if(offset > UINT16_MAX) DECLARE_ERROR("Code jump too big");
         vm.write_word(static_cast<u16>(offset));
-        vm.patch_jump($[offset_exit].as.int_val);  
+        vm.patch_jump($[offset_exit].as.int_val);
+        for(auto it = loop_entries.back().breaks.begin(); it != loop_entries.back().breaks.end(); it ++)
+        {
+                vm.patch_jump(*it);
+        }  
+        loop_entries.pop_back();
+
 }
         ;
 
 forstmt : TOKEN_FOR TOKEN_IDENTIFIER TOKEN_FROM expr TOKEN_TO expr blckstmt
         ;
 
-ifstmt  : TOKEN_IF expr {
+ifstmt  : /*TOKEN_IF expr {
         $[offset_then].as.int_val = vm.bytecode_len();
         vm.write_op(OP::JMP_IF_FALSE);
         vm.write_word(0);
@@ -213,7 +240,7 @@ ifstmt  : TOKEN_IF expr {
 } [offset_else] TOKEN_ELSE blckstmt {
         vm.patch_jump($[offset_else].as.int_val);
 }
-        | TOKEN_IF expr {
+        | */TOKEN_IF expr {
         $[offset].as.int_val = vm.bytecode_len();
         vm.write_op(OP::JMP_IF_FALSE);
         vm.write_word(0);

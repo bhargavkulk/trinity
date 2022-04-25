@@ -59,8 +59,18 @@ struct ScopeStartEntry
     DataType type;
 };
 
+
 extern vector<ScopeStartEntry> scope_starts;
 extern vector<DataType> argv;
+
+/**** Loop entries for cnt and brk****/
+struct LoopEntry
+{
+    u64 loop_start;
+    vector<u64> breaks;
+};
+
+extern vector<LoopEntry> loop_entries;
 
 void init_buffers();
 

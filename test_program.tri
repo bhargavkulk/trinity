@@ -1,31 +1,19 @@
-var glob: int = 100;
-
-fun function(a: int, b: str): str
-{
-    log a;
-    log b;
-
-    ret "abc";
-}
-
-fun factorial(n: int): int
-{
-    if n == 0 {
-        ret 1;
-    } else {
-        ret n * factorial(n - 1);
-    }
-}
-
-fun add(a: int, b: int): int
-{
-    ret a + b;
-}
-
 fun start()
 {
-    var g: int = 3;
-    var h: int = 3;
-    log factorial(add(g, h));
-    log glob;
+    var i: int = 0;
+    while i < 5
+    {
+        i = i + 1;
+        if i == 2
+        {
+            cnt;
+            log "nice";
+        }
+        if i == 4
+        {
+            brk;
+        }
+        log i;
+    }
+    log "out of loop";
 }

@@ -99,8 +99,12 @@ bool check_func(string &symbol, FuncEntry &entry)
 vector<ScopeStartEntry> scope_starts;
 vector<DataType> argv;
 
+/**** Loop entries ****/
+vector<LoopEntry> loop_entries;
+
 void init_buffers()
 {
     scope_starts = vector<ScopeStartEntry>();
     argv = vector<DataType>();
+    loop_entries = vector<LoopEntry>();
 }
