@@ -72,112 +72,112 @@ int VM::run()
 
 			case OP::ADD:
 			{
-				i64 op2 = (i64)pop();
-				i64 op1 = (i64)pop();
+				i64 op2 = static_cast<i64>(pop());
+				i64 op1 = static_cast<i64>(pop());
 				// printf("OP1 is %ld ,OP2 is %ld, and the sum is - %ld ", op1, op2, op1 + op2);
-				push((u64)(op1 + op2));
+				push(static_cast<u64>(op1 + op2));
 				break;
 			}
 
 			case OP::SUB:
 			{
-				i64 op2 = (i64)pop();
-				i64 op1 = (i64)pop();
-				push((u64)(op1 - op2));
+				i64 op2 = static_cast<i64>(pop());
+				i64 op1 = static_cast<i64>(pop());
+				push(static_cast<u64>(op1 - op2));
 				break;
 			}
 			case OP::MUL:
 			{
-				i64 op2 = (i64)pop();
-				i64 op1 = (i64)pop();
-				push((u64)(op1 * op2));
+				i64 op2 = static_cast<i64>(pop());
+				i64 op1 = static_cast<i64>(pop());
+				push(static_cast<u64>(op1 * op2));
 				break;
 			}
 
 			case OP::DIV:
 			{
-				i64 op2 = (i64)pop();
-				i64 op1 = (i64)pop();
+				i64 op2 = static_cast<i64>(pop());
+				i64 op1 = static_cast<i64>(pop());
 				// error checking for division by zero error
 				if (op2 == 0)
 				{
 					fprintf(stderr, "Division by zero, PLEASE CHANGE THIS NOW");
 					break;
 				}
-				push((u64)(op1 / op2));
+				push(static_cast<u64>(op1 / op2));
 				break;
 			}
 
 			case OP::MOD:
 			{
-				i64 op2 = (i64)pop();
-				i64 op1 = (i64)pop();
-				push((u64)(op1 % op2));
+				i64 op2 = static_cast<i64>(pop());
+				i64 op1 = static_cast<i64>(pop());
+				push(static_cast<u64>(op1 % op2));
 				break;
 			}
 
 			case OP::EQUAL:
 			{
-				i64 op2 = (i64)pop();
-				i64 op1 = (i64)pop();
-				push((u64)((op1 == op2) ? (1) : (0)));
+				i64 op2 = static_cast<i64>(pop());
+				i64 op1 = static_cast<i64>(pop());
+				push(static_cast<u64>(op1 == op2));
 				break;
 			}
 			case OP::LESS:
 			{
-				i64 op2 = (i64)pop();
-				i64 op1 = (i64)pop();
-				push((u64)((op1 < op2) ? (1) : (0)));
+				i64 op2 = static_cast<i64>(pop());
+				i64 op1 = static_cast<i64>(pop());
+				push(static_cast<u64>(op1 < op2));
 				break;
 			}
 			case OP::LESS_EQUAL:
 			{
-				i64 op2 = (i64)pop();
-				i64 op1 = (i64)pop();
-				push((u64)((op1 <= op2) ? (1) : (0)));
+				i64 op2 = static_cast<i64>(pop());
+				i64 op1 = static_cast<i64>(pop());
+				push(static_cast<u64>(op1 <= op2));
 				break;
 			}
 			case OP::GREATER:
 			{
-				i64 op2 = (i64)pop();
-				i64 op1 = (i64)pop();
-				push((u64)((op1 > op2) ? (1) : (0)));
+				i64 op2 = static_cast<i64>(pop());
+				i64 op1 = static_cast<i64>(pop());
+				push(static_cast<u64>(op1 > op2));
 				break;
 			}
 			case OP::GREATER_EQUAL:
 			{
-				i64 op2 = (i64)pop();
-				i64 op1 = (i64)pop();
-				push((u64)((op1 >= op2) ? (1) : (0)));
+				i64 op2 = static_cast<i64>(pop());
+				i64 op1 = static_cast<i64>(pop());
+				push(static_cast<u64>(op1 >= op2));
 				break;
 			}
 
 			case OP::NEG:
 			{
-				i64 op2 = (i64)pop();
-				push((u64)(-1 * op2));
+				i64 op2 = static_cast<i64>(pop());
+				push(static_cast<u64>(-1 * op2));
 				break;
 			}
 
 			case OP::AND:
 			{
-				i64 op2 = (i64)pop();
-				i64 op1 = (i64)pop();
-				push((u64)((op1 * op2 != 0) ? (1) : (0)));
+				i64 op2 = static_cast<i64>(pop());
+				i64 op1 = static_cast<i64>(pop());
+				push(static_cast<u64>(op1 && op2));
 				break;
 			}
 			case OP::OR:
 			{
-				i64 op2 = (i64)pop();
-				i64 op1 = (i64)pop();
-				push((u64)((op1 + op2 != 0) ? (1) : (0)));
+				i64 op2 = static_cast<i64>(pop());
+				i64 op1 = static_cast<i64>(pop());
+				push(static_cast<u64>(op1 || op2));
 				break;
 			}
 
 			case OP::NOT:
 			{
-				i64 op1 = (i64)pop();
-				push((u64)((op1 == 0) ? (1) : (0)));
+				i64 op1 = static_cast<i64>(pop());
+				push(static_cast<u64>(!op1));
 				break;
 			}
 
