@@ -22,7 +22,7 @@ void yyerror(const char *);
 %define api.value.type { ExprType }
     
 %token 	TOKEN_INT TOKEN_STR TOKEN_BLK TOKEN_FUN
-        TOKEN_IF TOKEN_ELSE TOKEN_FOR TOKEN_FROM TOKEN_TO TOKEN_WHILE
+        TOKEN_IF TOKEN_ELSE TOKEN_WHILE
         TOKEN_VAR TOKEN_BRK TOKEN_CNT TOKEN_RET TOKEN_NIL
         TOKEN_DIR_GRID TOKEN_DIR_TITLE TOKEN_DIR_ICON
     
@@ -139,7 +139,6 @@ stmts :	stmts stmt
     
 stmt : variable
         | expr TOKEN_SEMICOLON
-        | forstmt
         | ifstmt
         | whilestmt
         | retstmt
@@ -222,9 +221,6 @@ whilestmt : TOKEN_WHILE {
         loop_entries.pop_back();
 
 }
-        ;
-
-forstmt : TOKEN_FOR TOKEN_IDENTIFIER TOKEN_FROM expr TOKEN_TO expr blckstmt
         ;
 
 ifstmt  : /*TOKEN_IF expr {
