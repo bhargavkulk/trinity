@@ -5,6 +5,7 @@ SymbolTable *currentTable;
 SymbolTable::SymbolTable(int level, SymbolTable *parent) : scope_level(level), parent(parent) { }
 
 DataType currFuncRetType;
+i64 curr_func_ret_dim_count;
 
 void init_symbols()
 {
@@ -97,7 +98,7 @@ bool check_func(string &symbol, FuncEntry &entry)
 /**** Scope Start Symbols ****/
 
 vector<ScopeStartEntry> scope_starts;
-vector<DataType> argv;
+vector<ArgvEntry> argv;
 
 /**** Loop entries ****/
 vector<LoopEntry> loop_entries;
@@ -105,6 +106,6 @@ vector<LoopEntry> loop_entries;
 void init_buffers()
 {
     scope_starts = vector<ScopeStartEntry>();
-    argv = vector<DataType>();
+    argv = vector<ArgvEntry>();
     loop_entries = vector<LoopEntry>();
 }

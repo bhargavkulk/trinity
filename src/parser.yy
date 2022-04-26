@@ -40,7 +40,8 @@ void yyerror(const char *);
     
 %%
     
-program : vardefs 
+program : 
+        vardefs 
         {
                 $[start_jump].as.int_val = vm.bytecode_len();
                 vm.write_op(OP::JMP);
@@ -49,57 +50,65 @@ program : vardefs
         fundefs
         {
                 vm.patch_start_jump($[start_jump].as.int_val);
-        }
-        ;
+        } ;
     
+
 vardefs : variable vardefs | ;
 fundefs : fundef fundefs | ;
     
-fundef : function 
-            {
-                    string ident = $1.as.str_val;
-                    FuncEntry entry;
-                    entry.retType = $1.type;
-                    entry.pc = (u32) vm.bytecode_len();
 
-                    currFuncRetType = entry.retType;
+fundef : 
+        function 
+        {
+                string ident = $1.as.str_val;
+                FuncEntry entry;
+                entry.retType = $1.type;
+                entry.ret_dim_count = $1.as.int_val;
+                entry.pc = static_cast<u32>(vm.bytecode_len());
 
-                    if(ident == "start")
-                    {
-                            if(entry.retType != DataType::NIL || scope_starts.size() > 0)
-                            {
-                                    DECLARE_ERROR("Function \"start\" must have the following prototype: fun start() { ... }");
-                            }
-                            vm.set_start(entry.pc);
-                    }
+                currFuncRetType = entry.retType;
+                curr_func_ret_dim_count = entry.ret_dim_count;
 
-                    for(usize i = 0, size = scope_starts.size(); i < size; i++)
-                    {
-                            ScopeStartEntry sse = scope_starts.at(i);
-                            entry.paramTypes.push_back(sse.type);
-                    }
-                    if(!add_func(ident, entry)) DECLARE_ERROR("Function redefinition not allowed");
-            } 
-            blckstmt { vm.write_op(OP::CONST_0); vm.write_op(OP::RET); }
-            ;
-    
-variable : TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_EQUAL expr TOKEN_SEMICOLON
-    {
-            if($4.type != $6.type) DECLARE_ERROR("Type mismatch");
+                if(ident == "start")
+                {
+                        if(entry.retType != DataType::NIL || scope_starts.size() > 0)
+                        {
+                                DECLARE_ERROR("Function \"start\" must have the following prototype: fun start() { ... }");
+                        }
+                        vm.set_start(entry.pc);
+                }
 
-            usize id = vm.write_decl_var(is_currently_global());
-            string ident = $2.as.str_val;
-            SymbolEntry entry = { $4.type, id };
+                for(usize i = 0, size = scope_starts.size(); i < size; i++)
+                {
+                        ScopeStartEntry sse = scope_starts.at(i);
+                        entry.paramTypes.push_back(sse.type);
+                        entry.param_dim_counts.push_back(sse.dim_count);
+                }
+                if(!add_func(ident, entry)) DECLARE_ERROR("Function redefinition not allowed");
+        } blckstmt 
+        { 
+                vm.write_op(OP::CONST_0); vm.write_op(OP::RET); 
+        } ;
 
-            if(!add_symbol(ident, entry)) DECLARE_ERROR("Variable redeclaration not allowed");
-    }
 
-            | TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R TOKEN_SEMICOLON
+variable : 
+        TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_EQUAL expr TOKEN_SEMICOLON
+        {
+                if($4.type != $6.type) DECLARE_ERROR("Type mismatch");
+
+                usize id = vm.write_decl_var(is_currently_global());
+                string ident = $2.as.str_val;
+                SymbolEntry entry = { $4.type, id };
+
+                if(!add_symbol(ident, entry)) DECLARE_ERROR("Variable redeclaration not allowed");
+        } |
+
+        TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R TOKEN_SEMICOLON
         {
                 if(argv.size() >= UINT8_MAX) DECLARE_ERROR("Arrays can have a maximum of 255 dimensions");
-                for(auto type : argv)
+                for(auto arg : argv)
                 {
-                        if(type != DataType::INT) DECLARE_ERROR("Array dimensions can only be of type \"int\"");
+                        if(arg.type != DataType::INT) DECLARE_ERROR("Array dimensions can only be of type \"int\"");
                 }
 
                 vm.write_op(OP::ARR);
@@ -107,27 +116,55 @@ variable : TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_EQUAL expr TOKEN_SE
 
                 usize id = vm.write_decl_var(is_currently_global());
                 string ident = $2.as.str_val;
-                SymbolEntry entry = { convert_to_arr_type($4.type), id };
+                SymbolEntry entry = { convert_to_arr_type($4.type), id, static_cast<i64>(argv.size()) };
 
                 if(!add_symbol(ident, entry)) DECLARE_ERROR("Variable redeclaration not allowed");
                 argv.clear();
-        }
-            ;
+        } |
+
+        TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_SQ_BRACK_L dim_commas TOKEN_SQ_BRACK_R TOKEN_EQUAL expr TOKEN_SEMICOLON
+        {
+                if(convert_to_arr_type($4.type) != $9.type) DECLARE_ERROR("Type mismatch: Not an array expression");
+                if($6.as.int_val + 1 != $9.as.int_val) DECLARE_ERROR("Number of dimensions does not match");
+
+                usize id = vm.write_decl_var(is_currently_global());
+                string ident = $2.as.str_val;
+                SymbolEntry entry = { convert_to_arr_type($4.type), id, $9.as.int_val };
+
+                if(!add_symbol(ident, entry)) DECLARE_ERROR("Variable redeclaration not allowed");
+        } ;
+
+
+dim_commas : 
+        dim_commas TOKEN_COMMA
+        {
+                $$.as.int_val = $1.as.int_val + 1;
+        } |
+        {
+                $$.as.int_val = 0;
+        };
     
-function :  TOKEN_FUN TOKEN_IDENTIFIER TOKEN_PAREN_L params TOKEN_PAREN_R 
-            {
-                    $$.as.str_val = $2.as.str_val;
-                    $$.type = DataType::NIL;
-            }
 
-                | TOKEN_FUN TOKEN_IDENTIFIER TOKEN_PAREN_L params TOKEN_PAREN_R TOKEN_COLON type
-                {
-                    $$.as.str_val = $2.as.str_val;
-                    $$.type = $7.type;
-                }
+function : 
+        TOKEN_FUN TOKEN_IDENTIFIER TOKEN_PAREN_L params TOKEN_PAREN_R 
+        {
+                $$.as.str_val = $2.as.str_val;
+                $$.type = DataType::NIL;
+        } |
 
-            | TOKEN_FUN TOKEN_IDENTIFIER TOKEN_PAREN_L params TOKEN_PAREN_R TOKEN_COLON type TOKEN_SQ_BRACK_L TOKEN_SQ_BRACK_R
-            ;
+        TOKEN_FUN TOKEN_IDENTIFIER TOKEN_PAREN_L params TOKEN_PAREN_R TOKEN_COLON type
+        {
+                $$.as.str_val = $2.as.str_val;
+                $$.type = $7.type;
+        } |
+
+        TOKEN_FUN TOKEN_IDENTIFIER TOKEN_PAREN_L params TOKEN_PAREN_R TOKEN_COLON type TOKEN_SQ_BRACK_L dim_commas TOKEN_SQ_BRACK_R
+        {
+                $$.as.str_val = $2.as.str_val;
+                $$.type = convert_to_arr_type($7.type);
+                $$.as.int_val = $9.as.int_val + 1;
+        }
+        ;
 
 params : params_
         |
@@ -137,13 +174,16 @@ params_	: param
         | param TOKEN_COMMA params_
         ;
     
-param :	TOKEN_IDENTIFIER TOKEN_COLON type
-            {
-                    scope_starts.push_back({$1.as.str_val, $3.type});
-            }
+param :	
+        TOKEN_IDENTIFIER TOKEN_COLON type
+        {
+                scope_starts.push_back({$1.as.str_val, $3.type});
+        } |
 
-        | TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_SQ_BRACK_L TOKEN_SQ_BRACK_R
-        ;
+        TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_SQ_BRACK_L dim_commas TOKEN_SQ_BRACK_R
+        {
+                scope_starts.push_back({$1.as.str_val, convert_to_arr_type($3.type), $5.as.int_val + 1});
+        } ;
     
 type : TOKEN_INT { $$.type = DataType::INT; }
         | TOKEN_STR { $$.type = DataType::STR; }
@@ -212,6 +252,7 @@ retstmt : TOKEN_RET TOKEN_SEMICOLON
         | TOKEN_RET expr TOKEN_SEMICOLON
             {
                     if(currFuncRetType != $2.type) DECLARE_ERROR("Return value type mismatch");
+                    if(curr_func_ret_dim_count != $2.as.int_val) DECLARE_ERROR("Return value array type dimension count mismatch");
                     vm.write_op(OP::RET);
             }
         ;
@@ -261,60 +302,60 @@ ifstmt  : /*TOKEN_IF expr {
 }
         ;
 
-asgnstmt : TOKEN_IDENTIFIER TOKEN_EQUAL expr TOKEN_SEMICOLON
-            {
-                    string ident = $1.as.str_val;
-                    SymbolEntry entry;
-                    bool is_global;
-                    if(!check_symbol(ident, entry, is_global)) DECLARE_ERROR("Undeclared identifier");
-                    if(entry.type != $3.type) DECLARE_ERROR("Type mismatch");
+asgnstmt : 
+        TOKEN_IDENTIFIER TOKEN_EQUAL expr TOKEN_SEMICOLON
+        {
+                string ident = $1.as.str_val;
+                SymbolEntry entry;
+                bool is_global;
+                if(!check_symbol(ident, entry, is_global)) DECLARE_ERROR("Undeclared identifier");
+                if(entry.type != $3.type) DECLARE_ERROR("Type mismatch");
+                if(is_arr_type(entry.type) && entry.dim_count != $3.as.int_val) DECLARE_ERROR("Number of dimensions does not match");
 
-                    vm.write_op(is_global ? OP::GLOB_VARSET : OP::VARSET);
-                    vm.write_byte(entry.id);
-            }
+                vm.write_op(is_global ? OP::GLOB_VARSET : OP::VARSET);
+                vm.write_byte(entry.id);
+        } |
 
-            | TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R TOKEN_EQUAL expr TOKEN_SEMICOLON
-            {
-                    string ident = $1.as.str_val;
-                    SymbolEntry entry;
-                    bool is_global;
-                    if(!check_symbol(ident, entry, is_global)) DECLARE_ERROR("Undeclared identifier");
-                    if(!is_arr_type(entry.type)) DECLARE_ERROR("Cannot use subscript operator on a non-array type");
-                    for(auto type : argv)
-                    {
-                            if(type != DataType::INT) DECLARE_ERROR("Array dimensions can only be of type \"int\"");
-                    }
-                    if(convert_from_arr_type(entry.type) != $6.type) DECLARE_ERROR("Type mismatch");
+        TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R TOKEN_EQUAL expr TOKEN_SEMICOLON
+        {
+                string ident = $1.as.str_val;
+                SymbolEntry entry;
+                bool is_global;
+                if(!check_symbol(ident, entry, is_global)) DECLARE_ERROR("Undeclared identifier");
+                if(!is_arr_type(entry.type)) DECLARE_ERROR("Cannot use subscript operator on a non-array type");
+                for(auto arg : argv)
+                {
+                        if(arg.type != DataType::INT) DECLARE_ERROR("Array dimensions can only be of type \"int\"");
+                }
+                if(convert_from_arr_type(entry.type) != $6.type) DECLARE_ERROR("Type mismatch");
 
-                    vm.write_op(is_global ? OP::GLOB_VARGET : OP::VARGET);
-                    vm.write_byte(entry.id);
-                    vm.write_op(OP::ARRSET);
+                vm.write_op(is_global ? OP::GLOB_VARGET : OP::VARGET);
+                vm.write_byte(entry.id);
+                vm.write_op(OP::ARRSET);
 
-                    argv.clear();
-            }
-            ;
+                argv.clear();
+        } ;
     
-blckstmt : TOKEN_BRACE_L 
-            { 
-                    open_scope();
-                    for(auto it = scope_starts.rbegin(); it != scope_starts.rend(); it++)
-                    {
-                            ScopeStartEntry sse = *it;
-                            
-                            usize id = vm.write_decl_var(false); // Never global in a block stmt
-                            SymbolEntry entry = { sse.type, id };
+blckstmt : 
+        TOKEN_BRACE_L 
+        {
+                open_scope();
+                for(auto it = scope_starts.rbegin(); it != scope_starts.rend(); it++)
+                {
+                        ScopeStartEntry sse = *it;
+                        
+                        usize id = vm.write_decl_var(false); // Never global in a block stmt
+                        SymbolEntry entry = { sse.type, id, sse.dim_count };
 
-                            if(!add_symbol(sse.symbol, entry)) DECLARE_ERROR("Variable redeclaration not allowed");
-                    }
-                    scope_starts.clear();
-            } 
-            stmts TOKEN_BRACE_R 
-            { 
-                    usize var_count = get_scope_var_count();
-                    close_scope();
-                    vm.undecl_vars(var_count);
-            }
-        ;
+                        if(!add_symbol(sse.symbol, entry)) DECLARE_ERROR("Variable redeclaration not allowed");
+                }
+                scope_starts.clear();
+        } stmts TOKEN_BRACE_R 
+        {
+                usize var_count = get_scope_var_count();
+                close_scope();
+                vm.undecl_vars(var_count);
+        } ;
     
 expr : expr TOKEN_LOGICAL_OR andexpr 
 {
@@ -460,95 +501,105 @@ unexpr : TOKEN_MINUS smolexpr
         | smolexpr { $$.type = $1.type; }
         ;
     
-smolexpr : TOKEN_INT_VAL
-            {
-                    vm.write_constant_op(OP::CONST, $1.as.int_val);
-                    $$.type = DataType::INT;
-            }
-
-            | TOKEN_NIL
-            {
-                    vm.write_op(OP::CONST_0);
-                    $$.type = DataType::NIL; 
-            }
-
-            | TOKEN_STR_VAL
-            {
-                    vm.write_constant_op(OP::CONST, (u64) $1.as.str_val);
-                    $$.type = DataType::STR;
-            }
-            | TOKEN_PAREN_L expr TOKEN_PAREN_R { $$.type = $2.type; }
-            | TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R
-            {
-                    string ident = $1.as.str_val;
-                    SymbolEntry entry;
-                    bool is_global;
-                    if(!check_symbol(ident, entry, is_global)) DECLARE_ERROR("Undeclared identifier");
-                    if(!is_arr_type(entry.type)) DECLARE_ERROR("Cannot use subscript operator on a non-array type");
-                    for(auto type : argv)
-                    {
-                            if(type != DataType::INT) DECLARE_ERROR("Array dimensions can only be of type \"int\"");
-                    }
-
-                    vm.write_op(is_global ? OP::GLOB_VARGET : OP::VARGET);
-                    vm.write_byte(entry.id);
-                    vm.write_op(OP::ARRGET);
-
-                    argv.clear();
-                    $$.type = convert_from_arr_type(entry.type);
-            }
-            | callexpr
-            | TOKEN_IDENTIFIER
-            {
-                    string ident = $1.as.str_val;
-                    SymbolEntry entry;
-                    bool is_global;
-                    if(!check_symbol(ident, entry, is_global)) DECLARE_ERROR("Undeclared identifier");
-
-                    vm.write_op(is_global ? OP::GLOB_VARGET : OP::VARGET);
-                    vm.write_byte(entry.id);
-                    $$.type = entry.type;
-            }
-            ;
-    
-callexpr : TOKEN_IDENTIFIER TOKEN_PAREN_L args TOKEN_PAREN_R
-            {
-                    string ident = $1.as.str_val;
-                    FuncEntry func;
-                    if(!check_func(ident, func)) DECLARE_ERROR("Undefined function");
-                    if(func.paramTypes.size() != argv.size()) DECLARE_ERROR("Number of function parameters and arguments do not match");
-
-                    for(usize i = 0, size = argv.size(); i < size; i++)
-                    {
-                            if(func.paramTypes.at(i) != argv.at(i)) DECLARE_ERROR("Function parameter and argument type mismatch");
-                    }
-                    argv.clear();
-
-                    vm.write_op(OP::CALL);
-                    vm.write_dword(func.pc);
-
-                    $$.type = func.retType;
-            }
-            ;
-    
-args : args_
-        |
-        ;
-    
-args_ : args_ TOKEN_COMMA expr
-            {
-                    argv.push_back($3.type);
-            }
-        | expr
+smolexpr : 
+        TOKEN_INT_VAL
         {
-                argv.push_back($1.type);
-        }
+                vm.write_constant_op(OP::CONST, $1.as.int_val);
+                $$.type = DataType::INT;
+        } |
+
+        TOKEN_NIL
+        {
+                vm.write_op(OP::CONST_0);
+                $$.type = DataType::NIL; 
+        } |
+
+        TOKEN_STR_VAL
+        {
+                vm.write_constant_op(OP::CONST, (u64) $1.as.str_val);
+                $$.type = DataType::STR;
+        } |
+
+        TOKEN_PAREN_L expr TOKEN_PAREN_R { $$.type = $2.type; } |
+
+        TOKEN_IDENTIFIER TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R
+        {
+                string ident = $1.as.str_val;
+                SymbolEntry entry;
+                bool is_global;
+                if(!check_symbol(ident, entry, is_global)) DECLARE_ERROR("Undeclared identifier");
+                if(!is_arr_type(entry.type)) DECLARE_ERROR("Cannot use subscript operator on a non-array type");
+                for(auto arg : argv)
+                {
+                        if(arg.type != DataType::INT) DECLARE_ERROR("Array dimensions can only be of type \"int\"");
+                }
+
+                vm.write_op(is_global ? OP::GLOB_VARGET : OP::VARGET);
+                vm.write_byte(entry.id);
+                vm.write_op(OP::ARRGET);
+
+                argv.clear();
+                $$.type = convert_from_arr_type(entry.type);
+        } |
+
+        callexpr |
+
+        TOKEN_IDENTIFIER
+        {
+                string ident = $1.as.str_val;
+                SymbolEntry entry;
+                bool is_global;
+                if(!check_symbol(ident, entry, is_global)) DECLARE_ERROR("Undeclared identifier");
+
+                vm.write_op(is_global ? OP::GLOB_VARGET : OP::VARGET);
+                vm.write_byte(entry.id);
+                $$.type = entry.type;
+                $$.as.int_val = entry.dim_count;
+        } ;
+    
+callexpr : 
+        TOKEN_IDENTIFIER TOKEN_PAREN_L args TOKEN_PAREN_R
+        {
+                string ident = $1.as.str_val;
+                FuncEntry func;
+                if(!check_func(ident, func)) DECLARE_ERROR("Undefined function");
+                if(func.paramTypes.size() != argv.size()) DECLARE_ERROR("Number of function parameters and arguments do not match");
+
+                for(usize i = 0, size = argv.size(); i < size; i++)
+                {
+                        if(func.paramTypes.at(i) != argv.at(i).type) DECLARE_ERROR("Function parameter and argument type mismatch");
+                        if(is_arr_type(argv.at(i).type) && func.param_dim_counts.at(i) != argv.at(i).dim_count)
+                                DECLARE_ERROR("Function array parameter and argument dimension count mismatch");
+                }
+                argv.clear();
+
+                vm.write_op(OP::CALL);
+                vm.write_dword(func.pc);
+
+                $$.type = func.retType;
+                $$.as.int_val = func.ret_dim_count;
+        } ;
+
+
+args : 
+        args_ |
         ;
+
+
+args_ : 
+        args_ TOKEN_COMMA expr
+        {
+                argv.push_back({ $3.type, $3.as.int_val });
+        } |
+        expr
+        {
+                argv.push_back({ $1.type, $1.as.int_val });
+        } ;
     
     
 %%
     
 void yyerror(const char *msg)
 {
-    fprintf(stderr, "<Line %d> Syntax error: %s\n", yylineno, msg);
+    fprintf(stderr, "SYNTAX ERROR <Line %d>: %s\n", yylineno, msg);
 }

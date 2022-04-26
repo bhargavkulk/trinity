@@ -10,6 +10,12 @@
 FILE *execution_log;
 #endif /* DEBUG_FLAG */
 
+#define CRASH_IF_NIL(ptr) do { if(!ptr) \
+				{ \
+					fprintf(stderr, "ERROR: NIL Reference"); \
+					return 1; \
+				} } while(0)
+
 VM vm;
 VM::VM() : pc(0), start_pc(0), found_start(false), vars_declared(0), max_vars_declared(0) {}
 
@@ -263,6 +269,8 @@ int VM::run()
 			case OP::ARRSET:
 			{
 				Array *array = reinterpret_cast<Array *>(pop());
+				CRASH_IF_NIL(array);
+
 				u64 value = pop();
 				vector<i64> indices(array->dims.size());
 				i64 flat_index = 0, multiplicand = 1;
@@ -271,12 +279,12 @@ int VM::run()
 					indices[i] = pop();
 					if(indices[i] < 0)
 					{
-						fprintf(stderr, "Error: Index of array (%ld) must be a non-negative integer\n", indices[i]);
+						fprintf(stderr, "ERROR: Index of array (%ld) must be a non-negative integer\n", indices[i]);
 						return 1;
 					}
 					else if(indices[i] >= array->dims[i])
 					{
-						fprintf(stderr, "Error: Index of array (here %ld) must be less than the corresponding dimension (%ld)\n", indices[i], array->dims[i]);
+						fprintf(stderr, "ERROR: Index of array (here %ld) must be less than the corresponding dimension (%ld)\n", indices[i], array->dims[i]);
 						return 1;
 					}
 
@@ -290,6 +298,8 @@ int VM::run()
 			case OP::ARRGET:
 			{
 				Array *array = reinterpret_cast<Array *>(pop());
+				CRASH_IF_NIL(array);
+
 				vector<i64> indices(array->dims.size());
 				i64 flat_index = 0, multiplicand = 1;
 				for(int i = indices.size() - 1; i >= 0; i--)
@@ -297,12 +307,12 @@ int VM::run()
 					indices[i] = pop();
 					if(indices[i] < 0)
 					{
-						fprintf(stderr, "Error: Index of array (%ld) must be a non-negative integer\n", indices[i]);
+						fprintf(stderr, "ERROR: Index of array (%ld) must be a non-negative integer\n", indices[i]);
 						return 1;
 					}
 					else if(indices[i] >= array->dims[i])
 					{
-						fprintf(stderr, "Error: Index of array (here %ld) must be less than the corresponding dimension (%ld)\n", indices[i], array->dims[i]);
+						fprintf(stderr, "ERROR: Index of array (here %ld) must be less than the corresponding dimension (%ld)\n", indices[i], array->dims[i]);
 						return 1;
 					}
 
@@ -335,26 +345,23 @@ int VM::run()
 
 			case OP::LOGINT:
 			{
-				printf("%ld\n", (i64) pop());
+				printf("%ld\n", static_cast<i64>(pop()));
 				break;
 			}
 
 			case OP::LOGSTR:
 			{
-				u64 str = pop();
-				if(str == 0)
-				{
-					fprintf(stderr, "NIL Reference\n");
-					return 1;
-				}
-				printf("%s\n", (const char *) str);
+				const char *str = reinterpret_cast<const char *>(pop());
+				CRASH_IF_NIL(str);
+
+				printf("%s\n", str);
 				break;
 			}
 
 			case OP::JMP_IF_FALSE:
 			{
 				u16 offset = read_word() - 3;
-				i64 cond = (i64) pop();
+				i64 cond = static_cast<i64>(pop());
 				pc += cond ? 0 : offset;
 				break;
 			}

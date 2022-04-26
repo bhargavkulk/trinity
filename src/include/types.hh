@@ -16,9 +16,9 @@ enum class DataType
 struct ExprType
 {
 	DataType type;
-	union
+	struct
 	{
-		int64_t int_val;
+		i64 int_val;
 		char *str_val;
 	} as;
 };
