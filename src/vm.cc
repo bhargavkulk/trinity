@@ -12,7 +12,7 @@ FILE *execution_log;
 
 #define CRASH_IF_NIL(ptr) do { if(!ptr) \
 				{ \
-					fprintf(stderr, "ERROR: NIL Reference"); \
+					fprintf(stderr, "FATAL ERROR: NIL Reference\n"); \
 					return 1; \
 				} } while(0)
 
@@ -243,8 +243,11 @@ int VM::run()
 			// PLEASE ADD ARR DELETE FUNCTION
 			case OP::ARR:
 			{
-				u8 dim_count = read_byte();
+				void **dptr = new void *;
 				Array *array = new Array;
+				*dptr = array;
+
+				u8 dim_count = read_byte();
 				i64 flat_size = 1;
 				array->dims.insert(array->dims.end(), dim_count, 0);
 
@@ -261,14 +264,15 @@ int VM::run()
 
 				array->arr.insert(array->arr.end(), flat_size, 0);
 
-				push(reinterpret_cast<u64>(array));
+				push(reinterpret_cast<u64>(dptr));
 				break;
 			}
 
 			// Order of stack from top: array ptr, value, indices.
 			case OP::ARRSET:
 			{
-				Array *array = reinterpret_cast<Array *>(pop());
+				void **dptr = reinterpret_cast<void **>(pop());
+				Array *array = static_cast<Array *>(*dptr);
 				CRASH_IF_NIL(array);
 
 				u64 value = pop();
@@ -297,7 +301,8 @@ int VM::run()
 
 			case OP::ARRGET:
 			{
-				Array *array = reinterpret_cast<Array *>(pop());
+				void **dptr = reinterpret_cast<void **>(pop());
+				Array *array = static_cast<Array *>(*dptr);
 				CRASH_IF_NIL(array);
 
 				vector<i64> indices(array->dims.size());
@@ -383,6 +388,16 @@ int VM::run()
 			case OP::POP:
 			{
 				pop();
+				break;
+			}
+
+			case OP::DEL:
+			{
+				void **dptr = reinterpret_cast<void **>(pop());
+				Array *array = static_cast<Array *>(*dptr);
+				CRASH_IF_NIL(array);
+				delete array;
+				*dptr = reinterpret_cast<void *>(0);
 				break;
 			}
 		}

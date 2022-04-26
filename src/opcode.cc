@@ -41,6 +41,8 @@ const OPData OP_DATA[]
 	{"ARRSET", 0},
 	{"ARRGET", 0},
 
+	{"DEL", 0},
+
 	{"LOGINT", 0},
 	{"LOGSTR", 0},
 

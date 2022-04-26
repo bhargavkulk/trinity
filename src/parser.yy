@@ -34,7 +34,7 @@ void yyerror(const char *);
     
         TOKEN_INT_VAL TOKEN_STR_VAL TOKEN_IDENTIFIER
     
-        TOKEN_LOG
+        TOKEN_LOG TOKEN_NEW TOKEN_DEL
                 
         TOKEN_ERR
     
@@ -103,7 +103,19 @@ variable :
                 if(!add_symbol(ident, entry)) DECLARE_ERROR("Variable redeclaration not allowed");
         } |
 
-        TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R TOKEN_SEMICOLON
+        TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_SQ_BRACK_L dim_commas TOKEN_SQ_BRACK_R TOKEN_EQUAL expr TOKEN_SEMICOLON
+        {
+                if(convert_to_arr_type($4.type) != $9.type) DECLARE_ERROR("Type mismatch: Not an array expression");
+                if($6.as.int_val + 1 != $9.as.int_val) DECLARE_ERROR("Number of dimensions does not match");
+
+                usize id = vm.write_decl_var(is_currently_global());
+                string ident = $2.as.str_val;
+                SymbolEntry entry = { convert_to_arr_type($4.type), id, $9.as.int_val };
+
+                if(!add_symbol(ident, entry)) DECLARE_ERROR("Variable redeclaration not allowed");
+        } |
+
+        TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R TOKEN_EQUAL TOKEN_NEW TOKEN_SEMICOLON
         {
                 if(argv.size() >= UINT8_MAX) DECLARE_ERROR("Arrays can have a maximum of 255 dimensions");
                 for(auto arg : argv)
@@ -122,16 +134,9 @@ variable :
                 argv.clear();
         } |
 
-        TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_SQ_BRACK_L dim_commas TOKEN_SQ_BRACK_R TOKEN_EQUAL expr TOKEN_SEMICOLON
+        TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R TOKEN_SEMICOLON
         {
-                if(convert_to_arr_type($4.type) != $9.type) DECLARE_ERROR("Type mismatch: Not an array expression");
-                if($6.as.int_val + 1 != $9.as.int_val) DECLARE_ERROR("Number of dimensions does not match");
-
-                usize id = vm.write_decl_var(is_currently_global());
-                string ident = $2.as.str_val;
-                SymbolEntry entry = { convert_to_arr_type($4.type), id, $9.as.int_val };
-
-                if(!add_symbol(ident, entry)) DECLARE_ERROR("Variable redeclaration not allowed");
+                DECLARE_ERROR("Arrays must be declared using the \"new\" keyword as the initialised value");
         } ;
 
 
@@ -201,6 +206,7 @@ stmt : variable
         | retstmt
         | asgnstmt
         | blckstmt
+        | delstmt
         | TOKEN_BRK TOKEN_SEMICOLON
         {
                 if(loop_entries.empty())
@@ -356,7 +362,16 @@ blckstmt :
                 close_scope();
                 vm.undecl_vars(var_count);
         } ;
-    
+
+
+delstmt :
+        TOKEN_DEL expr
+        {
+                if(!is_arr_type($2.type)) DECLARE_ERROR("Cannot delete primitive type values");
+                vm.write_op(OP::DEL);
+        }
+
+
 expr : expr TOKEN_LOGICAL_OR andexpr 
 {
                 if($1.type == DataType::INT && $3.type == DataType::INT) {

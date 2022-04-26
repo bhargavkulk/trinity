@@ -43,6 +43,8 @@ enum class OP : u8
 
 	ARR, ARRSET, ARRGET,
 
+	DEL,
+
 	LOGINT, LOGSTR,
 
 	// Bhargav

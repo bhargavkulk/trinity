@@ -37,6 +37,7 @@ void disassemble(const u8 *instruction, FILE *file)
 		case OP::ARRSET:
 		case OP::ARRGET:
 		case OP::POP:
+		case OP::DEL:
 		fprintf(file, "%s\n", OP_str(op));
 		break;
 

@@ -1,22 +1,20 @@
 fun umm?(c: int[,]): int[,,]
 {
-    var g: int[1,2,3];
+    var g: int[1,2,3] = new;
     g[0,1,2] = c[0,1];
     ret g;
 }
 
 fun start()
 {
-    var a: int[2, 2];
+    var a: int[2, 2] = new;
     a[0, 1] = 2;
     var b: int[,] = a;
-    b[0, 1] = 7 + a[0, 1] + b[0, 1];
+    b[0, 1] = 7;
 
-    var d: int[,,] = umm?(b);
-    log d[0, 1, 2];
+    log a[0, 1];
 
-    var z: int[3, 3];
-    z[2, 2] = 18;
-    b = z;
-    log b[2, 2];
+    del b;
+
+    log a[0, 1];
 }

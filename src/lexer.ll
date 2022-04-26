@@ -26,6 +26,8 @@ nil                             return TOKEN_NIL;
 !icon                           return TOKEN_DIR_ICON;
 
 log                             return TOKEN_LOG;
+new                             return TOKEN_NEW;
+del                             return TOKEN_DEL;
 
 \[                              return TOKEN_SQ_BRACK_L;
 \]                              return TOKEN_SQ_BRACK_R;
