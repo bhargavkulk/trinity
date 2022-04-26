@@ -15,6 +15,4 @@ fun start()
     log a[0, 1];
 
     del b;
-
-    log a[0, 1];
 }

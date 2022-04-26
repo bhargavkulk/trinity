@@ -35,7 +35,7 @@ int VM::run()
 	callstack = vector<StackFrame>(1);
 
 	// TEMPORARY: REPLACE WITH WINDOW FLAG.
-	while (pc < bytecode.size())
+	while (true)
 	{
 		if (has_halted)
 		{
@@ -69,7 +69,6 @@ int VM::run()
 
 			case OP::HLT:
 			{
-				printf("hlt\n");
 				has_halted = true;
 				pc -= 1;
 				halt_pc = pc;
@@ -340,9 +339,6 @@ int VM::run()
 
 			case OP::RET:
 			{
-				// Remove when stub added.
-				if(callstack.size() == 1) return 0;
-
 				pc = callstack.back().retPC;
 				callstack.pop_back();
 				break;
@@ -531,12 +527,14 @@ void VM::patch_jump(i64 offset) {
     bytecode[offset + 2] = static_cast<u8>((jump >> 8) & 0xff);
 }
 
-void VM::patch_start_jump(u64 jmp_pc)
+void VM::patch_start_call(u64 call_pc)
 {
 	if(!found_start) return;
-	u16 value = static_cast<u16>(start_pc - jmp_pc);
-	bytecode.at(jmp_pc + 1) = static_cast<u8>(value);
-	bytecode.at(jmp_pc + 2) = static_cast<u8>(value >> 8);
+	u32 value = static_cast<u32>(start_pc);
+	bytecode.at(call_pc + 1) = static_cast<u8>(value);
+	bytecode.at(call_pc + 2) = static_cast<u8>(value >> 8);
+	bytecode.at(call_pc + 3) = static_cast<u8>(value >> 16);
+	bytecode.at(call_pc + 4) = static_cast<u8>(value >> 24);
 }
 
 /*********************************************************************/

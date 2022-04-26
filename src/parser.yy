@@ -43,13 +43,15 @@ void yyerror(const char *);
 program : 
         vardefs 
         {
-                $[start_jump].as.int_val = vm.bytecode_len();
-                vm.write_op(OP::JMP);
-                vm.write_word(0);
-        } [start_jump]
+                $[start_call].as.int_val = vm.bytecode_len();
+                vm.write_op(OP::CALL);
+                vm.write_dword(0);
+                vm.write_op(OP::POP);
+                vm.write_op(OP::HLT);
+        } [start_call]
         fundefs
         {
-                vm.patch_start_jump($[start_jump].as.int_val);
+                vm.patch_start_call($[start_call].as.int_val);
         } ;
     
 
@@ -171,13 +173,12 @@ function :
         }
         ;
 
-params : params_
-        |
-        ;
+params : 
+        params_ | ;
     
-params_	: param
-        | param TOKEN_COMMA params_
-        ;
+params_	: 
+        param |
+        param TOKEN_COMMA params_ ;
     
 param :	
         TOKEN_IDENTIFIER TOKEN_COLON type
@@ -190,24 +191,37 @@ param :
                 scope_starts.push_back({$1.as.str_val, convert_to_arr_type($3.type), $5.as.int_val + 1});
         } ;
     
-type : TOKEN_INT { $$.type = DataType::INT; }
-        | TOKEN_STR { $$.type = DataType::STR; }
-        | TOKEN_BLK { $$.type = DataType::BLK; }
-        ;
+type : 
+        TOKEN_INT 
+        { 
+                $$.type = DataType::INT; 
+        } |
+        TOKEN_STR 
+        { 
+                $$.type = DataType::STR; 
+        } |
+        TOKEN_BLK 
+        { 
+                $$.type = DataType::BLK;
+        } ;
     
-stmts :	stmts stmt
-        |
-        ;
+stmts :	
+        stmts stmt | ;
     
-stmt : variable
-        | expr TOKEN_SEMICOLON { vm.write_op(OP::POP); }
-        | ifstmt
-        | whilestmt
-        | retstmt
-        | asgnstmt
-        | blckstmt
-        | delstmt
-        | TOKEN_BRK TOKEN_SEMICOLON
+stmt : 
+        variable |
+        expr TOKEN_SEMICOLON 
+        { 
+                vm.write_op(OP::POP); 
+        } |
+
+        ifstmt |
+        whilestmt |
+        retstmt |
+        asgnstmt |
+        blckstmt |
+        delstmt |
+        TOKEN_BRK TOKEN_SEMICOLON
         {
                 if(loop_entries.empty())
                 {
@@ -217,8 +231,8 @@ stmt : variable
                 vm.write_op(OP::JMP);
                 vm.write_word(0);
                 loop_entries.back().breaks.push_back(brk_point);
-        }
-        | TOKEN_CNT TOKEN_SEMICOLON
+        } |
+        TOKEN_CNT TOKEN_SEMICOLON
         {
                 if(loop_entries.empty())
                 {
@@ -227,10 +241,9 @@ stmt : variable
                 vm.write_op(OP::LOOP);
                 vm.write_word(static_cast<u16>(vm.bytecode_len() - 1 - loop_entries.back().loop_start));
 
-        }
-        | TOKEN_SEMICOLON
-
-        | TOKEN_LOG expr TOKEN_SEMICOLON
+        } |
+        TOKEN_SEMICOLON |
+        TOKEN_LOG expr TOKEN_SEMICOLON
         {
                 switch($2.type)
                 {
@@ -246,67 +259,77 @@ stmt : variable
                         DECLARE_ERROR("Invalid operand for log\n");
                         break;
                 }
-        }
-        ;
+        } ;
     
-retstmt : TOKEN_RET TOKEN_SEMICOLON 
-            {
-                    if(currFuncRetType != DataType::NIL) DECLARE_ERROR("Must return a value");
-                    vm.write_op(OP::CONST_0); 
-                    vm.write_op(OP::RET);
-            }
-        | TOKEN_RET expr TOKEN_SEMICOLON
-            {
-                    if(currFuncRetType != $2.type) DECLARE_ERROR("Return value type mismatch");
-                    if(curr_func_ret_dim_count != $2.as.int_val) DECLARE_ERROR("Return value array type dimension count mismatch");
-                    vm.write_op(OP::RET);
-            }
-        ;
-
-whilestmt : TOKEN_WHILE {
-        $[offset_loop].as.int_val = vm.bytecode_len();
-        LoopEntry entry = {vm.bytecode_len(), vector<u64>()};
-        loop_entries.push_back(entry);
-}[offset_loop] expr {
-        $[offset_exit].as.int_val = vm.bytecode_len();
-        vm.write_op(OP::JMP_IF_FALSE);
-        vm.write_word(0);
-}[offset_exit] blckstmt {
-        vm.write_op(OP::LOOP);
-        i64 offset = vm.bytecode_len() - 1 - $[offset_loop].as.int_val;
-        if(offset > UINT16_MAX) DECLARE_ERROR("Code jump too big");
-        vm.write_word(static_cast<u16>(offset));
-        vm.patch_jump($[offset_exit].as.int_val);
-        for(auto it = loop_entries.back().breaks.begin(); it != loop_entries.back().breaks.end(); it ++)
+retstmt : 
+        TOKEN_RET TOKEN_SEMICOLON 
         {
-                vm.patch_jump(*it);
-        }  
-        loop_entries.pop_back();
+                if(currFuncRetType != DataType::NIL) DECLARE_ERROR("Must return a value");
+                vm.write_op(OP::CONST_0); 
+                vm.write_op(OP::RET);
+        } |
+        TOKEN_RET expr TOKEN_SEMICOLON
+        {
+                if(currFuncRetType != $2.type) DECLARE_ERROR("Return value type mismatch");
+                if(curr_func_ret_dim_count != $2.as.int_val) DECLARE_ERROR("Return value array type dimension count mismatch");
+                vm.write_op(OP::RET);
+        } ;
 
-}
-        ;
+whilestmt : 
+        TOKEN_WHILE 
+        {
+                $[offset_loop].as.int_val = vm.bytecode_len();
+                LoopEntry entry = {vm.bytecode_len(), vector<u64>()};
+                loop_entries.push_back(entry);
+        } [offset_loop] 
+        expr 
+        {
+                $[offset_exit].as.int_val = vm.bytecode_len();
+                vm.write_op(OP::JMP_IF_FALSE);
+                vm.write_word(0);
+        } [offset_exit] 
+        blckstmt 
+        {
+                vm.write_op(OP::LOOP);
+                i64 offset = vm.bytecode_len() - 1 - $[offset_loop].as.int_val;
+                if(offset > UINT16_MAX) DECLARE_ERROR("Code jump too big");
+                vm.write_word(static_cast<u16>(offset));
+                vm.patch_jump($[offset_exit].as.int_val);
+                for(auto it = loop_entries.back().breaks.begin(); it != loop_entries.back().breaks.end(); it ++)
+                {
+                        vm.patch_jump(*it);
+                }  
+                loop_entries.pop_back();
+        } ;
 
-ifstmt  : /*TOKEN_IF expr {
-        $[offset_then].as.int_val = vm.bytecode_len();
-        vm.write_op(OP::JMP_IF_FALSE);
-        vm.write_word(0);
+ifstmt : 
+        /*TOKEN_IF expr 
+        {
+                $[offset_then].as.int_val = vm.bytecode_len();
+                vm.write_op(OP::JMP_IF_FALSE);
+                vm.write_word(0);
+        } [offset_then] 
+        blckstmt 
+        {
+                $[offset_else].as.int_val = vm.bytecode_len();
+                vm.write_op(OP::JMP);
+                vm.write_word(0);
+                vm.patch_jump($[offset_then].as.int_val);
+        } [offset_else] 
+        TOKEN_ELSE blckstmt 
+        {
+                vm.patch_jump($[offset_else].as.int_val);
+        } | */
         
-}[offset_then] blckstmt {
-        $[offset_else].as.int_val = vm.bytecode_len();
-        vm.write_op(OP::JMP);
-        vm.write_word(0);
-        vm.patch_jump($[offset_then].as.int_val);
-} [offset_else] TOKEN_ELSE blckstmt {
-        vm.patch_jump($[offset_else].as.int_val);
-}
-        | */TOKEN_IF expr {
-        $[offset].as.int_val = vm.bytecode_len();
-        vm.write_op(OP::JMP_IF_FALSE);
-        vm.write_word(0);
-}[offset] blckstmt {
-        vm.patch_jump($[offset].as.int_val);        
-}
-        ;
+        TOKEN_IF expr 
+        {
+                $[offset].as.int_val = vm.bytecode_len();
+                vm.write_op(OP::JMP_IF_FALSE);
+                vm.write_word(0);
+        } [offset] blckstmt 
+        {
+                vm.patch_jump($[offset].as.int_val);        
+        } ;
 
 asgnstmt : 
         TOKEN_IDENTIFIER TOKEN_EQUAL expr TOKEN_SEMICOLON
@@ -372,16 +395,16 @@ delstmt :
         }
 
 
-expr : expr TOKEN_LOGICAL_OR andexpr 
-{
+expr : 
+        expr TOKEN_LOGICAL_OR andexpr 
+        {
                 if($1.type == DataType::INT && $3.type == DataType::INT) {
                         vm.write_op(OP::OR);
                 } else {
                         DECLARE_ERROR("Types not same.");
                 } 
-}
-        | andexpr { $$.type = $1.type; }
-        ;
+        } |
+        andexpr { $$.type = $1.type; } ;
     
 andexpr : andexpr TOKEN_LOGICAL_AND notexpr
 {
