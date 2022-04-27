@@ -1,0 +1,13 @@
+fun factorial(n: int): int
+{
+    if n == 0 {
+        ret 1;
+    } else {
+        ret n * factorial(n - 1);
+    } 
+}
+
+fun start()
+{
+    log factorial(5);
+}

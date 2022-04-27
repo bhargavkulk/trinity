@@ -1,0 +1,9 @@
+var global: int = 5;
+fun start()
+{
+    var local: int = 9;
+
+    log global;
+
+    log local;
+}

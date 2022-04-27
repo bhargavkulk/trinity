@@ -281,7 +281,7 @@ retstmt :
         TOKEN_RET expr TOKEN_SEMICOLON
         {
                 if(currFuncRetType != $2.type) DECLARE_ERROR("Return value type mismatch");
-                if(curr_func_ret_dim_count != $2.as.int_val) DECLARE_ERROR("Return value array type dimension count mismatch");
+                // if(curr_func_ret_dim_count != $2.as.int_val) DECLARE_ERROR("Return value array type dimension count mismatch");
                 vm.write_op(OP::RET);
         } ;
 

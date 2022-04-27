@@ -1,0 +1,4 @@
+fun start()
+{
+    log "Hello, World!";
+}

@@ -18,7 +18,7 @@ obj/%.o: src/%.cc
 	g++ $(FLAGS) -c $^ -o $@
 
 src/$(PARSER).cc: src/$(PARSER).yy
-	bison src/$(PARSER).yy -do src/$(PARSER).cc -v
+	bison src/$(PARSER).yy -do src/$(PARSER).cc -v --graph
 	mv -f src/$(PARSER).hh src/include/$(PARSER).hh
 
 src/$(LEXER).cc: src/$(LEXER).ll
@@ -30,3 +30,21 @@ run: $(BIN)
 
 clean:
 	rm -f src/$(LEXER).cc src/$(PARSER).cc src/include/$(PARSER).hh obj/* bin/* log/*
+
+test:
+	@echo "RUNNING TESTS..."
+	@echo "test: 1_hello_world.tri"
+	@./$(BIN) tests/1_hello_world.tri
+
+	@echo "test: 2_vars.tri"
+	@./$(BIN) tests/2_vars.tri
+
+	@echo "test: 3_expr.tri"
+	@./$(BIN) tests/3_expr.tri
+
+	@echo "test: 4_factorial.tri"
+	@./$(BIN) tests/4_factorial.tri
+
+	@echo "test: 5loop_arr.tri"
+	@./$(BIN) tests/5_loop_arr.tri
+
