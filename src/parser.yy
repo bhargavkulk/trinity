@@ -56,6 +56,8 @@ program :
     
 
 vardefs : variable vardefs | ;
+
+
 fundefs : fundef fundefs | ;
     
 
@@ -100,7 +102,7 @@ variable :
 
                 usize id = vm.write_decl_var(is_currently_global());
                 string ident = $2.as.str_val;
-                SymbolEntry entry = { $4.type, id };
+                SymbolEntry entry = { $4.type, id, 0 };
 
                 if(!add_symbol(ident, entry)) DECLARE_ERROR("Variable redeclaration not allowed");
         } |
@@ -173,17 +175,21 @@ function :
         }
         ;
 
+
 params : 
         params_ | ;
     
+
 params_	: 
         param |
+        
         param TOKEN_COMMA params_ ;
     
+
 param :	
         TOKEN_IDENTIFIER TOKEN_COLON type
         {
-                scope_starts.push_back({$1.as.str_val, $3.type});
+                scope_starts.push_back({ $1.as.str_val, $3.type, 0 });
         } |
 
         TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_SQ_BRACK_L dim_commas TOKEN_SQ_BRACK_R
@@ -191,6 +197,7 @@ param :
                 scope_starts.push_back({$1.as.str_val, convert_to_arr_type($3.type), $5.as.int_val + 1});
         } ;
     
+
 type : 
         TOKEN_INT 
         { 
@@ -205,9 +212,11 @@ type :
                 $$.type = DataType::BLK;
         } ;
     
+
 stmts :	
         stmts stmt | ;
     
+
 stmt : 
         variable |
         expr TOKEN_SEMICOLON 
@@ -261,6 +270,7 @@ stmt :
                 }
         } ;
     
+
 retstmt : 
         TOKEN_RET TOKEN_SEMICOLON 
         {
@@ -274,6 +284,7 @@ retstmt :
                 if(curr_func_ret_dim_count != $2.as.int_val) DECLARE_ERROR("Return value array type dimension count mismatch");
                 vm.write_op(OP::RET);
         } ;
+
 
 whilestmt : 
         TOKEN_WHILE 
@@ -302,8 +313,9 @@ whilestmt :
                 loop_entries.pop_back();
         } ;
 
+
 ifstmt : 
-        /*TOKEN_IF expr 
+        TOKEN_IF expr 
         {
                 $[offset_then].as.int_val = vm.bytecode_len();
                 vm.write_op(OP::JMP_IF_FALSE);
@@ -319,7 +331,7 @@ ifstmt :
         TOKEN_ELSE blckstmt 
         {
                 vm.patch_jump($[offset_else].as.int_val);
-        } | */
+        } /* |
         
         TOKEN_IF expr 
         {
@@ -329,7 +341,8 @@ ifstmt :
         } [offset] blckstmt 
         {
                 vm.patch_jump($[offset].as.int_val);        
-        } ;
+        }*/ ;
+
 
 asgnstmt : 
         TOKEN_IDENTIFIER TOKEN_EQUAL expr TOKEN_SEMICOLON
@@ -365,6 +378,7 @@ asgnstmt :
                 argv.clear();
         } ;
     
+
 blckstmt : 
         TOKEN_BRACE_L 
         {
@@ -404,20 +418,25 @@ expr :
                         DECLARE_ERROR("Types not same.");
                 } 
         } |
+
         andexpr { $$.type = $1.type; } ;
     
-andexpr : andexpr TOKEN_LOGICAL_AND notexpr
-{
+
+andexpr : 
+        andexpr TOKEN_LOGICAL_AND notexpr
+        {
                 if($1.type == DataType::INT && $3.type == DataType::INT) {
                         vm.write_op(OP::AND);
                 } else {
                         DECLARE_ERROR("Types not same.");
                 } 
-}
-        | notexpr { $$.type = $1.type; }
-        ;
+        } |
+
+        notexpr { $$.type = $1.type; } ;
     
-notexpr : TOKEN_LOGICAL_NOT relexpr
+
+notexpr : 
+        TOKEN_LOGICAL_NOT relexpr
         {
                 if($2.type == DataType::INT) {
                         vm.write_op(OP::NOT);
@@ -425,109 +444,127 @@ notexpr : TOKEN_LOGICAL_NOT relexpr
                         DECLARE_ERROR("Types not same.");
                 }
                 $$.type = $2.type;
-        }
-        | relexpr { $$.type = $1.type; }
-        ;
+        } |
+
+        relexpr { $$.type = $1.type; } ;
     
-relexpr : relexpr TOKEN_LESS_EQ sumexpr
-{
+
+relexpr : 
+        relexpr TOKEN_LESS_EQ sumexpr
+        {
                 if($1.type == DataType::INT && $3.type == DataType::INT) {
                         vm.write_op(OP::LESS_EQUAL);
                 } else {
                         DECLARE_ERROR("Types not same.");
                 } 
-}
-        | relexpr TOKEN_GREATER_EQ sumexpr
-{
+        } |
+
+        relexpr TOKEN_GREATER_EQ sumexpr
+        {
                 if($1.type == DataType::INT && $3.type == DataType::INT) {
                         vm.write_op(OP::LESS);
                         vm.write_op(OP::NOT);
                 } else {
                         DECLARE_ERROR("Types not same.");
                 } 
-}
-        | relexpr TOKEN_LESS sumexpr
-{
+        } |
+
+        relexpr TOKEN_LESS sumexpr
+        {
                 if($1.type == DataType::INT && $3.type == DataType::INT) {
                         vm.write_op(OP::LESS);
                 } else {
                         DECLARE_ERROR("Types not same.");
                 } 
-}
-        | relexpr TOKEN_GREATER sumexpr
-{
+        } |
+
+        relexpr TOKEN_GREATER sumexpr
+        {
                 if($1.type == DataType::INT && $3.type == DataType::INT) {
                         vm.write_op(OP::LESS_EQUAL);
                         vm.write_op(OP::NOT);
                 } else {
                         DECLARE_ERROR("Types not same.");
                 }     
-}
-        | relexpr TOKEN_DOUBLE_EQ sumexpr
-{
+        } |
+
+        relexpr TOKEN_DOUBLE_EQ sumexpr
+        {
                 if($1.type == DataType::INT && $3.type == DataType::INT) {
                         vm.write_op(OP::EQUAL);
                 } else {
                         DECLARE_ERROR("Types not same.");
                 } 
-}
-        | relexpr TOKEN_NOT_EQ sumexpr
-{
+        } |
+
+        relexpr TOKEN_NOT_EQ sumexpr
+        {
                 if($1.type == DataType::INT && $3.type == DataType::INT) {
                         vm.write_op(OP::EQUAL);
                         vm.write_op(OP::NOT);
                 } else {
                         DECLARE_ERROR("Types not same.");
                 } 
-}
-        | sumexpr { $$.type = $1.type; }
-        ;
+        } |
+
+        sumexpr { $$.type = $1.type; } ;
 
 
-sumexpr : sumexpr TOKEN_PLUS mulexpr{
+sumexpr : 
+        sumexpr TOKEN_PLUS mulexpr
+        {
                 if($1.type == DataType::INT && $3.type == DataType::INT) {
                         vm.write_op(OP::ADD);
                 } else {
                         DECLARE_ERROR("Types not same.");
                 }    
-}
-        | sumexpr TOKEN_MINUS mulexpr { 
+        } |
+
+        sumexpr TOKEN_MINUS mulexpr 
+        { 
                 if($1.type == DataType::INT && $3.type == DataType::INT) {
                         vm.write_op(OP::SUB);
                 } else {
                         DECLARE_ERROR("Types not same.");
                 }
-}
-        | mulexpr { $$.type = $1.type; }
-        ;
+        } |
 
-mulexpr : mulexpr TOKEN_STAR unexpr{
+        mulexpr { $$.type = $1.type; } ;
+
+
+mulexpr : 
+        mulexpr TOKEN_STAR unexpr
+        {
                 if($1.type == DataType::INT && $3.type == DataType::INT) {
                         vm.write_op(OP::MUL);
                 } else {
                         DECLARE_ERROR("Types not same.");
                 }    
-}
-        | mulexpr TOKEN_SLASH unexpr
-{
+        } |
+
+        mulexpr TOKEN_SLASH unexpr
+        {
                 if($1.type == DataType::INT && $3.type == DataType::INT) {
                         vm.write_op(OP::DIV);
                 } else {
                         DECLARE_ERROR("Types not same.");
                 }
-}
-        | mulexpr TOKEN_MODULO unexpr
-{
+        } |
+
+        mulexpr TOKEN_MODULO unexpr
+        {
                 if($1.type == DataType::INT && $3.type == DataType::INT) {
                         vm.write_op(OP::MOD);
                 } else {
                         DECLARE_ERROR("Types not same.");
                 }
-}
-        | unexpr { $$.type = $1.type; }
-        ;
+        } |
+
+        unexpr { $$.type = $1.type; } ;
     
-unexpr : TOKEN_MINUS smolexpr
+
+unexpr : 
+        TOKEN_MINUS smolexpr
         {
                 if($2.type == DataType::INT) {
                         vm.write_op(OP::NEG);
@@ -535,10 +572,11 @@ unexpr : TOKEN_MINUS smolexpr
                         DECLARE_ERROR("Types not same.");
                 }
                 $$.type = $2.type;
-        }
-        | smolexpr { $$.type = $1.type; }
-        ;
+        } |
+        
+        smolexpr { $$.type = $1.type; } ;
     
+
 smolexpr : 
         TOKEN_INT_VAL
         {
@@ -595,6 +633,7 @@ smolexpr :
                 $$.as.int_val = entry.dim_count;
         } ;
     
+
 callexpr : 
         TOKEN_IDENTIFIER TOKEN_PAREN_L args TOKEN_PAREN_R
         {
@@ -620,8 +659,7 @@ callexpr :
 
 
 args : 
-        args_ |
-        ;
+        args_ | ;
 
 
 args_ : 
@@ -629,6 +667,7 @@ args_ :
         {
                 argv.push_back({ $3.type, $3.as.int_val });
         } |
+
         expr
         {
                 argv.push_back({ $1.type, $1.as.int_val });

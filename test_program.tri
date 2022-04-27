@@ -1,3 +1,5 @@
+var glob: int[3] = new;
+
 fun umm?(c: int[,]): int[,,]
 {
     var g: int[1,2,3] = new;
@@ -15,4 +17,8 @@ fun start()
     log a[0, 1];
 
     del b;
+
+    glob[2] = 167;
+    log glob[2];
+    del glob;
 }
