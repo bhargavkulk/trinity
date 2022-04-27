@@ -47,17 +47,17 @@ Pops top 2 elements from the stack and pushes the boolean comparison result onto
 ## `GLOB_VARGET`
 **TODO NIMISH**
 
-## `VARSET`
-**TODO NIMISH**
+## `VARSET 8'bID`
+Pops value from the stack and saves it in the variable with id `ID`.
 
-## `VARGET`
-**TODO NIMISH**
+## `VARGET 8'bID`
+Pushes the value saved in variable with id `ID`.
 
-## `CALL`
-**TODO NIMISH**
+## `CALL 32b'ADDR`
+Jumps the instruction pointed to at by `ADDR` while also starting a new stackframe.
 
 ## `RET`
-**TODO NIMISH**
+Moves PC back to where the caller called the callee.
 
 ## `LOGINT`
 Pops the topmost element of the stack and logs it.
@@ -79,3 +79,18 @@ The 16-bit `OFFSET` is unconditionally added to the program counter.
 The 16-bit `OFFSET` is unconditionally subtracted from the program counter.
 - Throws error if the `OFFSET` cannot be represented as an unsigned 16-bit integer.
 - Throws error if the `OFFSET` is greater than the program counter
+
+## `POP`
+Topmost element of the stack is discarded.
+
+## `ARR 8'bSIZE`
+Pushes a new array on stack with `SIZE` as dimension.
+
+## `ARRSET`
+Pops array pointer and indices and value from stack and sets the element of the array at the indices to that value.
+
+## `ARRGET`
+Pops array pointer and indices from stack and get the value saved in the array at the indices.
+
+## `DEL`
+Pops pointer to array from the stack and deletes it.
