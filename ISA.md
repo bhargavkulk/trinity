@@ -1,5 +1,5 @@
 # NEO ISA
-## `hlt`
+## `HLT`
 Halts execution.
 
 ## `CONST 8'bID`
