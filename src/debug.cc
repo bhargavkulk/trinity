@@ -60,6 +60,10 @@ void disassemble(const u8 *instruction, FILE *file)
 		fprintf(file, "%s %u\n", OP_str(op), *(u32 *) &instruction[1]);
 		break;
 
+		case OP::CALL_NAT:
+		fprintf(file, "%s %u %u\n", OP_str(op), *(u32 *) &instruction[1], *(u8 *) &instruction[5]);
+		break;
+
 		default:
 		fprintf(stderr, "INVALID OPCODE\n");
 		break;

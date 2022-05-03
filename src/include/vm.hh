@@ -7,6 +7,8 @@
 
 using std::vector;
 
+typedef u64 (*NativeFun)(vector<u64> &);
+
 class VM
 {
 	u64 pc, start_pc;
@@ -16,6 +18,7 @@ class VM
 	vector<u64> stack;
 	vector<u64> constants; // Both integers and string pointers.
 	vector<u64> globals;
+	vector<NativeFun> natives;
 	usize vars_declared, max_vars_declared;
 
 	struct StackFrame
@@ -58,6 +61,8 @@ class VM
 	usize bytecode_len();
     void patch_jump(i64 offset);
 	void patch_start_call(u64 call_pc);
+
+	u32 add_native_fun(NativeFun fun);
 
 	#ifdef DEBUG_FLAG
 	const u8 *get_raw_code(u64 *size);

@@ -6,6 +6,7 @@ TRINITY_PROGRAM:= test_program.tri
 FLAGS:= -Wall -Wextra -Wno-unused-function -Isrc/include -std=c++17
 
 SRC:= $(wildcard src/*.cc) src/$(PARSER).cc src/$(LEXER).cc
+SRC += $(wildcard src/native/*.cc)
 OBJ:= $(patsubst src/%.cc,obj/%.o,$(SRC))
 BIN:= bin/neo
 
@@ -15,6 +16,7 @@ $(BIN): $(OBJ)
 
 obj/%.o: src/%.cc
 	mkdir -p obj
+	mkdir -p obj/native
 	g++ $(FLAGS) -c $^ -o $@
 
 src/$(PARSER).cc: src/$(PARSER).yy
@@ -29,7 +31,7 @@ run: $(BIN)
 	./$(BIN) $(TRINITY_PROGRAM)
 
 clean:
-	rm -f src/$(LEXER).cc src/$(PARSER).cc src/include/$(PARSER).hh obj/* bin/* log/*
+	rm -rf src/$(LEXER).cc src/$(PARSER).cc src/include/$(PARSER).hh obj/* bin/* log/*
 
 test:
 	@echo "RUNNING TESTS..."

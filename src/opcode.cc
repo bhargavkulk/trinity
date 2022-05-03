@@ -35,6 +35,7 @@ const OPData OP_DATA[]
 	{"VARGET", 1},
 
 	{"CALL", 4},
+	{"CALL_NAT", 5}, // 4 bytes function id, 1 byte argv size.
 	{"RET", 0},
 
 	{"ARR", 1},

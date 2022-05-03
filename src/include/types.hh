@@ -10,7 +10,8 @@ enum class DataType
 	INTARR,
     STR,
 	STRARR,
-    BLK
+    BLK,
+	BLKARR,
 };
 
 struct ExprType
@@ -35,7 +36,7 @@ inline DataType convert_from_arr_type(DataType type)
 
 inline bool is_arr_type(DataType type)
 {
-	return type == DataType::INTARR || type == DataType::STRARR;
+	return type == DataType::INTARR || type == DataType::STRARR || type == DataType::BLKARR;
 }
 
 #endif /* TYPES_HH */

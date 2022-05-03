@@ -3,18 +3,13 @@
 #include "debug.hh"
 #include "vm.hh"
 #include "structures.hh"
+#include "crash.hh"
 #include <cstdio>
 #include <cstdlib>
 
 #ifdef DEBUG_FLAG
 FILE *execution_log;
 #endif /* DEBUG_FLAG */
-
-#define CRASH_IF_NIL(ptr) do { if(!ptr) \
-				{ \
-					fprintf(stderr, "FATAL ERROR: NIL Reference\n"); \
-					return 1; \
-				} } while(0)
 
 VM vm;
 VM::VM() : pc(0), start_pc(0), found_start(false), vars_declared(0), max_vars_declared(0) {}
@@ -270,8 +265,7 @@ int VM::run()
 			// Order of stack from top: array ptr, value, indices.
 			case OP::ARRSET:
 			{
-				void **dptr = reinterpret_cast<void **>(pop());
-				Array *array = static_cast<Array *>(*dptr);
+				Array *array = deref_dptr(pop(), Array *);
 				CRASH_IF_NIL(array);
 
 				u64 value = pop();
@@ -300,8 +294,7 @@ int VM::run()
 
 			case OP::ARRGET:
 			{
-				void **dptr = reinterpret_cast<void **>(pop());
-				Array *array = static_cast<Array *>(*dptr);
+				Array *array = deref_dptr(pop(), Array *);
 				CRASH_IF_NIL(array);
 
 				vector<i64> indices(array->dims.size());
@@ -334,6 +327,18 @@ int VM::run()
 				frame.retPC = pc;
 				callstack.push_back(frame);
 				pc = addr;
+				break;
+			}
+
+			case OP::CALL_NAT:
+			{
+				u32 id = read_dword();
+				u8 argc = read_byte();
+				
+				vector<u64> argv(argc);
+				for(int i = argc - 1; i >= 0; i--) argv.at(i) = pop();
+				push(natives.at(id)(argv));
+
 				break;
 			}
 
@@ -535,6 +540,14 @@ void VM::patch_start_call(u64 call_pc)
 	bytecode.at(call_pc + 2) = static_cast<u8>(value >> 8);
 	bytecode.at(call_pc + 3) = static_cast<u8>(value >> 16);
 	bytecode.at(call_pc + 4) = static_cast<u8>(value >> 24);
+}
+
+/*********************************************************************/
+
+u32 VM::add_native_fun(NativeFun fun)
+{
+	natives.push_back(fun);
+	return static_cast<u32>(natives.size() - 1);
 }
 
 /*********************************************************************/

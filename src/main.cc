@@ -6,6 +6,19 @@
 #include "vm.hh"
 
 
+FILE *runtime_log = NULL;
+
+void cleanup()
+{
+	#ifdef DEBUG_FLAG
+	if(runtime_log)
+	{
+		fclose(runtime_log);
+	}
+	#endif /* DEBUG_FLAG */
+}
+
+
 int main(int argc, char *argv[])
 {
 	if(argc != 2)
@@ -13,6 +26,8 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "FATAL ERROR: Expecting exactly 1 argument, the name of the Trinity source file\n");
 		return EXIT_FAILURE;
 	}
+
+	atexit(cleanup);
 
 	/************************************************
 	 * 				READING SOURCE FILE     		*
@@ -100,7 +115,7 @@ int main(int argc, char *argv[])
 
 	#ifdef DEBUG_FLAG
 	const char *execution_log = "log/runtime.log";
-	FILE *runtime_log = fopen(execution_log, "w");
+	runtime_log = fopen(execution_log, "w");
 	if(!compile_log)
 	{
 		perror("Could not create execution log");
@@ -109,13 +124,6 @@ int main(int argc, char *argv[])
 	#endif /* DEBUG_FLAG */
 
 	vm.run();
-
-	#ifdef DEBUG_FLAG
-	if(runtime_log)
-	{
-		fclose(runtime_log);
-	}
-	#endif /* DEBUG_FLAG */
 	
 	return 0;
 }

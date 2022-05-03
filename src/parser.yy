@@ -34,14 +34,14 @@ void yyerror(const char *);
     
         TOKEN_INT_VAL TOKEN_STR_VAL TOKEN_IDENTIFIER
     
-        TOKEN_LOG TOKEN_NEW TOKEN_DEL
+        TOKEN_LOG TOKEN_NEW TOKEN_DEL TOKEN_REC
                 
         TOKEN_ERR
     
 %%
     
 program : 
-        vardefs 
+        globdefs 
         {
                 $[start_call].as.int_val = vm.bytecode_len();
                 vm.write_op(OP::CALL);
@@ -49,17 +49,56 @@ program :
                 vm.write_op(OP::POP);
                 vm.write_op(OP::HLT);
         } [start_call]
-        fundefs
+        defs
         {
                 vm.patch_start_call($[start_call].as.int_val);
         } ;
     
 
-vardefs : variable vardefs | ;
+globdefs : 
+        variable globdefs | ;
 
 
-fundefs : fundef fundefs | ;
+defs : 
+        fundef defs | 
+
+        /*recdef defs |*/ ;
     
+/*
+recdef :
+        TOKEN_REC TOKEN_IDENTIFIER
+        {
+                string ident = $2.as.str_val;
+                RecordEntry entry;
+                entry.name = ident;
+                if(!add_record(ident, entry)) DECLARE_ERROR("Cannot create two records with the same name");
+                set_current_record_name(ident);
+        }
+        TOKEN_BRACE_L fielddefs TOKEN_BRACE_R ;
+
+
+fielddefs :
+        fielddef fielddefs | ;
+
+
+fielddef :
+        TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_SEMICOLON
+        {
+                string &rec = get_current_record_name();
+                string ident = $2.as.str_val;
+
+                RecordEntry::FieldEntry entry;
+                entry.type = $4.type;
+                entry.id = get_current_record_field_id();
+
+                if(!add_record_field(rec, ident, entry)) DECLARE_ERROR("Cannot declare two fields with the same name");
+        } |
+
+        TOKEN_VAR TOKEN_IDENTIFIER TOKEN_COLON type TOKEN_SQ_BRACK_L args TOKEN_SQ_BRACK_R TOKEN_SEMICOLON
+        {
+
+        } ;
+*/
 
 fundef : 
         function 
@@ -88,7 +127,8 @@ fundef :
                         entry.paramTypes.push_back(sse.type);
                         entry.param_dim_counts.push_back(sse.dim_count);
                 }
-                if(!add_func(ident, entry)) DECLARE_ERROR("Function redefinition not allowed");
+                FuncEntry nat;
+                if(check_native(ident, nat) || !add_func(ident, entry)) DECLARE_ERROR("Function redefinition not allowed");
         } blckstmt 
         { 
                 vm.write_op(OP::CONST_0); vm.write_op(OP::RET); 
@@ -281,7 +321,7 @@ retstmt :
         TOKEN_RET expr TOKEN_SEMICOLON
         {
                 if(currFuncRetType != $2.type) DECLARE_ERROR("Return value type mismatch");
-                // if(curr_func_ret_dim_count != $2.as.int_val) DECLARE_ERROR("Return value array type dimension count mismatch");
+                if(is_arr_type(currFuncRetType) && curr_func_ret_dim_count != $2.as.int_val) DECLARE_ERROR("Return value array type dimension count mismatch");
                 vm.write_op(OP::RET);
         } ;
 
@@ -638,8 +678,11 @@ callexpr :
         TOKEN_IDENTIFIER TOKEN_PAREN_L args TOKEN_PAREN_R
         {
                 string ident = $1.as.str_val;
-                FuncEntry func;
-                if(!check_func(ident, func)) DECLARE_ERROR("Undefined function");
+                FuncEntry nat, func;
+                bool is_nat = check_native(ident, nat);
+                if(!is_nat && !check_func(ident, func)) DECLARE_ERROR("Undefined function");
+                if(is_nat) func = nat;
+
                 if(func.paramTypes.size() != argv.size()) DECLARE_ERROR("Number of function parameters and arguments do not match");
 
                 for(usize i = 0, size = argv.size(); i < size; i++)
@@ -650,8 +693,9 @@ callexpr :
                 }
                 argv.clear();
 
-                vm.write_op(OP::CALL);
+                vm.write_op(is_nat ? OP::CALL_NAT : OP::CALL);
                 vm.write_dword(func.pc);
+                if(is_nat) vm.write_byte(static_cast<u8>(func.paramTypes.size()));
 
                 $$.type = func.retType;
                 $$.as.int_val = func.ret_dim_count;

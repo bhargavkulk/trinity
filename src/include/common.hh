@@ -16,4 +16,6 @@ using u64 = std::uint64_t;
 
 using usize = std::size_t;
 
+#define deref_dptr(dptr, type) static_cast<type>(*reinterpret_cast<void **>(dptr))
+
 #endif /* COMMON_HH */

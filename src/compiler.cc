@@ -16,7 +16,9 @@ FILE *compilation_log;
 int compile(FILE *source)
 {
 	init_symbols();
+	init_natives();
 	init_funcs();
+	init_records();
 	init_buffers();
 
 	yyin = source;
