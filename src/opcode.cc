@@ -44,9 +44,6 @@ const OPData OP_DATA[]
 
 	{"DEL", 0},
 
-	{"LOGINT", 0},
-	{"LOGSTR", 0},
-
 	{"JMP_IF_FALSE", 2},
 	{"JMP", 2},
 	{"LOOP", 2},

@@ -28,7 +28,6 @@ nil                             return TOKEN_NIL;
 !title                          return TOKEN_DIR_TITLE;
 !icon                           return TOKEN_DIR_ICON;
 
-log                             return TOKEN_LOG;
 new                             return TOKEN_NEW;
 del                             return TOKEN_DEL;
 

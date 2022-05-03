@@ -345,21 +345,6 @@ int VM::run()
 				break;
 			}
 
-			case OP::LOGINT:
-			{
-				printf("%ld\n", static_cast<i64>(pop()));
-				break;
-			}
-
-			case OP::LOGSTR:
-			{
-				const char *str = reinterpret_cast<const char *>(pop());
-				CRASH_IF_NIL(str);
-
-				printf("%s\n", str);
-				break;
-			}
-
 			case OP::JMP_IF_FALSE:
 			{
 				u16 offset = read_word() - 3;

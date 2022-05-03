@@ -45,8 +45,6 @@ enum class OP : u8
 
 	DEL,
 
-	LOGINT, LOGSTR,
-
 	// Bhargav
 	JMP_IF_FALSE,
 	JMP,

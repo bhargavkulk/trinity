@@ -34,7 +34,7 @@ void yyerror(const char *);
     
         TOKEN_INT_VAL TOKEN_STR_VAL TOKEN_IDENTIFIER
     
-        TOKEN_LOG TOKEN_NEW TOKEN_DEL TOKEN_REC
+        TOKEN_NEW TOKEN_DEL TOKEN_REC
                 
         TOKEN_ERR
     
@@ -291,24 +291,7 @@ stmt :
                 vm.write_word(static_cast<u16>(vm.bytecode_len() - 1 - loop_entries.back().loop_start));
 
         } |
-        TOKEN_SEMICOLON |
-        TOKEN_LOG expr TOKEN_SEMICOLON
-        {
-                switch($2.type)
-                {
-                        case DataType::STR:
-                        vm.write_op(OP::LOGSTR);
-                        break;
-
-                        case DataType::INT:
-                        vm.write_op(OP::LOGINT);
-                        break;
-
-                        default:
-                        DECLARE_ERROR("Invalid operand for log\n");
-                        break;
-                }
-        } ;
+        TOKEN_SEMICOLON ;
     
 
 retstmt : 

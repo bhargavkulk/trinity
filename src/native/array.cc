@@ -1,4 +1,4 @@
-#include "common.hh"
+#include "structures.hh"
 #include "native/native.hh"
 #include "native/array.hh"
 #include "crash.hh"

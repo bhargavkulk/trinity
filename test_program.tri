@@ -1,4 +1,5 @@
 fun start()
 {
-    log "hello\nworld";
+    printi(5);
+    prints("Hello\nworld\n");
 }

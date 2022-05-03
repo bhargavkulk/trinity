@@ -17,8 +17,6 @@ void disassemble(const u8 *instruction, FILE *file)
 		case OP::ERR:
 		case OP::HLT:
 		case OP::CONST_0:
-		case OP::LOGINT:
-		case OP::LOGSTR:
 		case OP::RET:
 		case OP::ADD:
 		case OP::SUB:
