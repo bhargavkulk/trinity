@@ -2,6 +2,9 @@
 #include <cstdlib>
 #include <cstring>
 #include "parser.hh"
+
+char *parse_escapes(char *s);
+
 %}
 
 %option noyywrap
@@ -57,10 +60,46 @@ del                             return TOKEN_DEL;
 [_a-zA-Z][a-zA-Z0-9_\?]*		{ yylval.as.str_val = strndup(yytext, yyleng); return TOKEN_IDENTIFIER; }
 0x[0-9A-Fa-f]+	 				{ yylval.as.int_val = strtol(yytext, NULL, 16); return TOKEN_INT_VAL; }
 [0-9]+ 							{ yylval.as.int_val = strtol(yytext, NULL, 10); return TOKEN_INT_VAL; }
-\"([^\\\"]|\\.)*\"				{ yylval.as.str_val = strndup(yytext + 1, yyleng - 2); return TOKEN_STR_VAL; }
+\"([^\\\"]|\\.)*\"				{ yylval.as.str_val = parse_escapes(strndup(yytext + 1, yyleng - 2)); return TOKEN_STR_VAL; }
 
 
 [ \t\n\r]+						;
 .								return TOKEN_ERR;
 
 %%
+
+char *parse_escapes(char *s)
+{
+    char *oldptr = s;
+    char *newptr = s;
+
+    while(*oldptr)
+    {
+        if(*oldptr != '\\')
+        {
+            *newptr = *oldptr;
+        }
+        else
+        {
+            oldptr += 1;
+            switch(*oldptr)
+            {
+                case 'n': *newptr = '\n'; break;
+                case 'b': *newptr = '\b'; break;
+                case 'r': *newptr = '\r'; break;
+                case '\\': *newptr = '\\'; break;
+                case '\'': *newptr = '\''; break;
+                case '\"': *newptr = '\"'; break;
+                case 'f': *newptr = '\f'; break;
+
+                default: oldptr -= 1; *newptr = *oldptr; break;
+            }
+        }
+
+        oldptr += 1;
+        newptr += 1;
+    }
+    *newptr = 0;
+
+    return s;
+}
