@@ -107,6 +107,7 @@ int VM::run()
 			{
 				i64 op2 = static_cast<i64>(pop());
 				i64 op1 = static_cast<i64>(pop());
+				CRASH_IF_TRUE(op2 == 0, "Modulo by zero");
 				push(static_cast<u64>(op1 % op2));
 				break;
 			}
