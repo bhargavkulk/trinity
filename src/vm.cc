@@ -98,12 +98,7 @@ int VM::run()
 			{
 				i64 op2 = static_cast<i64>(pop());
 				i64 op1 = static_cast<i64>(pop());
-				// error checking for division by zero error
-				if (op2 == 0)
-				{
-					fprintf(stderr, "Division by zero, PLEASE CHANGE THIS NOW");
-					break;
-				}
+				CRASH_IF_TRUE(op2 == 0, "Division by zero");
 				push(static_cast<u64>(op1 / op2));
 				break;
 			}
