@@ -23,7 +23,7 @@ src/$(PARSER).cc: src/$(PARSER).yy
 	bison src/$(PARSER).yy -do src/$(PARSER).cc -v --graph
 	mv -f src/$(PARSER).hh src/include/$(PARSER).hh
 
-src/$(LEXER).cc: src/$(LEXER).ll
+src/$(LEXER).cc: src/$(LEXER).l
 	flex -o src/$(LEXER).cc src/$(LEXER).l
 
 run: $(BIN)

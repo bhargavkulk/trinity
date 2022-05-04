@@ -1,17 +1,23 @@
 var i: int = 0;
+var frame: int = 0;
+var x: int = 0;
+var y: int = 0;
 
 fun start()
 {
     draw_at(0,0,0);
 }
+
 fun update()
 {
-    i = i + 10000;
-    draw_at(0,0, i);
-
-    if i == 1000000
-    {
-        exit();
-    }
-    else {}
+    frame = frame + 1;
+    if (frame % 32 == 0) {
+        draw_at(x, y, 0);
+        if left_pressed?() {
+            prints("left");
+        } else {
+            prints("nothing");
+        }
+        draw_at(x, y, 0xFFD700);
+    } else {}
 }

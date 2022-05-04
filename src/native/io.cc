@@ -2,6 +2,28 @@
 #include <cstdio>
 #include <cstdlib>
 
+extern bool upPressed, leftPressed, rightPressed, downPressed;
+
+def_native(nat_up_pressed)
+{
+    return upPressed;
+}
+
+def_native(nat_down_pressed)
+{
+    return downPressed;
+}
+
+def_native(nat_left_pressed)
+{
+    return leftPressed;
+}
+
+def_native(nat_right_pressed)
+{
+    return rightPressed;
+}
+
 def_native(nat_prints)
 {
     printf("%s", reinterpret_cast<const char *>(argv.at(0)));
