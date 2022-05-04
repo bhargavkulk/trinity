@@ -1,0 +1,19 @@
+#ifndef COMMON_HPP
+#define COMMON_HPP
+
+#define FRAMERATE 32
+#define MUS_PER_FRAME (1000000 / FRAMERATE)
+
+enum class Key {
+    UP_PRESS,
+    UP_RELEASE,
+    LEFT_PRESS,
+    LEFT_RELEASE,
+    RIGHT_PRESS,
+    RIGHT_RELEASE,
+    DOWN_PRESS,
+    DOWN_RELEASE,
+    NONE
+};
+
+#endif

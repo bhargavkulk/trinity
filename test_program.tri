@@ -1,5 +1,10 @@
 fun start()
 {
-    printi(5);
-    prints("\nHello\nworld\n");
+    var i: int = 1000000;
+    while i
+    {
+        draw_at(0, 0, 0xFF);
+        i = i - 1;
+    }
+    1/0;
 }

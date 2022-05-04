@@ -12,25 +12,26 @@ FILE *execution_log;
 #endif /* DEBUG_FLAG */
 
 VM vm;
-VM::VM() : pc(0), start_pc(0), found_start(false), vars_declared(0), max_vars_declared(0) {}
+VM::VM() : pc(0), start_pc(0), update_pc(0), found_start(false), 
+	found_update(false), has_halted(false), halt_pc(0),
+	vars_declared(0), max_vars_declared(0) {}
 
 int VM::run()
 {
 	// TEMP
-	if(!found_start)
-	{
-		printf("ERROR: start() not found\n");
-		return 0;
-	}
-
-	bool has_halted = false;
-	u64 halt_pc = 0;
+	// if(!found_start || !found_update)
+	// {
+	// 	printf("ERROR: start() or update() not found\n");
+	// 	return 0;
+	// }
 
 	// Remove when stub added.
 	callstack = vector<StackFrame>(1);
 
+	extern bool isWindowActive;
+
 	// TEMPORARY: REPLACE WITH WINDOW FLAG.
-	while (true)
+	while (isWindowActive)
 	{
 		if (has_halted)
 		{
@@ -40,9 +41,6 @@ int VM::run()
 			}
 			else
 			{
-				// TEMP BREAK
-				break;
-
 				continue;
 			}
 		}
@@ -57,6 +55,11 @@ int VM::run()
 
 		switch (read_op())
 		{
+			case OP::NOP:
+			{
+				break;
+			}
+
 			case OP::ERR:
 			{
 				return 1;
@@ -453,6 +456,17 @@ void VM::set_start(u64 pc)
 	start_pc = pc;
 }
 
+void VM::set_update(u64 pc)
+{
+	found_update = true;
+	update_pc = pc;
+}
+
+void VM::set_pc_to_update_pc()
+{
+	if(has_halted) pc = halt_pc - 6;
+}
+
 /*********************************************************************/
 
 OP VM::read_op()
@@ -515,8 +529,30 @@ void VM::patch_jump(i64 offset) {
 
 void VM::patch_start_call(u64 call_pc)
 {
-	if(!found_start) return;
+	if(!found_start)
+	{
+		for(int i = 0; i < 6; i++)
+			bytecode.at(call_pc + i) = static_cast<u8>(OP::NOP);
+		return;
+	}
+
 	u32 value = static_cast<u32>(start_pc);
+	bytecode.at(call_pc + 1) = static_cast<u8>(value);
+	bytecode.at(call_pc + 2) = static_cast<u8>(value >> 8);
+	bytecode.at(call_pc + 3) = static_cast<u8>(value >> 16);
+	bytecode.at(call_pc + 4) = static_cast<u8>(value >> 24);
+}
+
+void VM::patch_update_call(u64 call_pc)
+{
+	if(!found_update)
+	{
+		for(int i = 0; i < 6; i++)
+			bytecode.at(call_pc + i) = static_cast<u8>(OP::NOP);
+		return;
+	}
+
+	u32 value = static_cast<u32>(update_pc);
 	bytecode.at(call_pc + 1) = static_cast<u8>(value);
 	bytecode.at(call_pc + 2) = static_cast<u8>(value >> 8);
 	bytecode.at(call_pc + 3) = static_cast<u8>(value >> 16);

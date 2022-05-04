@@ -7,4 +7,7 @@ def_native(nat_prints);
 def_native(nat_printi);
 def_native(nat_cls);
 
+def_native(nat_draw_at);
+def_native(nat_grid_at);
+
 #endif /* NATIVE_IO_HH */

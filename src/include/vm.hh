@@ -11,8 +11,11 @@ typedef u64 (*NativeFun)(vector<u64> &);
 
 class VM
 {
-	u64 pc, start_pc;
-	bool found_start;
+	u64 pc;
+	u64 start_pc, update_pc;
+	bool found_start, found_update;
+	bool has_halted;
+	u64 halt_pc;
 
 	vector<u8> bytecode;
 	vector<u64> stack;
@@ -57,10 +60,14 @@ class VM
     void undecl_vars(usize count);
     
 	void set_start(u64 pc);
+	void set_update(u64 pc);
+
+	void set_pc_to_update_pc();
 
 	usize bytecode_len();
     void patch_jump(i64 offset);
 	void patch_start_call(u64 call_pc);
+	void patch_update_call(u64 call_pc);
 
 	u32 add_native_fun(NativeFun fun);
 

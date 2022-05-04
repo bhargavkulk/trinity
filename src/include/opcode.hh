@@ -45,6 +45,8 @@ enum class OP : u8
 
 	DEL,
 
+	NOP,
+
 	// Bhargav
 	JMP_IF_FALSE,
 	JMP,

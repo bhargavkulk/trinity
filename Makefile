@@ -12,7 +12,7 @@ BIN:= bin/neo
 
 $(BIN): $(OBJ)
 	mkdir -p bin
-	g++ $^ -o $@
+	g++ $^ -o $@ -lxcb -lpthread
 
 obj/%.o: src/%.cc
 	mkdir -p obj

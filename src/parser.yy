@@ -4,12 +4,15 @@
 #include <cstring>
 #include "vm.hh"
 #include "symbols.hh"
+#include "common.hh"
     
 extern int yylineno;
 extern int yylex(void);
 void yyerror(const char *);
     
 #define DECLARE_ERROR(msg) do { yyerror(msg); YYERROR; } while(0)
+
+u64 update_call;
     
 }
     
@@ -47,11 +50,18 @@ program :
                 vm.write_op(OP::CALL);
                 vm.write_dword(0);
                 vm.write_op(OP::POP);
+
+                update_call = vm.bytecode_len();
+                vm.write_op(OP::CALL);
+                vm.write_dword(0);
+                vm.write_op(OP::POP);
+
                 vm.write_op(OP::HLT);
         } [start_call]
         defs
         {
                 vm.patch_start_call($[start_call].as.int_val);
+                vm.patch_update_call(update_call);
         } ;
     
 
@@ -119,6 +129,14 @@ fundef :
                                 DECLARE_ERROR("Function \"start\" must have the following prototype: fun start() { ... }");
                         }
                         vm.set_start(entry.pc);
+                }
+                else if(ident == "update")
+                {
+                        if(entry.retType != DataType::NIL || scope_starts.size() > 0)
+                        {
+                                DECLARE_ERROR("Function \"update\" must have the following prototype: fun update() { ... }");
+                        }
+                        vm.set_update(entry.pc);
                 }
 
                 for(usize i = 0, size = scope_starts.size(); i < size; i++)

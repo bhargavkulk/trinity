@@ -43,6 +43,7 @@ const OPData OP_DATA[]
 	{"ARRGET", 0},
 
 	{"DEL", 0},
+	{"NOP", 0},
 
 	{"JMP_IF_FALSE", 2},
 	{"JMP", 2},

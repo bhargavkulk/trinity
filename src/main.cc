@@ -123,7 +123,9 @@ int main(int argc, char *argv[])
 	set_execution_log(runtime_log);
 	#endif /* DEBUG_FLAG */
 
-	vm.run();
+	extern void engine_main();
+
+	engine_main();
 	
 	return 0;
 }
