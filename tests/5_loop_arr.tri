@@ -5,8 +5,8 @@ fun start()
 
     while idx < 4 {
         a[idx] = idx;
-        log a[idx];
-
+        printi(a[idx]);
+        prints("\n");
         idx = idx + 1;
     }
 

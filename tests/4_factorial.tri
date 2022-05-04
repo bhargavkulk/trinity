@@ -9,5 +9,6 @@ fun factorial(n: int): int
 
 fun start()
 {
-    log factorial(5);
+    printi(factorial(5));
+    prints("\n");
 }

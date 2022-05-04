@@ -1,5 +1,5 @@
 fun start()
 {
     printi(5);
-    prints("Hello\nworld\n");
+    prints("\nHello\nworld\n");
 }

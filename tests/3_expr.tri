@@ -4,13 +4,20 @@ fun start()
     var b: int = 5;
     var zero: int = 0;
 
-    log a + b;
-    log b * a + b;
-    log -b;
+    printi(a + b);
+    prints("\n");
+    printi(b * a + b);
+    prints("\n");
+    printi(b);
+    prints("\n");
 
-    log a > b;
-    log a != b;
+    printi(a > b);
+    prints("\n");
+    printi(a != b);
+    prints("\n");
 
-    log zero && a;
-    log !a;
+    printi(zero && a);
+    prints("\n");
+    printi(!a);
+    prints("\n");
 }

@@ -3,7 +3,8 @@ fun start()
 {
     var local: int = 9;
 
-    log global;
+    printi(global);
 
-    log local;
+    printi(local);
+    prints("\n");
 }
