@@ -5,7 +5,8 @@ var y: int = 0;
 
 fun start()
 {
-    draw_at(0,0,0);
+    draw_at(x, y, 0xFFD700);
+    prints("start");
 }
 
 fun update()
