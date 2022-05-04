@@ -1,24 +1,51 @@
 var i: int = 0;
-var frame: int = 0;
 var x: int = 0;
 var y: int = 0;
+
+var a: int[4] = new;
+
+fun draw_block(x: int, y: int, color: int)
+{
+    var i: int = 0;
+    while i < 4 {
+        draw_at(x + i, y, color);
+        i = i + 1;
+    }
+}
 
 fun start()
 {
     draw_at(x, y, 0xFFD700);
-    prints("start");
+    prints("start\n");
 }
 
 fun update()
 {
-    frame = frame + 1;
-    if (frame % 32 == 0) {
-        draw_at(x, y, 0);
-        if left_pressed?() {
-            prints("left");
-        } else {
-            prints("nothing");
-        }
-        draw_at(x, y, 0xFFD700);
+    draw_block(x, y, 0);
+    if left_pressed?() {
+    	if x > 0
+    	{
+        	x = (x - 1);
+        } else {}
     } else {}
+    if right_pressed?() {
+    	if x < 6
+    	{
+        	x = (x + 1);
+        } else {}
+    } else {}
+    if up_pressed?() {
+    	if y > 0
+    	{
+        	y = (y - 1);
+        } else {}
+    } else {}
+    if down_pressed?() {
+        if y < 17
+    	{
+        	y = (y + 1);
+        } else {}
+    } else {}
+    draw_block(x, y, 0xFFD700);
+   
 }

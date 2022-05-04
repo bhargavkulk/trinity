@@ -50,3 +50,5 @@ test:
 	@echo "test: 5loop_arr.tri"
 	@./$(BIN) tests/5_loop_arr.tri
 
+install:
+	sudo apt install libx11-xcb-dev

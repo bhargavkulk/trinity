@@ -49,35 +49,35 @@ void key_handler(Key key) {
     switch (key) {
         case Key::UP_PRESS:
             upPressed = true;
-            printf("UP press\n");
+            //printf("UP press\n");
             break;
         case Key::UP_RELEASE:
             upPressed = false;
-            printf("UP release\n");
+            //printf("UP release\n");
             break;
         case Key::LEFT_PRESS:
             leftPressed = true;
-            printf("LEFT press\n");
+           // printf("LEFT press\n");
             break;
         case Key::LEFT_RELEASE:
             leftPressed = false;
-            printf("LEFT release\n");
+           // printf("LEFT release\n");
             break;
         case Key::RIGHT_PRESS:
             rightPressed = true;
-            printf("RIGHT press\n");
+           // printf("RIGHT press\n");
             break;
         case Key::RIGHT_RELEASE:
             rightPressed = false;
-            printf("RIGHT release\n");
+            //printf("RIGHT release\n");
             break;
         case Key::DOWN_PRESS:
             downPressed = true;
-            printf("DOWN press\n");
+            //printf("DOWN press\n");
             break;
         case Key::DOWN_RELEASE:
             downPressed = false;
-            printf("DOWN release\n");
+            //printf("DOWN release\n");
             break;
         default:
             break;
