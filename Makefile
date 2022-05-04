@@ -24,7 +24,7 @@ src/$(PARSER).cc: src/$(PARSER).yy
 	mv -f src/$(PARSER).hh src/include/$(PARSER).hh
 
 src/$(LEXER).cc: src/$(LEXER).ll
-	flex -o src/$(LEXER).cc src/$(LEXER).ll
+	flex -o src/$(LEXER).cc src/$(LEXER).l
 
 run: $(BIN)
 	mkdir -p log
