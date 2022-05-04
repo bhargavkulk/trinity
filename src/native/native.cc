@@ -30,10 +30,12 @@ void add_native_functions(std::unordered_map<string, FuncEntry> &natives)
 
     add_native("prints", func(NIL, 0, vm_nat(nat_prints), vecT(STR)));
     add_native("printi", func(NIL, 0, vm_nat(nat_printi), vecT(INT)));
-    add_native("cls", func(NIL, 0, vm_nat(nat_cls));
+    add_native("cls", func(NIL, 0, vm_nat(nat_cls)));
 
     add_native("draw_at", func(NIL, 0, vm_nat(nat_draw_at), vecT(INT, INT, INT)));
     add_native("grid_at", func(INT, 0, vm_nat(nat_grid_at), vecT(INT, INT)));
+
+    add_native("exit", func(NIL, 0, vm_nat(nat_exit)));
 
     add_native("Array1DLen", func(INT, 0, vm_nat(Array_1D_Len), vecT(INTARR), vecI(1)));
     

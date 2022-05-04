@@ -38,3 +38,8 @@ def_native(nat_grid_at)
 
     return game_grid[x][y];
 }
+
+def_native(nat_exit)
+{
+    exit(0);
+}

@@ -1,7 +1,7 @@
 #ifndef DEBUG_HPP
 #define DEBUG_HPP
 
-#define DEBUG_FLAG
+//#define DEBUG_FLAG
 
 #ifdef DEBUG_FLAG
 #include <cstdio>
